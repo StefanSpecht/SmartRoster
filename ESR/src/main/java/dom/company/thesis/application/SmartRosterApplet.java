@@ -84,40 +84,39 @@ public class SmartRosterApplet extends AbstractApplet
 	 private JComponent createParametersPanel() {
 	 
 	 		 
-        Box parameters = Box.createHorizontalBox();
-        parameters.add(Box.createHorizontalStrut(10));
+        Box parameterBox = Box.createHorizontalBox();
+        parameterBox.add(Box.createHorizontalStrut(10));
         final JLabel populationLabel = new JLabel("Population Size: ");
-        parameters.add(populationLabel);
-        parameters.add(Box.createHorizontalStrut(10));
+        parameterBox.add(populationLabel);
+        parameterBox.add(Box.createHorizontalStrut(10));
         
         populationSpinner = new JSpinner(new SpinnerNumberModel(10, 2, 10000, 1));
         populationSpinner.setMaximumSize(populationSpinner.getMinimumSize());
-        parameters.add(populationSpinner);
-        parameters.add(Box.createHorizontalStrut(10));
+        parameterBox.add(populationSpinner);
+        parameterBox.add(Box.createHorizontalStrut(10));
         final JLabel elitismLabel = new JLabel("Elitism: ");
-        parameters.add(elitismLabel);
-        parameters.add(Box.createHorizontalStrut(10));
+        parameterBox.add(elitismLabel);
+        parameterBox.add(Box.createHorizontalStrut(10));
         
         elitismSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 1000, 1));
         elitismSpinner.setMaximumSize(elitismSpinner.getMinimumSize());
-        parameters.add(elitismSpinner);
-        parameters.add(Box.createHorizontalStrut(10));
+        parameterBox.add(elitismSpinner);
+        parameterBox.add(Box.createHorizontalStrut(10));
 
-        parameters.add(new JLabel("Selection Pressure: "));
-        parameters.add(Box.createHorizontalStrut(10));
+        parameterBox.add(new JLabel("Selection Pressure: "));
+        parameterBox.add(Box.createHorizontalStrut(10));
         selectionPressureControl = new ProbabilityParameterControl(Probability.EVENS,
                                                                    Probability.ONE,
                                                                    2,
                                                                    new Probability(0.7));
-        parameters.add(selectionPressureControl.getControl());
-        parameters.add(Box.createHorizontalStrut(10));
+        parameterBox.add(selectionPressureControl.getControl());
+        parameterBox.add(Box.createHorizontalStrut(10));
 
         startButton = new JButton("Start");
+        abort = new AbortControl(); 
         
-        abort = new AbortControl();        
         startButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent event) {
-        		
+        	public void actionPerformed(ActionEvent event) {        		
                 abort.getControl().setEnabled(true);
                 populationLabel.setEnabled(false);
                 populationSpinner.setEnabled(false);
@@ -134,12 +133,12 @@ public class SmartRosterApplet extends AbstractApplet
         });
         abort.getControl().setEnabled(false);
         
-        parameters.add(startButton);
-        parameters.add(abort.getControl());
-        parameters.add(Box.createHorizontalStrut(10));
+        parameterBox.add(startButton);
+        parameterBox.add(abort.getControl());
+        parameterBox.add(Box.createHorizontalStrut(10));
 
-        parameters.setBorder(BorderFactory.createTitledBorder("Parameters"));
-        return parameters;
+        parameterBox.setBorder(BorderFactory.createTitledBorder("Parameters"));
+        return parameterBox;
      }
 	
 	 private class EvolutionTask extends SwingBackgroundTask<String> {
