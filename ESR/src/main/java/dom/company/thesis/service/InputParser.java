@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import dom.company.thesis.model.Employee;
 import dom.company.thesis.model.Task;
 
 public class InputParser {
@@ -67,7 +68,7 @@ public class InputParser {
 			        Element taskElement = (Element) taskNode;
 			      
 			        //Get ID of each task
-			        expression = xPath.compile("ID"); 
+			        expression = xPath.compile("@ID"); 
 			        Node taskIdNode = (Node) expression.evaluate(taskElement,XPathConstants.NODE);
 			        String taskId = taskIdNode.getTextContent();
 			        
@@ -86,4 +87,78 @@ public class InputParser {
 		return taskList;		
 	}	
 
+public List<Employee> getEmployees() {
+		
+		List<Employee> employeeList = new ArrayList<Employee>();
+		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		try {
+			//Get all employee nodes
+			XPathExpression expression = xPath.compile("SchedulingPeriod/Employees/Employee");
+			NodeList employeeNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			
+			//iterate through all employee nodes
+			for (int i = 0; i < employeeNodes.getLength(); i++) {
+				
+				Node employeeNode = employeeNodes.item(i);				
+				if (employeeNode != null && employeeNode.getNodeType() == Node.ELEMENT_NODE) {
+
+			        Element employeeElement = (Element) employeeNode;
+			      
+			        //Get ID of each employee
+			        String employeeId;
+			        expression = xPath.compile("@ID"); 
+			        Node employeeIdNode = (Node) expression.evaluate(employeeElement,XPathConstants.NODE);
+			        employeeId = employeeIdNode.getTextContent();
+			        
+			        //Get name of each employee. If not defined use ID value
+			        String employeeName;
+			        expression = xPath.compile("Name"); 
+			        Node employeeNameNode = (Node) expression.evaluate(employeeElement,XPathConstants.NODE);
+			        if (employeeNameNode != null) {
+			        	employeeName = employeeNameNode.getTextContent();
+			        } else {
+			        	employeeName = employeeId;
+			        }
+			        
+			        Employee employee = new Employee(employeeId, employeeName);
+			        employeeList.add(employee);
+			    }
+			}			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return employeeList;		
+	}
+
+	public List<String> getTaskQualificationIds(String employeeId) {
+		
+		List<String> taskIds = new ArrayList<String>();
+		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		try {
+			//Get employee with queried ID
+			XPathExpression expression = xPath.compile("SchedulingPeriod/Employees/Employee[@ID='" + employeeId + "']");
+			Node employeeNode = (Node)expression.evaluate(document, XPathConstants.NODE);
+					
+			if (employeeNode != null) {
+
+		        Element employeeElement = (Element) employeeNode;
+		      
+		        //Get tasks ID references for this employee
+		        expression = xPath.compile("TaskQualifications/TaskQualification/@ID"); 
+		        NodeList taskQualificationNodes = (NodeList) expression.evaluate(employeeElement,XPathConstants.NODESET);
+		        
+		        for (int i = 0; i < taskQualificationNodes.getLength(); i++) {
+		        	Node taskQualificationNode = taskQualificationNodes.item(i);
+		        	taskIds.add(taskQualificationNode.getTextContent());		        	
+		        }
+			} else {
+				throw(new IllegalArgumentException());
+			}			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return taskIds;
+	}
 }
