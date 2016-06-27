@@ -42,17 +42,13 @@ public class SmartRosterApplet extends AbstractApplet
 {
 	private static final long serialVersionUID = 9082082587988054878L;
 	
-	 
-	//private EvolutionMonitor<String> evolutionMonitor;
 	private JButton startButton;
 	private AbortControl abort;
 	private JSpinner populationSpinner;
 	private JSpinner elitismSpinner;
 	private ProbabilityParameterControl selectionPressureControl;
 	private ProbabilitiesPanel probabilitiesPanel;
-	private EvolutionMonitor<String> evolutionMonitor;
-	
-	
+	private EvolutionMonitor<String> evolutionMonitor;	
 	
 
 	/**Delete if no additional initialization needed**/	
@@ -64,7 +60,7 @@ public class SmartRosterApplet extends AbstractApplet
 	
 	
 	 /**
-	  * Initialise and layout the GUI.
+	  * Initialize and layout the GUI.
 	  * @param container The Swing component that will contain the GUI controls.
 	  */
 	 @Override
@@ -94,7 +90,7 @@ public class SmartRosterApplet extends AbstractApplet
         parameters.add(populationLabel);
         parameters.add(Box.createHorizontalStrut(10));
         
-        populationSpinner = new JSpinner(new SpinnerNumberModel(10, 2, 1000, 1));
+        populationSpinner = new JSpinner(new SpinnerNumberModel(10, 2, 10000, 1));
         populationSpinner.setMaximumSize(populationSpinner.getMinimumSize());
         parameters.add(populationSpinner);
         parameters.add(Box.createHorizontalStrut(10));
