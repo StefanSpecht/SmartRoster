@@ -8,6 +8,7 @@ public class SmartRoster {
 	{
 	     SmartRosterApplet smartRosterApplet = new SmartRosterApplet();
 	     InputService inputService = new InputService();
+	     inputService.parse();
 	     smartRosterApplet.displayInFrame("Evonik SmartRoster");
 	 }
 }
