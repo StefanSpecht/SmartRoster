@@ -6,7 +6,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -233,6 +235,7 @@ public List<Employee> getEmployees() {
 	}
 
 	public List<List<String>> getTaskCombinationIds() {
+		
 		List<List<String>> taskCombinations = new ArrayList<List<String>>();		
 		XPath xPath =  XPathFactory.newInstance().newXPath();
 		
@@ -269,5 +272,57 @@ public List<Employee> getEmployees() {
 			e.printStackTrace();
 		}
 		return taskCombinations;
+	}
+
+	public Map<String, Integer> getTaskIdCoverRequirements(String shiftTypeId) {
+
+		Map<String,Integer> taskIdCoverRequirements = new HashMap<String,Integer>();		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			//Get taskCoverRequirements node for queried shiftType-ID
+			XPathExpression expression = xPath.compile("SchedulingPeriod/TaskCoverRequirements/TaskCoverRequirement[@ShiftType='" + shiftTypeId + "']");
+			Node taskCoverRequirementsNode = (Node)expression.evaluate(document, XPathConstants.NODE);
+					
+			if (taskCoverRequirementsNode != null) {
+
+		        Element taskCoverRequirements = (Element) taskCoverRequirementsNode;
+		      
+		        //Get all Cover nodes
+		        expression = xPath.compile("Cover"); 
+		        NodeList coverNodes = (NodeList) expression.evaluate(taskCoverRequirements,XPathConstants.NODESET);
+		        
+		        //Iterate through all cover requirements
+		        for (int i = 0; i < coverNodes.getLength(); i++) {
+		        	
+		        	Node coverNode = coverNodes.item(i);
+		        	
+		        	if (coverNode != null && coverNode.getNodeType() == Node.ELEMENT_NODE) {
+
+				        Element coverElement = (Element) coverNode;
+				        
+				        //Get Task Id
+				        String taskId;
+				        expression = xPath.compile("Task"); 
+				        Node taskIdNode = (Node) expression.evaluate(coverElement,XPathConstants.NODE);
+				        taskId = taskIdNode.getTextContent();
+				        
+				        //Get quantity
+				        int quantity;
+				        expression = xPath.compile("Quantity"); 
+				        Node quantityNode = (Node) expression.evaluate(coverElement,XPathConstants.NODE);
+				        quantity = Integer.parseInt(quantityNode.getTextContent());
+				        
+				        //Add to map
+				        taskIdCoverRequirements.put(taskId, quantity);
+		        	}		        			        	
+		        }
+			} else {
+				throw(new IllegalArgumentException());
+			}			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return taskIdCoverRequirements;
 	}
 }

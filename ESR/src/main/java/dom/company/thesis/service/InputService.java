@@ -1,7 +1,10 @@
 package dom.company.thesis.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.w3c.dom.Document;
@@ -60,6 +63,19 @@ public class InputService {
 			this.taskCombinations.add(taskCombination);
 		}
 		
+		//Add TaskCoverRequirements to each ShiftType
+		Map<String,Integer> taskIdCoverRequirements = new HashMap<String,Integer>();
+		
+		for (ShiftType shiftType : this.shiftTypes) {
+			taskIdCoverRequirements = inputParser.getTaskIdCoverRequirements(shiftType.getId());
+			
+			for(Entry<String, Integer> taskIdCoverRequirement : taskIdCoverRequirements.entrySet()) {
+				String taskId = taskIdCoverRequirement.getKey();
+				Task task = this.getTask(taskId);
+				int quantity = taskIdCoverRequirement.getValue();
+				shiftType.addTaskCoverRequirement(task, quantity);
+			}
+		}
 	}
 
 	public Task getTask(String taskId) {
