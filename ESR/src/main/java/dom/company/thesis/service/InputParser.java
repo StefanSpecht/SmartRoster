@@ -231,4 +231,43 @@ public List<Employee> getEmployees() {
 		}
 		return shiftTypeList;	
 	}
+
+	public List<List<String>> getTaskCombinationIds() {
+		List<List<String>> taskCombinations = new ArrayList<List<String>>();		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			//Get all Task nodes
+			XPathExpression expression = xPath.compile("SchedulingPeriod/TaskCombinations/TaskCombination");
+			NodeList taskCombinationNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			
+			//iterate through all TaskCombination nodes
+			for (int i = 0; i < taskCombinationNodes.getLength(); i++) {
+				
+				Node taskCombinationNode = taskCombinationNodes.item(i);				
+				if (taskCombinationNode != null && taskCombinationNode.getNodeType() == Node.ELEMENT_NODE) {
+
+			        Element taskCombinationElement = (Element) taskCombinationNode;
+			      
+			        //Get all tasks included in this combination entry
+			        expression = xPath.compile("Task"); 
+			        NodeList taskNodes = (NodeList) expression.evaluate(taskCombinationElement,XPathConstants.NODESET);
+			        
+			        //iterate through all included tasks and add it to the tasklist
+			        List<String> tasks = new ArrayList<String>();
+					for (int y = 0; y < taskNodes.getLength(); y++) {
+						tasks.add(taskNodes.item(y).getTextContent());
+					}
+					
+					//Finally, add the task list to the task-combination list
+					taskCombinations.add(tasks);
+				}
+			}			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (DOMException e) {
+			e.printStackTrace();
+		}
+		return taskCombinations;
+	}
 }

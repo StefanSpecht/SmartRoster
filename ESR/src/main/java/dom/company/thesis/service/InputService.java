@@ -17,7 +17,8 @@ public class InputService {
 	List<Task> tasks = new ArrayList<Task>();
 	List<Employee> employees = new ArrayList<Employee>();
 	List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
-	//Convert to employee
+	//Convert to employee, task and shiftType map!!	
+	List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 		
 	public InputService() {
 	}
@@ -45,6 +46,20 @@ public class InputService {
 		
 		//Read shift types
 		this.shiftTypes = inputParser.getShiftTypes();
+		
+		//Read all task-combinations Ids
+		List<List<String>> taskCombinationIds = new ArrayList<List<String>>();
+		taskCombinationIds = inputParser.getTaskCombinationIds();
+		
+		//Get Task objects by combination IDs and add it to the task combination list
+		for (List<String> taskCombinationId : taskCombinationIds) {
+			List<Task> taskCombination = new ArrayList<Task>();
+			for (String taskId : taskCombinationId) {
+				taskCombination.add(this.getTask(taskId));
+			}
+			this.taskCombinations.add(taskCombination);
+		}
+		
 	}
 
 	public Task getTask(String taskId) {
