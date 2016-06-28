@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.w3c.dom.Document;
 
 import dom.company.thesis.model.Employee;
+import dom.company.thesis.model.ShiftType;
 import dom.company.thesis.model.Task;
 
 public class InputService {
@@ -15,9 +16,13 @@ public class InputService {
 	
 	List<Task> tasks = new ArrayList<Task>();
 	List<Employee> employees = new ArrayList<Employee>();
+	List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
+	//Convert to employee
 		
 	public InputService() {
-		
+	}
+	
+	public void parse() {	//Later XML String as input
 		InputParser inputParser = new InputParser(XML_FILE_PATH);
 		
 		//Read tasks
@@ -37,9 +42,12 @@ public class InputService {
 			
 			employee.setTaskQualifications(taskQualifications);			
 		}
+		
+		//Read shift types
+		
 	}
-	
-	Task getTask(String taskId) {
+
+	public Task getTask(String taskId) {
 		return this.tasks.stream().filter(task -> task.getId().equals(taskId)).collect(Collectors.toList()).get(0);
 	}
 	
