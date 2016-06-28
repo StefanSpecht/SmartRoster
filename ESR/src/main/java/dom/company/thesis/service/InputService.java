@@ -44,7 +44,7 @@ public class InputService {
 		}
 		
 		//Read shift types
-		
+		this.shiftTypes = inputParser.getShiftTypes();
 	}
 
 	public Task getTask(String taskId) {

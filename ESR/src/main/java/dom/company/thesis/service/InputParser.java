@@ -1,6 +1,10 @@
 package dom.company.thesis.service;
 
 import java.io.IOException;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +17,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,6 +25,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import dom.company.thesis.model.Employee;
+import dom.company.thesis.model.ShiftType;
 import dom.company.thesis.model.Task;
 
 public class InputParser {
@@ -73,9 +79,14 @@ public class InputParser {
 			        String taskId = taskIdNode.getTextContent();
 			        
 			        //Get description of each task
+			        String taskDescription;
 			        expression = xPath.compile("Description"); 
 			        Node taskDescriptionNode = (Node) expression.evaluate(taskElement,XPathConstants.NODE);
-			        String taskDescription = taskDescriptionNode.getTextContent();
+			        if (taskDescriptionNode != null) {
+			        	taskDescription = taskDescriptionNode.getTextContent();
+			        } else {
+			        	taskDescription = taskId;
+			        }
 			        
 			        Task task = new Task(taskId, taskDescription);
 			        taskList.add(task);
@@ -160,5 +171,64 @@ public List<Employee> getEmployees() {
 			e.printStackTrace();
 		}
 		return taskIds;
+	}
+
+	public List<ShiftType> getShiftTypes() {
+		
+		List<ShiftType> shiftTypeList = new ArrayList<ShiftType>();		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			//Get all Shift nodes
+			XPathExpression expression = xPath.compile("SchedulingPeriod/ShiftTypes/Shift");
+			NodeList shiftTypeNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			
+			//iterate through all Shift nodes
+			for (int i = 0; i < shiftTypeNodes.getLength(); i++) {
+				
+				Node shiftTypeNode = shiftTypeNodes.item(i);				
+				if (shiftTypeNode != null && shiftTypeNode.getNodeType() == Node.ELEMENT_NODE) {
+
+			        Element shiftTypeElement = (Element) shiftTypeNode;
+			      
+			        //Get ID of each shiftType
+			        expression = xPath.compile("@ID"); 
+			        Node shiftTypeIdNode = (Node) expression.evaluate(shiftTypeElement,XPathConstants.NODE);
+			        String shiftTypeId = shiftTypeIdNode.getTextContent();
+			        
+			        //Get description of each shiftType
+			        String shiftTypeDescription;
+			        expression = xPath.compile("Description"); 
+			        Node shiftTypeDescriptionNode = (Node) expression.evaluate(shiftTypeElement,XPathConstants.NODE);
+			        if (shiftTypeDescriptionNode != null) {
+			        	shiftTypeDescription = shiftTypeDescriptionNode.getTextContent();
+			        } else {
+			        	shiftTypeDescription = shiftTypeId;
+			        }
+			        
+			        //Get StartTime of each shift
+			        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+			        expression = xPath.compile("StartTime"); 
+			        Node shiftTypeStartTimeNode = (Node) expression.evaluate(shiftTypeElement,XPathConstants.NODE);
+			        Time shiftTypeStartTime = new Time(dateFormat.parse(shiftTypeStartTimeNode.getTextContent()).getTime());
+			        
+			      //Get EndTime of each shift
+			        expression = xPath.compile("EndTime"); 
+			        Node shiftTypeEndTimeNode = (Node) expression.evaluate(shiftTypeElement,XPathConstants.NODE);
+			        Time shiftTypeEndTime = new Time(dateFormat.parse(shiftTypeEndTimeNode.getTextContent()).getTime());
+			        
+			        
+			        ShiftType shiftType = new ShiftType(shiftTypeId, shiftTypeDescription, shiftTypeStartTime, shiftTypeEndTime);
+			        shiftTypeList.add(shiftType);
+			    }
+			}			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (DOMException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return shiftTypeList;	
 	}
 }
