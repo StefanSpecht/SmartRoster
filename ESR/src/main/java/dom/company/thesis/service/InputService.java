@@ -1,5 +1,6 @@
 package dom.company.thesis.service;
 
+import java.sql.Date;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ public class InputService {
 	
 	private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input.xml";
 	
+	Date startDate;
+	Date endDate;	
 	List<Task> tasks = new ArrayList<Task>();
 	List<Employee> employees = new ArrayList<Employee>();
 	List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
@@ -30,6 +33,12 @@ public class InputService {
 	
 	public void parse() {	//Later XML String as input
 		InputParser inputParser = new InputParser(XML_FILE_PATH);
+		
+		//Read startDate of planning horizon
+		this.startDate = inputParser.getStartDate();
+		
+		//Read endDate of planning horizon
+		this.endDate = inputParser.getEndDate();
 		
 		//Read tasks
 		this.tasks = inputParser.getTasks();

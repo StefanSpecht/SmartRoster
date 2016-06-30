@@ -1,6 +1,7 @@
 package dom.company.thesis.service;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -392,5 +393,43 @@ public List<Employee> getEmployees() {
 			e.printStackTrace();
 		}
 		return shiftIdCoverRequirements;
+	}
+
+	public Date getStartDate() {
+		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		java.util.Date date = new java.sql.Date(0);
+		try {
+			//Get startDate node
+			XPathExpression expression = xPath.compile("SchedulingPeriod/StartDate");
+			Node startDateNode = (Node)expression.evaluate(document, XPathConstants.NODE);
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			date = dateFormat.parse(startDateNode.getTextContent());			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return new java.sql.Date(date.getTime());
+	}
+	
+	public Date getEndDate() {
+		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		java.util.Date date = new java.sql.Date(0);
+		try {
+			//Get endDate node
+			XPathExpression expression = xPath.compile("SchedulingPeriod/EndDate");
+			Node endDateNode = (Node)expression.evaluate(document, XPathConstants.NODE);
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			date = dateFormat.parse(endDateNode.getTextContent());			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return new java.sql.Date(date.getTime());
 	}
 }
