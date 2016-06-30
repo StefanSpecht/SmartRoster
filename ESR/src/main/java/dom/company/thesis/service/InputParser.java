@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -315,7 +316,9 @@ public List<Employee> getEmployees() {
 				        
 				        //Add to map
 				        taskIdCoverRequirements.put(taskId, quantity);
-		        	}		        			        	
+		        	} else {
+						throw(new IllegalArgumentException());
+					}	        			        	
 		        }
 			} else {
 				throw(new IllegalArgumentException());
@@ -324,5 +327,70 @@ public List<Employee> getEmployees() {
 			e.printStackTrace();
 		}
 		return taskIdCoverRequirements;
+	}
+
+	public Map<DayOfWeek, List<String>> getShiftIdCoverRequirements() {
+		
+		Map<DayOfWeek,List<String>> shiftIdCoverRequirements = new HashMap<DayOfWeek,List<String>>();		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			//Get DayOfWeek shiftCoverRequirement nodes
+			XPathExpression expression = xPath.compile("SchedulingPeriod/ShiftCoverRequirements/DayOfWeekCoverRequirement");
+			NodeList dayOfWeekCoverRequirementsNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+					
+			
+		        //Iterate through all cover requirements
+		        for (int i = 0; i < dayOfWeekCoverRequirementsNodes.getLength(); i++) {
+		        	
+		        	Node dayOfWeekCoverRequirementNode = dayOfWeekCoverRequirementsNodes.item(i);
+		        	
+		        	if (dayOfWeekCoverRequirementNode != null && dayOfWeekCoverRequirementNode.getNodeType() == Node.ELEMENT_NODE) {
+
+				        Element dayOfWeekCoverRequirementElement = (Element) dayOfWeekCoverRequirementNode;
+				        
+				        //Get DayOfWeek
+				        DayOfWeek dayOfWeek;
+				        expression = xPath.compile("Day"); 
+				        Node dayOfWeekNode = (Node) expression.evaluate(dayOfWeekCoverRequirementElement,XPathConstants.NODE);
+				        dayOfWeek = DayOfWeek.valueOf(dayOfWeekNode.getTextContent().toUpperCase());
+				        
+				        //Get list of required shifts for that day
+				        List<String> shiftCovers = new ArrayList<String>();
+				        
+				        expression = xPath.compile("Cover"); 
+				        NodeList coverNodes = (NodeList) expression.evaluate(dayOfWeekCoverRequirementElement,XPathConstants.NODESET);
+
+				        //Iterate through all cover requirements
+				        for (int y = 0; y < coverNodes.getLength(); y++) {
+				        	
+				        	Node coverNode = coverNodes.item(y);
+				        	
+				        	if (coverNode != null && coverNode.getNodeType() == Node.ELEMENT_NODE) {
+
+						        Element coverElement = (Element) coverNode;
+						        
+						        //Get shift Id
+						        String shiftId;
+						        expression = xPath.compile("@Shift"); 
+						        Node shiftIdNode = (Node) expression.evaluate(coverElement,XPathConstants.NODE);
+						        shiftId = shiftIdNode.getTextContent();
+						        
+						        //Add shiftId to List
+						        shiftCovers.add(shiftId);
+				        	} else {
+								throw(new IllegalArgumentException());
+							}	        			        	
+				        }
+				        
+				        //Add DayofWeek shiftCoverRequirement to map
+				        shiftIdCoverRequirements.put(dayOfWeek, shiftCovers);
+		        	}		        			        	
+		        }
+						
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return shiftIdCoverRequirements;
 	}
 }

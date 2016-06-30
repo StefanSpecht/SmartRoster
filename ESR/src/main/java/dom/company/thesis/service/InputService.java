@@ -1,5 +1,6 @@
 package dom.company.thesis.service;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ public class InputService {
 	List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
 	//Convert to employee, task and shiftType map!!	
 	List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
+	Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
 		
 	public InputService() {
 	}
@@ -67,8 +69,10 @@ public class InputService {
 		Map<String,Integer> taskIdCoverRequirements = new HashMap<String,Integer>();
 		
 		for (ShiftType shiftType : this.shiftTypes) {
+			//Get Task Ids
 			taskIdCoverRequirements = inputParser.getTaskIdCoverRequirements(shiftType.getId());
 			
+			//Convert task Ids to tasks and add them to the shifttypes
 			for(Entry<String, Integer> taskIdCoverRequirement : taskIdCoverRequirements.entrySet()) {
 				String taskId = taskIdCoverRequirement.getKey();
 				Task task = this.getTask(taskId);
@@ -76,10 +80,29 @@ public class InputService {
 				shiftType.addTaskCoverRequirement(task, quantity);
 			}
 		}
+		
+		//Get ShiftCoverRequirements for each DayOfWeek
+		Map<DayOfWeek, List<String>> shiftIdCoverRequirements = new HashMap<DayOfWeek, List<String>>();
+		shiftIdCoverRequirements = inputParser.getShiftIdCoverRequirements();
+		
+		//Convert shift Ids to shiftTypes
+		for(Entry<DayOfWeek, List<String>> shiftIdCoverRequirement : shiftIdCoverRequirements.entrySet()) {
+			DayOfWeek dayOfWeek = shiftIdCoverRequirement.getKey();
+			List<ShiftType> shiftCovers = new ArrayList<ShiftType>();
+			
+			for(String shiftIdCover : shiftIdCoverRequirement.getValue()) {
+				ShiftType shiftCover = this.getShiftType(shiftIdCover);
+				shiftCovers.add(shiftCover);
+			}
+			this.shiftCoverRequirements.put(dayOfWeek, shiftCovers);
+		}
 	}
 
 	public Task getTask(String taskId) {
 		return this.tasks.stream().filter(task -> task.getId().equals(taskId)).collect(Collectors.toList()).get(0);
+	}
+	public ShiftType getShiftType(String shiftTypeId) {
+		return this.shiftTypes.stream().filter(shiftType -> shiftType.getId().equals(shiftTypeId)).collect(Collectors.toList()).get(0);
 	}
 	
 	
