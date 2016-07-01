@@ -1,8 +1,11 @@
 package dom.company.thesis.service;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +24,14 @@ public class InputService {
 	
 	Date startDate;
 	Date endDate;	
+	long noOfDays;
 	List<Task> tasks = new ArrayList<Task>();
 	List<Employee> employees = new ArrayList<Employee>();
 	List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
 	//Convert to employee, task and shiftType map!!	
+	static Map<Integer,Employee> employeeMap = new HashMap<Integer,Employee>();
+	static Map<Integer,ShiftType> shiftMap = new HashMap<Integer,ShiftType>();
+	static Map<Integer,List<Task>> taskMap = new HashMap<Integer,List<Task>>();
 	List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
 		
@@ -39,6 +46,9 @@ public class InputService {
 		
 		//Read endDate of planning horizon
 		this.endDate = inputParser.getEndDate();
+		
+		//calculate number of days
+		this.noOfDays = Math.abs(((endDate.getTime() - startDate.getTime()) / 86400000) + 1);
 		
 		//Read tasks
 		this.tasks = inputParser.getTasks();
@@ -71,6 +81,12 @@ public class InputService {
 			for (String taskId : taskCombinationId) {
 				taskCombination.add(this.getTask(taskId));
 			}
+			this.taskCombinations.add(taskCombination);
+		}
+		//Add all single tasks to list
+		for (Task task : tasks) {
+			List<Task> taskCombination = new ArrayList<Task>();
+			taskCombination.add(task);
 			this.taskCombinations.add(taskCombination);
 		}
 		
@@ -131,13 +147,59 @@ public class InputService {
 			
 			employee.setShiftOffRequests(shiftOffRequests);
 			
+			//generate maps
+			this.generateMaps();
+			
 		}
 	}
+	
+	public void generateMaps() {
+		//generate employee map
+		for (int i=0; i<employees.size(); i++) {
+			employeeMap.put(i, employees.get(i));
+		}
+		
+		//generate shift map
+		orderShifts(shiftTypes);
+		for (int i=0; i<(shiftTypes.size() * noOfDays); i++) {
+			shiftMap.put(i, shiftTypes.get(i % shiftTypes.size()));
+		}
+		
+		//generate task map
+		for (int i=0; i<taskCombinations.size(); i++) {
+			taskMap.put(i, taskCombinations.get(i));
+		}
+		
+		@SuppressWarnings("unused")
+		int g = 4;
+		g++;
+		
+	}
+	
+	private static void orderShifts(List<ShiftType> shiftTypes) {
 
-	public Task getTask(String taskId) {
+	    Collections.sort(shiftTypes, new Comparator<ShiftType>() {
+
+	        public int compare(ShiftType shiftType1, ShiftType shiftType2) {
+
+	            Time startDate1 = shiftType1.getStartTime();
+	            Time startDate2 = shiftType2.getStartTime();
+	            int startDateComp = startDate1.compareTo(startDate2);
+
+	            if (startDateComp != 0) {
+	               return startDateComp;
+	            } else {
+	            	Time endDate1 = shiftType1.getEndTime();
+		            Time endDate2 = shiftType2.getEndTime();
+		            return endDate1.compareTo(endDate2);
+	            }
+	        }
+	    });
+	}
+	private Task getTask(String taskId) {
 		return this.tasks.stream().filter(task -> task.getId().equals(taskId)).collect(Collectors.toList()).get(0);
 	}
-	public ShiftType getShiftType(String shiftTypeId) {
+	private ShiftType getShiftType(String shiftTypeId) {
 		return this.shiftTypes.stream().filter(shiftType -> shiftType.getId().equals(shiftTypeId)).collect(Collectors.toList()).get(0);
 	}
 	

@@ -474,7 +474,7 @@ public List<String> getShiftTypeIds() {
 		Map<Date,List<String>> shiftIdOffRequests = new HashMap<Date,List<String>>();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar calendar = Calendar.getInstance();
-		long noOfDays = Math.abs((endDate.getTime() - startDate.getTime()) / 86400000);
+		long noOfDays = Math.abs(((endDate.getTime() - startDate.getTime()) / 86400000) + 1);
 		
 		calendar.setTime(startDate);
 		calendar.add(Calendar.DAY_OF_YEAR,-1);
@@ -492,7 +492,7 @@ public List<String> getShiftTypeIds() {
 			for (String employeeGroupId : employeeGroupIds) {
 				
 				//Iterate through all dates
-				for (int i=0; i <= noOfDays; i++) {
+				for (int i=0; i < noOfDays; i++) {
 					calendar.add(Calendar.DAY_OF_YEAR,1);
 					Date currentDate = new Date(calendar.getTimeInMillis());
 					String currentDateString = dateFormat.format(currentDate);
