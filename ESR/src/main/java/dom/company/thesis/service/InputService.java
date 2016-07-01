@@ -105,6 +105,33 @@ public class InputService {
 			}
 			this.shiftCoverRequirements.put(dayOfWeek, shiftCovers);
 		}
+		
+		//Get shiftOffRequests and add it to employee objects
+		for (Employee employee : employees) {
+			Map<Date,List<String>> shiftIdOffRequests= new HashMap<Date,List<String>>();
+			Map<Date,List<ShiftType>> shiftOffRequests= new HashMap<Date,List<ShiftType>>();
+			
+			shiftIdOffRequests = inputParser.getShifIdOffRequests(employee.getId(), this.startDate, this.endDate);
+			
+			//Convert shiftIds to shifts
+			
+			for(Entry<Date, List<String>> shiftIdOffRequest : shiftIdOffRequests.entrySet()) {
+				List<ShiftType> currentShiftOffRequests = new ArrayList<ShiftType>();
+				Date date = shiftIdOffRequest.getKey();
+				List<String> shiftIds = shiftIdOffRequest.getValue();
+				
+				for (String shiftId : shiftIds) {
+					ShiftType shiftType = this.getShiftType(shiftId);
+					currentShiftOffRequests.add(shiftType);
+				}
+				
+				shiftOffRequests.put(date, currentShiftOffRequests);
+			}
+			
+			
+			employee.setShiftOffRequests(shiftOffRequests);
+			
+		}
 	}
 
 	public Task getTask(String taskId) {

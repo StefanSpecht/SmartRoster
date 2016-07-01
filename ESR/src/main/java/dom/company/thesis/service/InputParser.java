@@ -8,9 +8,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -235,6 +237,39 @@ public List<Employee> getEmployees() {
 		}
 		return shiftTypeList;	
 	}
+	
+public List<String> getShiftTypeIds() {
+		
+		List<String> shiftTypeIds = new ArrayList<String>();		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			//Get all Shift nodes
+			XPathExpression expression = xPath.compile("SchedulingPeriod/ShiftTypes/Shift");
+			NodeList shiftTypeNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			
+			//iterate through all Shift nodes
+			for (int i = 0; i < shiftTypeNodes.getLength(); i++) {
+				
+				Node shiftTypeNode = shiftTypeNodes.item(i);				
+				if (shiftTypeNode != null && shiftTypeNode.getNodeType() == Node.ELEMENT_NODE) {
+
+			        Element shiftTypeElement = (Element) shiftTypeNode;
+			      
+			        //Get ID of each shiftType
+			        expression = xPath.compile("@ID"); 
+			        Node shiftTypeIdNode = (Node) expression.evaluate(shiftTypeElement,XPathConstants.NODE);
+			        String shiftTypeId = shiftTypeIdNode.getTextContent();
+			        shiftTypeIds.add(shiftTypeId);
+			    }
+			}			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (DOMException e) {
+			e.printStackTrace();
+		}
+		return shiftTypeIds;	
+	}
 
 	public List<List<String>> getTaskCombinationIds() {
 		
@@ -431,5 +466,143 @@ public List<Employee> getEmployees() {
 			e.printStackTrace();
 		}
 		return new java.sql.Date(date.getTime());
+	}
+
+	public Map<Date, List<String>> getShifIdOffRequests(String employeeId, Date startDate, Date endDate) {
+		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		Map<Date,List<String>> shiftIdOffRequests = new HashMap<Date,List<String>>();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar calendar = Calendar.getInstance();
+		long noOfDays = Math.abs((endDate.getTime() - startDate.getTime()) / 86400000);
+		
+		calendar.setTime(startDate);
+		calendar.add(Calendar.DAY_OF_YEAR,-1);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		//Get all EmployeeGroupIds for the employee
+		List<String> employeeGroupIds = this.getEmployeeGroupIds(employeeId);
+		
+		//get all shiftOff and dayOff request for the employee, or its group
+		try {
+			
+			for (String employeeGroupId : employeeGroupIds) {
+				
+				//Iterate through all dates
+				for (int i=0; i <= noOfDays; i++) {
+					calendar.add(Calendar.DAY_OF_YEAR,1);
+					Date currentDate = new Date(calendar.getTimeInMillis());
+					String currentDateString = dateFormat.format(currentDate);
+					List<String> currentShiftIds = new ArrayList<String>();
+					List<String> currentShiftOffExceptions = new ArrayList<String>();
+					
+					//Check, if there is a dayOffRequest for this date. If yes, add all shifts to the list
+					XPathExpression expression = xPath.compile("SchedulingPeriod/DayOffRequests/DayOffRequest[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and Date='" + currentDateString + "']");
+					NodeList dayOffRequestNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+					
+					if (dayOffRequestNodes != null && dayOffRequestNodes.getLength() > 0) {
+						currentShiftIds.addAll(this.getShiftTypeIds());
+					} 
+					else {
+						//If there is no dayOffRequest, check for shiftOffRequsts
+						expression = xPath.compile("SchedulingPeriod/ShiftOffRequests/ShiftOffRequest[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and (Date='" + currentDateString + "' or not(Date))]/Shift");
+						NodeList shiftOffRequestNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+						expression = xPath.compile("SchedulingPeriod/ShiftOffRequests/ShiftOffRequest[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and (Date='" + currentDateString + "' or not(Date))]/ShiftGroup");
+						NodeList shiftGroupOffRequestNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+						
+						if (shiftOffRequestNodes != null) {
+													
+							for (int y = 0; y < shiftOffRequestNodes.getLength(); y++) {
+								String shiftId = shiftOffRequestNodes.item(y).getTextContent();
+								currentShiftIds.add(shiftId);
+							}
+						}
+						
+						if (shiftGroupOffRequestNodes != null) {
+							
+							for (int y = 0; y < shiftGroupOffRequestNodes.getLength(); y++) {
+								String shiftGroupId = shiftGroupOffRequestNodes.item(y).getTextContent();
+								List<String> shiftIdsInGroup = this.getShiftIdsFromGroupId(shiftGroupId);
+								currentShiftIds.addAll(shiftIdsInGroup);
+							}
+						}
+						
+						//Remove all shiftOffExceptions from list
+						expression = xPath.compile("SchedulingPeriod/ShiftOffExceptions/ShiftOffException[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and (Date='" + currentDateString + "' or not(Date))]/Shift");
+						NodeList shiftOffExceptionNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+						expression = xPath.compile("SchedulingPeriod/ShiftOffExceptions/ShiftOffException[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and (Date='" + currentDateString + "' or not(Date))]/ShiftGroup");
+						NodeList shiftGroupOffExceptionNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+						
+						if (shiftOffExceptionNodes != null) {							
+							for (int y = 0; y < shiftOffExceptionNodes.getLength(); y++) {
+								String shiftId = shiftOffExceptionNodes.item(y).getTextContent();
+								currentShiftIds.remove(shiftId);
+							}
+						}
+						
+						if (shiftGroupOffExceptionNodes != null) {
+							
+							for (int y = 0; y < shiftGroupOffExceptionNodes.getLength(); y++) {
+								String shiftGroupId = shiftGroupOffExceptionNodes.item(y).getTextContent();
+								List<String> shiftIdsInGroup = this.getShiftIdsFromGroupId(shiftGroupId);
+								currentShiftIds.removeAll(shiftIdsInGroup);
+							}
+						}
+						shiftIdOffRequests.put(currentDate, currentShiftIds);
+						
+					}
+					
+					// Add all shiftOffRequests to the map
+					if (!currentShiftIds.isEmpty()) {
+						shiftIdOffRequests.put(currentDate, currentShiftIds);
+					}
+					
+				}
+			}
+			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return shiftIdOffRequests;
+	}
+
+	private List<String> getShiftIdsFromGroupId(String shiftGroupId) {
+		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		List<String> shiftIds = new ArrayList<String>();
+		
+		try {
+			XPathExpression expression = xPath.compile("SchedulingPeriod/ShiftGroups/ShiftGroup[@ID='" + shiftGroupId + "']/Shift");
+			NodeList shiftNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			
+			for (int i = 0; i < shiftNodes.getLength(); i++) {
+				String shiftId = shiftNodes.item(i).getTextContent();
+				shiftIds.add(shiftId);
+			}			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return shiftIds;
+	}
+
+	private List<String> getEmployeeGroupIds(String employeeId) {
+		
+		List<String> employeeGroupIds = new ArrayList<String>();
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			XPathExpression expression = xPath.compile("SchedulingPeriod/EmployeeGroups/EmployeeGroup[Employee='" + employeeId + "']/@ID");
+			NodeList employeeGroupNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			
+			for (int i = 0; i < employeeGroupNodes.getLength(); i++) {
+				employeeGroupIds.add(employeeGroupNodes.item(i).getTextContent());
+			}			
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return employeeGroupIds;
 	}
 }
