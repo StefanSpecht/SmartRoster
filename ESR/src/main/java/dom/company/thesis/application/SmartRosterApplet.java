@@ -39,6 +39,7 @@ import org.uncommons.watchmaker.swing.ProbabilityParameterControl;
 import org.uncommons.watchmaker.swing.evolutionmonitor.EvolutionMonitor;
 
 import dom.company.thesis.service.InputParser;
+import dom.company.thesis.service.InputService;
 
 public class SmartRosterApplet extends AbstractApplet
 {
@@ -68,6 +69,8 @@ public class SmartRosterApplet extends AbstractApplet
 	 @Override
 	 protected void prepareGUI(Container container)
 	 {
+		 InputService.parse();
+		 InputService.generateMaps();
 		 probabilitiesPanel = new ProbabilitiesPanel();
 	     probabilitiesPanel.setBorder(BorderFactory.createTitledBorder("Evolution Probabilities")); 
 		 JPanel controlsPanel = new JPanel(new BorderLayout());

@@ -20,41 +20,41 @@ import dom.company.thesis.model.Task;
 
 public class InputService {
 	
-	private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input.xml";
+	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input.xml";
 	
-	Date startDate;
-	Date endDate;	
-	long noOfDays;
-	List<Task> tasks = new ArrayList<Task>();
-	List<Employee> employees = new ArrayList<Employee>();
-	List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
+	static Date startDate;
+	static Date endDate;	
+	static long noOfDays;
+	static List<Task> tasks = new ArrayList<Task>();
+	static List<Employee> employees = new ArrayList<Employee>();
+	static List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
 	//Convert to employee, task and shiftType map!!	
 	static Map<Integer,Employee> employeeMap = new HashMap<Integer,Employee>();
 	static Map<Integer,ShiftType> shiftMap = new HashMap<Integer,ShiftType>();
 	static Map<Integer,List<Task>> taskMap = new HashMap<Integer,List<Task>>();
-	List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
-	Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
+	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
+	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
 		
 	public InputService() {
 	}
 	
-	public void parse() {	//Later XML String as input
+	static public void parse() {	//Later XML String as input
 		InputParser inputParser = new InputParser(XML_FILE_PATH);
 		
 		//Read startDate of planning horizon
-		this.startDate = inputParser.getStartDate();
+		startDate = inputParser.getStartDate();
 		
 		//Read endDate of planning horizon
-		this.endDate = inputParser.getEndDate();
+		endDate = inputParser.getEndDate();
 		
 		//calculate number of days
-		this.noOfDays = Math.abs(((endDate.getTime() - startDate.getTime()) / 86400000) + 1);
+		noOfDays = Math.abs(((endDate.getTime() - startDate.getTime()) / 86400000) + 1);
 		
 		//Read tasks
-		this.tasks = inputParser.getTasks();
+		tasks = inputParser.getTasks();
 		
 		//Read employees
-		this.employees = inputParser.getEmployees();
+		employees = inputParser.getEmployees();
 		
 		//Assign task qualifications to employees
 		for (Employee employee : employees) {
@@ -69,7 +69,7 @@ public class InputService {
 		}
 		
 		//Read shift types
-		this.shiftTypes = inputParser.getShiftTypes();
+		shiftTypes = inputParser.getShiftTypes();
 		
 		//Read all task-combinations Ids
 		List<List<String>> taskCombinationIds = new ArrayList<List<String>>();
@@ -79,28 +79,28 @@ public class InputService {
 		for (List<String> taskCombinationId : taskCombinationIds) {
 			List<Task> taskCombination = new ArrayList<Task>();
 			for (String taskId : taskCombinationId) {
-				taskCombination.add(this.getTask(taskId));
+				taskCombination.add(getTask(taskId));
 			}
-			this.taskCombinations.add(taskCombination);
+			taskCombinations.add(taskCombination);
 		}
 		//Add all single tasks to list
 		for (Task task : tasks) {
 			List<Task> taskCombination = new ArrayList<Task>();
 			taskCombination.add(task);
-			this.taskCombinations.add(taskCombination);
+			taskCombinations.add(taskCombination);
 		}
 		
 		//Add TaskCoverRequirements to each ShiftType
 		Map<String,Integer> taskIdCoverRequirements = new HashMap<String,Integer>();
 		
-		for (ShiftType shiftType : this.shiftTypes) {
+		for (ShiftType shiftType : shiftTypes) {
 			//Get Task Ids
 			taskIdCoverRequirements = inputParser.getTaskIdCoverRequirements(shiftType.getId());
 			
 			//Convert task Ids to tasks and add them to the shifttypes
 			for(Entry<String, Integer> taskIdCoverRequirement : taskIdCoverRequirements.entrySet()) {
 				String taskId = taskIdCoverRequirement.getKey();
-				Task task = this.getTask(taskId);
+				Task task = getTask(taskId);
 				int quantity = taskIdCoverRequirement.getValue();
 				shiftType.addTaskCoverRequirement(task, quantity);
 			}
@@ -116,10 +116,10 @@ public class InputService {
 			List<ShiftType> shiftCovers = new ArrayList<ShiftType>();
 			
 			for(String shiftIdCover : shiftIdCoverRequirement.getValue()) {
-				ShiftType shiftCover = this.getShiftType(shiftIdCover);
+				ShiftType shiftCover = getShiftType(shiftIdCover);
 				shiftCovers.add(shiftCover);
 			}
-			this.shiftCoverRequirements.put(dayOfWeek, shiftCovers);
+			shiftCoverRequirements.put(dayOfWeek, shiftCovers);
 		}
 		
 		//Get shiftOffRequests and add it to employee objects
@@ -127,7 +127,7 @@ public class InputService {
 			Map<Date,List<String>> shiftIdOffRequests= new HashMap<Date,List<String>>();
 			Map<Date,List<ShiftType>> shiftOffRequests= new HashMap<Date,List<ShiftType>>();
 			
-			shiftIdOffRequests = inputParser.getShifIdOffRequests(employee.getId(), this.startDate, this.endDate);
+			shiftIdOffRequests = inputParser.getShifIdOffRequests(employee.getId(), startDate, endDate);
 			
 			//Convert shiftIds to shifts
 			
@@ -137,7 +137,7 @@ public class InputService {
 				List<String> shiftIds = shiftIdOffRequest.getValue();
 				
 				for (String shiftId : shiftIds) {
-					ShiftType shiftType = this.getShiftType(shiftId);
+					ShiftType shiftType = getShiftType(shiftId);
 					currentShiftOffRequests.add(shiftType);
 				}
 				
@@ -148,12 +148,12 @@ public class InputService {
 			employee.setShiftOffRequests(shiftOffRequests);
 			
 			//generate maps
-			this.generateMaps();
+			generateMaps();
 			
 		}
 	}
 	
-	public void generateMaps() {
+	static public void generateMaps() {
 		//generate employee map
 		for (int i=0; i<employees.size(); i++) {
 			employeeMap.put(i, employees.get(i));
@@ -196,11 +196,11 @@ public class InputService {
 	        }
 	    });
 	}
-	private Task getTask(String taskId) {
-		return this.tasks.stream().filter(task -> task.getId().equals(taskId)).collect(Collectors.toList()).get(0);
+	private static Task getTask(String taskId) {
+		return tasks.stream().filter(task -> task.getId().equals(taskId)).collect(Collectors.toList()).get(0);
 	}
-	private ShiftType getShiftType(String shiftTypeId) {
-		return this.shiftTypes.stream().filter(shiftType -> shiftType.getId().equals(shiftTypeId)).collect(Collectors.toList()).get(0);
+	private static ShiftType getShiftType(String shiftTypeId) {
+		return shiftTypes.stream().filter(shiftType -> shiftType.getId().equals(shiftTypeId)).collect(Collectors.toList()).get(0);
 	}
 	
 	
