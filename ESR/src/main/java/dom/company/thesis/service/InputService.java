@@ -212,7 +212,23 @@ public class InputService {
 	public static Map<Integer, List<Task>> getTaskMap() {
 		return taskMap;
 	}
-	
+
+	public static Date getStartDate() {
+		return startDate;
+	}
+
+	public static Date getEndDate() {
+		return endDate;
+	}
+
+	public static long getNoOfDays() {
+		return noOfDays;
+	}
+
+	public static Map<DayOfWeek, List<ShiftType>> getShiftCoverRequirements() {
+		return shiftCoverRequirements;
+	}
+
 	
 	
 	
