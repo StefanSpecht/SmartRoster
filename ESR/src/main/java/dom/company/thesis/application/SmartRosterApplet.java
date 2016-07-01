@@ -69,8 +69,6 @@ public class SmartRosterApplet extends AbstractApplet
 	 @Override
 	 protected void prepareGUI(Container container)
 	 {
-		 InputService.parse();
-		 InputService.generateMaps();
 		 probabilitiesPanel = new ProbabilitiesPanel();
 	     probabilitiesPanel.setBorder(BorderFactory.createTitledBorder("Evolution Probabilities")); 
 		 JPanel controlsPanel = new JPanel(new BorderLayout());

@@ -146,11 +146,9 @@ public class InputService {
 			
 			
 			employee.setShiftOffRequests(shiftOffRequests);
-			
-			//generate maps
-			generateMaps();
-			
 		}
+		//generate maps
+		generateMaps();
 	}
 	
 	static public void generateMaps() {
@@ -202,6 +200,19 @@ public class InputService {
 	private static ShiftType getShiftType(String shiftTypeId) {
 		return shiftTypes.stream().filter(shiftType -> shiftType.getId().equals(shiftTypeId)).collect(Collectors.toList()).get(0);
 	}
+
+	public static Map<Integer, Employee> getEmployeeMap() {
+		return employeeMap;
+	}
+
+	public static Map<Integer, ShiftType> getShiftMap() {
+		return shiftMap;
+	}
+
+	public static Map<Integer, List<Task>> getTaskMap() {
+		return taskMap;
+	}
+	
 	
 	
 	
