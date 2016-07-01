@@ -228,6 +228,15 @@ public class InputService {
 	public static Map<DayOfWeek, List<ShiftType>> getShiftCoverRequirements() {
 		return shiftCoverRequirements;
 	}
+	public static int getNoOfEmployees() {
+		return employeeMap.size();
+	}
+	public static int getNoOfShifts() {
+		return shiftMap.size();
+	}
+	public static int getNoOfTasks() {
+		return taskMap.size();
+	}
 
 	
 	
