@@ -36,23 +36,15 @@ import org.uncommons.watchmaker.framework.operators.StringCrossover;
 import org.uncommons.watchmaker.framework.operators.StringMutation;
 import org.uncommons.watchmaker.swing.ProbabilityParameterControl;
 
+import dom.company.thesis.model.Roster;
+
 class ProbabilitiesPanel extends JPanel
 {
     private static final Probability ONE_TENTH = new Probability(0.1d);
     
     private final ProbabilityParameterControl crossoverControl;
     private final ProbabilityParameterControl mutationControl;
-    
-    private static final char[] ALPHABET = new char[27];
-    static
-    {
-        for (char c = 'A'; c <= 'Z'; c++)
-        {
-            getAlphabet()[c - 'A'] = c;
-        }
-        getAlphabet()[26] = ' ';
-    }
-    
+        
     ProbabilitiesPanel()
     {
         super(new SpringLayout());
@@ -86,19 +78,15 @@ class ProbabilitiesPanel extends JPanel
     }
 
 
-    public EvolutionaryOperator<String> createEvolutionPipeline() {
+    public EvolutionaryOperator<Roster> createEvolutionPipeline() {
     	
-        List<EvolutionaryOperator<String>> operators
-            = new LinkedList<EvolutionaryOperator<String>>();
-        operators.add(new StringCrossover());
-        operators.add(new StringMutation(getAlphabet(), mutationControl.getNumberGenerator()));
+        List<EvolutionaryOperator<Roster>> operators
+            = new LinkedList<EvolutionaryOperator<Roster>>();
+        operators.add(new RosterCrossover(120));
+        //operators.add(new UniformRosterCrossover());
+        //operators.add(new StringMutation(getAlphabet(), mutationControl.getNumberGenerator()));
        
-        return new EvolutionPipeline<String>(operators);
+        return new EvolutionPipeline<Roster>(operators);
     }
-
-
-	public static char[] getAlphabet() {
-		return ALPHABET;
-	}
 
 }

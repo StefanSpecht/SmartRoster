@@ -28,6 +28,7 @@ import org.uncommons.watchmaker.framework.FitnessEvaluator;
 import org.uncommons.watchmaker.framework.GenerationalEvolutionEngine;
 import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.TerminationCondition;
+import org.uncommons.watchmaker.framework.factories.BitStringFactory;
 import org.uncommons.watchmaker.framework.factories.StringFactory;
 import org.uncommons.watchmaker.framework.interactive.Renderer;
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
@@ -38,6 +39,7 @@ import org.uncommons.watchmaker.swing.AbortControl;
 import org.uncommons.watchmaker.swing.ProbabilityParameterControl;
 import org.uncommons.watchmaker.swing.evolutionmonitor.EvolutionMonitor;
 
+import dom.company.thesis.model.Roster;
 import dom.company.thesis.service.InputParser;
 import dom.company.thesis.service.InputService;
 
@@ -51,7 +53,7 @@ public class SmartRosterApplet extends AbstractApplet
 	private JSpinner elitismSpinner;
 	private ProbabilityParameterControl selectionPressureControl;
 	private ProbabilitiesPanel probabilitiesPanel;
-	private EvolutionMonitor<String> evolutionMonitor;	
+	private EvolutionMonitor<Roster> evolutionMonitor;	
 	
 
 	/**Delete if no additional initialization needed**/	
@@ -79,7 +81,7 @@ public class SmartRosterApplet extends AbstractApplet
 	     
 	     
 	     //Renderer<List<ColouredPolygon>, JComponent> renderer = new PolygonImageSwingRenderer(targetImage);
-	     evolutionMonitor = new EvolutionMonitor<String>(false);
+	     evolutionMonitor = new EvolutionMonitor<Roster>(false);
 	     container.add(evolutionMonitor.getGUIComponent(), BorderLayout.CENTER);
 		 
 	 }
@@ -144,7 +146,7 @@ public class SmartRosterApplet extends AbstractApplet
         return parameterBox;
      }
 	
-	 private class EvolutionTask extends SwingBackgroundTask<String> {
+	 private class EvolutionTask extends SwingBackgroundTask<Roster> {
 		 		 
 		 private final int populationSize;
 	     private final int eliteCount;
@@ -160,18 +162,19 @@ public class SmartRosterApplet extends AbstractApplet
 
 
         @Override
-        protected String performTask() throws Exception
+        protected Roster performTask() throws Exception
         {
-            String target = "GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT";
+            //String target = "GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT";
         	Random rng = new MersenneTwisterRNG();
-            FitnessEvaluator<String> fitnessEvaluator = new StringEvaluator(target);
-            StringFactory stringFactory = new StringFactory(ProbabilitiesPanel.getAlphabet(), target.length());
-            EvolutionaryOperator<String> pipeline = probabilitiesPanel.createEvolutionPipeline();
+            RosterEvaluator fitnessEvaluator = new RosterEvaluator();
+            RosterFactory rosterFactory = new RosterFactory(InputService.getNoOfEmployees(), InputService.getNoOfShifts(), InputService.getNoOfTasks());
+            
+            EvolutionaryOperator<Roster> pipeline = probabilitiesPanel.createEvolutionPipeline();
 
             SelectionStrategy<Object> selection = new RouletteWheelSelection();
             //selectionPressureControl.getNumberGenerator()
-            EvolutionEngine<String> engine = new GenerationalEvolutionEngine<String>(
-            		stringFactory,
+            EvolutionEngine<Roster> engine = new GenerationalEvolutionEngine<Roster>(
+            		rosterFactory,
             		pipeline,
             		fitnessEvaluator,
             		selection,
@@ -183,7 +186,7 @@ public class SmartRosterApplet extends AbstractApplet
 
 
         @Override
-        protected void postProcessing(String result)
+        protected void postProcessing(Roster result)
         {
             abort.reset();
             abort.getControl().setEnabled(false);

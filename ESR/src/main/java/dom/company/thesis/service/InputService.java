@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class InputService {
 	static Map<Integer,List<Task>> taskMap = new HashMap<Integer,List<Task>>();
 	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
+	static int[][] availabilityMatrix;
 		
 	public InputService() {
 	}
@@ -149,6 +151,9 @@ public class InputService {
 		}
 		//generate maps
 		generateMaps();
+		
+		//generate matrices
+		generateMatrices();
 	}
 	
 	static public void generateMaps() {
@@ -166,14 +171,46 @@ public class InputService {
 		//generate task map
 		for (int i=0; i<taskCombinations.size(); i++) {
 			taskMap.put(i, taskCombinations.get(i));
-		}
-		
-		@SuppressWarnings("unused")
-		int g = 4;
-		g++;
-		
+		}		
 	}
 	
+	static public void generateMatrices() {
+		
+		//generate availability matrix
+		availabilityMatrix = new int[getNoOfShifts()][getNoOfEmployees()];
+		
+		for (int s = 0; s < getNoOfShifts(); s++) {
+            for (int e = 0; e < getNoOfEmployees(); ++e) {
+            	
+            	//Check, if employee no e is available for shift no s
+            	
+            	availabilityMatrix[s][e] = isAvailable(s,e);		// HIERMIT KANN ICH DANN AUCH MAL DEBUGGEN OB DAS MIT DEM ++e SO STIMMT!!
+            }
+        }
+	}
+	
+	private static int isAvailable(int s, int e) {
+		
+		long dayIndex = getNoOfShifts() / noOfDays;
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		calendar.add(Calendar.DAY_OF_YEAR,(int)dayIndex);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		Date date = new Date(calendar.getTimeInMillis());
+		ShiftType shiftType = shiftMap.get(s);
+		Employee employee = employeeMap.get(e);
+		
+		if (employee.getShiftOffRequests().get(date).contains(shiftType)) {
+			return 0;
+		}		
+		return 1;
+	}
+
 	private static void orderShifts(List<ShiftType> shiftTypes) {
 
 	    Collections.sort(shiftTypes, new Comparator<ShiftType>() {
@@ -237,6 +274,11 @@ public class InputService {
 	public static int getNoOfTasks() {
 		return taskMap.size();
 	}
+
+	public static int[][] getAvailabilityMatrix() {
+		return availabilityMatrix;
+	}
+	
 
 	
 	

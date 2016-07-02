@@ -7,19 +7,31 @@ public class Roster {
 	private final int noOfTasks;
     private final int noOfShifts;
     private final int noOfEmployees;
-    private int[][] assignments;
+    private int[] assignments;
 	
 	public Roster(int noOfEmployees, int noOfShifts, int noOfTasks, Random rng) {
 		this.noOfTasks = noOfTasks;
         this.noOfShifts = noOfShifts;
         this.noOfEmployees = noOfEmployees;
         
-        assignments = new int[noOfShifts][noOfEmployees];
-        for (int i = 0; i < noOfShifts; i++) {
-            for (int y = 0; y < noOfEmployees; ++y) {
-            	assignments[i][y] = rng.nextInt(noOfTasks+1);
-            }
+        assignments = new int[noOfShifts * noOfEmployees];
+        for (int i = 0; i < noOfShifts * noOfEmployees ; i++) {
+        	// 50:50 chance dass kein Task assigned wird
+        	int assignTask = rng.nextInt(2);
+        	if (assignTask == 1) {
+        		assignments[i] = rng.nextInt(noOfTasks+1);
+        	} else {
+        		assignments[i] = 0;
+        	}
+            
         }
+	}
+	public Roster(int noOfEmployees, int noOfShifts, int noOfTasks, int[] assignments) {
+		this.noOfTasks = noOfTasks;
+        this.noOfShifts = noOfShifts;
+        this.noOfEmployees = noOfEmployees;
+        
+        this.assignments = assignments;
 	}
 
 	public int getNoOfTasks() {
@@ -34,7 +46,7 @@ public class Roster {
 		return noOfEmployees;
 	}
 
-	public int[][] getAssignments() {
+	public int[] getAssignments() {
 		return assignments;
 	}
 	
