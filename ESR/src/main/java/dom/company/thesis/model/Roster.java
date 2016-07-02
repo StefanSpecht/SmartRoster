@@ -16,9 +16,9 @@ public class Roster {
         
         assignments = new int[noOfShifts * noOfEmployees];
         for (int i = 0; i < noOfShifts * noOfEmployees ; i++) {
-        	// 50:50 chance dass kein Task assigned wird
-        	int assignTask = rng.nextInt(2);
-        	if (assignTask == 1) {
+        	// 33:66 chance dass kein Task assigned wird
+        	int assignTask = rng.nextInt(3);
+        	if (assignTask == 0) {
         		assignments[i] = rng.nextInt(noOfTasks+1);
         	} else {
         		assignments[i] = 0;
