@@ -14,11 +14,28 @@ public class Roster {
         this.noOfShifts = noOfShifts;
         this.noOfEmployees = noOfEmployees;
         
-        int[][] assignments = new int[noOfShifts][noOfEmployees];
+        assignments = new int[noOfShifts][noOfEmployees];
         for (int i = 0; i < noOfShifts; i++) {
             for (int y = 0; y < noOfEmployees; ++y) {
             	assignments[i][y] = rng.nextInt(noOfTasks+1);
             }
         }
 	}
+
+	public int getNoOfTasks() {
+		return noOfTasks;
+	}
+
+	public int getNoOfShifts() {
+		return noOfShifts;
+	}
+
+	public int getNoOfEmployees() {
+		return noOfEmployees;
+	}
+
+	public int[][] getAssignments() {
+		return assignments;
+	}
+	
 }
