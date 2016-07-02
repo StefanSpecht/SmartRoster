@@ -49,5 +49,17 @@ public class Roster {
 	public int[] getAssignments() {
 		return assignments;
 	}
+	public Roster clone() {
+		return new Roster(noOfEmployees, noOfShifts, noOfTasks, assignments);
+	}
+	public void mutateAssignment(int i, Random rng) {
+		// 33:66 chance dass kein Task assigned wird
+    	int assignTask = rng.nextInt(3);
+    	if (assignTask == 0) {
+    		assignments[i] = rng.nextInt(noOfTasks+1);
+    	} else {
+    		assignments[i] = 0;
+    	}
+	}
 	
 }

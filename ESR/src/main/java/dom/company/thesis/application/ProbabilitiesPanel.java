@@ -82,9 +82,10 @@ class ProbabilitiesPanel extends JPanel
     	
         List<EvolutionaryOperator<Roster>> operators
             = new LinkedList<EvolutionaryOperator<Roster>>();
-        operators.add(new RosterCrossover(120));
+        operators.add(new RosterCrossover(100));
         //operators.add(new UniformRosterCrossover());
         //operators.add(new StringMutation(getAlphabet(), mutationControl.getNumberGenerator()));
+        operators.add(new RosterMutation(mutationControl.getNumberGenerator()));
        
         return new EvolutionPipeline<Roster>(operators);
     }

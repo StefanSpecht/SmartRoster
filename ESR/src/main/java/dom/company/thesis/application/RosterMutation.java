@@ -4,11 +4,12 @@ package dom.company.thesis.application;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import org.uncommons.maths.binary.Roster;
 import org.uncommons.maths.number.ConstantGenerator;
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
+
+import dom.company.thesis.model.Roster;
 
 public class RosterMutation implements EvolutionaryOperator<Roster>
 {
@@ -42,14 +43,18 @@ public class RosterMutation implements EvolutionaryOperator<Roster>
         this.mutationProbability = mutationProbability;
         this.mutationCount = mutationCount;
     }
+    public RosterMutation(NumberGenerator<Probability> mutationProbability)
+	{
+	this(mutationProbability, new ConstantGenerator<Integer>(1));
+	}
 
 
     public List<Roster> apply(List<Roster> selectedCandidates, Random rng)
     {
         List<Roster> mutatedPopulation = new ArrayList<Roster>(selectedCandidates.size());
-        for (Roster b : selectedCandidates)
+        for (Roster roster : selectedCandidates)
         {
-            mutatedPopulation.add(mutateRoster(b, rng));
+            mutatedPopulation.add(mutateRoster(roster, rng));
         }
         return mutatedPopulation;
     }
@@ -63,18 +68,18 @@ public class RosterMutation implements EvolutionaryOperator<Roster>
      * @param rng A source of randomness.
      * @return The mutated bit string.
      */
-    private Roster mutateRoster(Roster bitString, Random rng)
+    private Roster mutateRoster(Roster roster, Random rng)
     {
         if (mutationProbability.nextValue().nextEvent(rng))
         {
-            Roster mutatedRoster = bitString.clone();
+            Roster mutatedRoster = roster.clone();
             int mutations = mutationCount.nextValue();
             for (int i = 0; i < mutations; i++)
             {
-                mutatedRoster.flipBit(rng.nextInt(mutatedRoster.getLength()));
+                mutatedRoster.mutateAssignment(rng.nextInt(mutatedRoster.getAssignments().length), rng);
             }
             return mutatedRoster;
         }
-        return bitString;
+        return roster;
     }
 }
