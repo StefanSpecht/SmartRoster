@@ -39,6 +39,7 @@ import org.uncommons.watchmaker.swing.AbortControl;
 import org.uncommons.watchmaker.swing.ProbabilityParameterControl;
 import org.uncommons.watchmaker.swing.evolutionmonitor.EvolutionMonitor;
 
+import dom.company.thesis.ga.CustomEvolutionMonitor;
 import dom.company.thesis.gui.RosterRenderer;
 import dom.company.thesis.model.Roster;
 import dom.company.thesis.service.InputParser;
@@ -54,7 +55,7 @@ public class SmartRosterApplet extends AbstractApplet
 	private JSpinner elitismSpinner;
 	private ProbabilityParameterControl selectionPressureControl;
 	private ProbabilitiesPanel probabilitiesPanel;
-	private EvolutionMonitor<Roster> evolutionMonitor;	
+	private CustomEvolutionMonitor<Roster> evolutionMonitor;	
 	
 
 	/**Delete if no additional initialization needed**/	
@@ -72,6 +73,8 @@ public class SmartRosterApplet extends AbstractApplet
 	 @Override
 	 protected void prepareGUI(Container container)
 	 {
+		 abort = new AbortControl(); 
+		 
 		 probabilitiesPanel = new ProbabilitiesPanel();
 	     probabilitiesPanel.setBorder(BorderFactory.createTitledBorder("Evolution Probabilities")); 
 		 JPanel controlsPanel = new JPanel(new BorderLayout());
@@ -82,9 +85,13 @@ public class SmartRosterApplet extends AbstractApplet
 	     
 	     
 	     Renderer<Roster, JComponent> renderer = new RosterRenderer();
-	     evolutionMonitor = new EvolutionMonitor<Roster>(renderer,false);
+	     
+	     evolutionMonitor = new CustomEvolutionMonitor<Roster>(renderer,
+	    		 false, 
+	    		 (TerminationCondition) new TargetFitness(0, false), 
+	    		 abort.getTerminationCondition());
+	     
 	     container.add(evolutionMonitor.getGUIComponent(), BorderLayout.CENTER);
-		 
 	 }
 	 
 	 private JComponent createParametersPanel() {
@@ -119,10 +126,11 @@ public class SmartRosterApplet extends AbstractApplet
         parameterBox.add(Box.createHorizontalStrut(10));
 
         startButton = new JButton("Start");
-        abort = new AbortControl(); 
+        
         
         startButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent event) {        		
+        	public void actionPerformed(ActionEvent event) {  
+        		RosterRenderer.disable();
                 abort.getControl().setEnabled(true);
                 populationLabel.setEnabled(false);
                 populationSpinner.setEnabled(false);
@@ -165,8 +173,7 @@ public class SmartRosterApplet extends AbstractApplet
         @Override
         protected Roster performTask() throws Exception
         {
-            //String target = "GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT GUDE TOBI DIESE NACHRICHT WIRD PER GENETISCHEM ALGORITHMUS ERZEUGT";
-        	Random rng = new MersenneTwisterRNG();
+            Random rng = new MersenneTwisterRNG();
             RosterEvaluator fitnessEvaluator = new RosterEvaluator();
             RosterFactory rosterFactory = new RosterFactory(InputService.getNoOfEmployees(), InputService.getNoOfShifts(), InputService.getNoOfTasks());
             

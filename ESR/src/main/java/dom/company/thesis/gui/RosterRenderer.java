@@ -15,25 +15,36 @@ public class RosterRenderer implements Renderer<Roster,JComponent> {
 
 	private RosterTableModel rosterTableModel = new RosterTableModel();
 	Roster roster;
+	private static boolean isEnabled;
 	
 	public RosterRenderer() {
+		isEnabled = false;
 	}
 	
 	@Override
 	public JComponent render(Roster roster) {
-		
-		//create JTable
-		this.roster = roster;
-		rosterTableModel.setRoster(roster);
-		JTable rosterTable = new JTable(rosterTableModel);
-		
-		//Put it into JScrollPane
-		JScrollPane scrollPane = new JScrollPane(rosterTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		
-		//AutoResize = off
-		rosterTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		
-		return scrollPane;
+		if (isEnabled) {
+			//create JTable
+			this.roster = roster;
+			rosterTableModel.setRoster(roster);
+			JTable rosterTable = new JTable(rosterTableModel);
+			
+			//Put it into JScrollPane
+			JScrollPane scrollPane = new JScrollPane(rosterTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			
+			//AutoResize = off
+			rosterTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			
+			return scrollPane;
+		}
+		else return new JPanel();
+	}
+	
+	static public void enable() {
+		isEnabled = true;
+	}
+	static public void disable() {
+		isEnabled = false;
 	}
 
 }
