@@ -61,5 +61,11 @@ public class Roster {
     		assignments[i] = 0;
     	}
 	}
+	public int getValue(int e, int s) {
+		return this.assignments[s * this.getNoOfEmployees() + e];
+	}
+	public void setValue(int value, int e, int s) {
+		this.assignments[s * this.getNoOfEmployees() + e] = value;
+	}
 	
 }
