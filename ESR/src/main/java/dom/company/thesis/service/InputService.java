@@ -21,7 +21,7 @@ import dom.company.thesis.model.Task;
 
 public class InputService {
 	
-	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input.xml";
+	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input2.xml";
 	
 	static Date startDate;
 	static Date endDate;	
@@ -92,19 +92,27 @@ public class InputService {
 			taskCombinations.add(taskCombination);
 		}
 		
-		//Add TaskCoverRequirements to each ShiftType
-		Map<String,Integer> taskIdCoverRequirements = new HashMap<String,Integer>();
+		//Add TaskCoverRequirements to each ShiftType for each day
+		Map<DayOfWeek,Map<String,Integer>> taskIdCoverRequirements = new HashMap<DayOfWeek,Map<String,Integer>>();
 		
 		for (ShiftType shiftType : shiftTypes) {
 			//Get Task Ids
 			taskIdCoverRequirements = inputParser.getTaskIdCoverRequirements(shiftType.getId());
 			
 			//Convert task Ids to tasks and add them to the shifttypes
-			for(Entry<String, Integer> taskIdCoverRequirement : taskIdCoverRequirements.entrySet()) {
-				String taskId = taskIdCoverRequirement.getKey();
-				Task task = getTask(taskId);
-				int quantity = taskIdCoverRequirement.getValue();
-				shiftType.addTaskCoverRequirement(task, quantity);
+			for(Entry<DayOfWeek, Map<String, Integer>> taskIdCoverRequirement : taskIdCoverRequirements.entrySet()) {
+				DayOfWeek dayOfWeek = taskIdCoverRequirement.getKey();
+				Map<String,Integer> currIdCoverRequirements = taskIdCoverRequirement.getValue();
+				
+				Map<Task,Integer> currCoverRequirements = new HashMap<Task,Integer>();
+				for(Entry<String,Integer> currIdCoverRequirement : currIdCoverRequirements.entrySet()) {
+					
+					String taskId = currIdCoverRequirement.getKey();
+					Task task = getTask(taskId);
+					int quantity = currIdCoverRequirement.getValue();
+					currCoverRequirements.put(task, quantity);
+				}
+				shiftType.addTaskCoverRequirement(dayOfWeek, currCoverRequirements);				
 			}
 		}
 		
@@ -164,7 +172,16 @@ public class InputService {
 		
 		//generate shift map
 		orderShifts(shiftTypes);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
 		for (int i=0; i<(shiftTypes.size() * noOfDays); i++) {
+			
+			
 			shiftMap.put(i, shiftTypes.get(i % shiftTypes.size()));
 		}
 		

@@ -39,6 +39,7 @@ import org.uncommons.watchmaker.swing.AbortControl;
 import org.uncommons.watchmaker.swing.ProbabilityParameterControl;
 import org.uncommons.watchmaker.swing.evolutionmonitor.EvolutionMonitor;
 
+import dom.company.thesis.gui.RosterRenderer;
 import dom.company.thesis.model.Roster;
 import dom.company.thesis.service.InputParser;
 import dom.company.thesis.service.InputService;
@@ -80,8 +81,8 @@ public class SmartRosterApplet extends AbstractApplet
 	     
 	     
 	     
-	     //Renderer<List<ColouredPolygon>, JComponent> renderer = new PolygonImageSwingRenderer(targetImage);
-	     evolutionMonitor = new EvolutionMonitor<Roster>(false);
+	     Renderer<Roster, JComponent> renderer = new RosterRenderer();
+	     evolutionMonitor = new EvolutionMonitor<Roster>(renderer,false);
 	     container.add(evolutionMonitor.getGUIComponent(), BorderLayout.CENTER);
 		 
 	 }

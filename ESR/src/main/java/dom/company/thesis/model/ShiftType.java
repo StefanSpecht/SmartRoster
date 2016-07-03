@@ -1,6 +1,7 @@
 package dom.company.thesis.model;
 
 import java.sql.Time;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,7 @@ public class ShiftType {
 	private String description;
 	private Time startTime;
 	private Time endTime;
-	private Map<Task,Integer> taskCoverRequirements = new HashMap<Task,Integer>();
+	private Map<DayOfWeek,Map<Task,Integer>> taskCoverRequirements = new HashMap<DayOfWeek,Map<Task,Integer>>();
 	
 	public ShiftType(String id, String description, Time startTime, Time endTime) {
 		super();
@@ -52,14 +53,14 @@ public class ShiftType {
 	public void setEndTime(Time endTime) {
 		this.endTime = endTime;
 	}
-	public Map<Task, Integer> getTaskCoverRequirements() {
+	public Map<DayOfWeek,Map<Task,Integer>> getTaskCoverRequirements() {
 		return taskCoverRequirements;
 	}
-	public void setTaskCoverRequirements(Map<Task, Integer> taskCoverRequirements) {
+	public void setTaskCoverRequirements(Map<DayOfWeek,Map<Task,Integer>> taskCoverRequirements) {
 		this.taskCoverRequirements = taskCoverRequirements;
 	}
-	public void addTaskCoverRequirement(Task task, int quantity) {
-		this.taskCoverRequirements.put(task, quantity);
+	public void addTaskCoverRequirement(DayOfWeek dayOfWeek, Map<Task,Integer> coverMap) {
+		this.taskCoverRequirements.put(dayOfWeek, coverMap);
 	}
 
 	
