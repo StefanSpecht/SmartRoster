@@ -21,7 +21,7 @@ public class EmployeeListModel extends AbstractListModel<String>{
 		this.employeeNames = new String[noOfEmployees];
 		
 		for (int i = 0; i < noOfEmployees; i++) {
-			employeeNames[i] = employeeMap.get(i).getName();
+			employeeNames[i] = employeeMap.get(i).getId();
 		}
 	}
 	@Override
