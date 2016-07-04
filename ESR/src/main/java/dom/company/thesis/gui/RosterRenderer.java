@@ -1,6 +1,7 @@
 package dom.company.thesis.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Map;
@@ -11,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.uncommons.watchmaker.framework.interactive.Renderer;
@@ -66,16 +69,27 @@ public class RosterRenderer implements Renderer<Roster,JComponent> {
 		      	}
 		    	header.addColumnGroup(dayGroup);
 		    }
-		    /*
-		    ColumnGroup dayGroup = new ColumnGroup("test");
-		    dayGroup.add(columnModel.getColumn(0));
-		    dayGroup.add(columnModel.getColumn(1));
-		      */
-		   
 		    
-		    //getContentPane().add( scroll );
-		    //setSize( 400, 120 ); 
-			
+		    //Resize Cells
+		    for (int column = 0; column < rosterTable.getColumnCount(); column++) {
+		    	TableColumn tableColumn = rosterTable.getColumnModel().getColumn(column);
+		        int preferredWidth = tableColumn.getMinWidth();
+		        int maxWidth = tableColumn.getMaxWidth();
+		     
+		        for (int row = 0; row < rosterTable.getRowCount(); row++) {
+		            TableCellRenderer cellRenderer = rosterTable.getCellRenderer(row, column);
+		            Component c = rosterTable.prepareRenderer(cellRenderer, row, column);
+		            int width = c.getPreferredSize().width + rosterTable.getIntercellSpacing().width;
+		            preferredWidth = Math.max(preferredWidth, width);
+		     
+		            if (preferredWidth >= maxWidth){
+		                preferredWidth = maxWidth;
+		                break;
+		            }
+		        }		     
+		        tableColumn.setPreferredWidth( preferredWidth );
+		     }
+		   			
 			//Add table and row headers to JScrollPane
 			JScrollPane scrollPane = new JScrollPane(rosterTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			scrollPane.setRowHeaderView(rowHeader);
