@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.w3c.dom.Document;
-
 import dom.company.thesis.model.Employee;
 import dom.company.thesis.model.ShiftType;
 import dom.company.thesis.model.Task;
