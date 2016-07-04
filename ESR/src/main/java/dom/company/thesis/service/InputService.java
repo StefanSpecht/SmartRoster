@@ -33,10 +33,13 @@ public class InputService {
 	static Map<Integer,Employee> employeeMap = new HashMap<Integer,Employee>();
 	static Map<Integer,ShiftType> shiftMap = new HashMap<Integer,ShiftType>();
 	static Map<Integer,Date> shiftDatesMap = new HashMap<Integer,Date>();
-	static Map<Integer,List<Task>> taskMap = new HashMap<Integer,List<Task>>();
+	static Map<Integer,List<Task>> taskCombinationMap = new HashMap<Integer,List<Task>>();
+	static Map<Integer,Task> taskMap = new HashMap<Integer,Task>();
+	static Map<Task, Integer> reverseTaskMap = new HashMap<Task, Integer>();
 	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
-	static int[][] availabilityMatrix;
+	static int[][] availabilityMatrix;		//[shift][employee] = {0,1}
+	static int[][] coverRequirementMatrix;	//[shift][task]	= {0,1,2,...#combinations}
 		
 	public InputService() {
 	}
@@ -187,26 +190,57 @@ public class InputService {
 			calendar.add(Calendar.DAY_OF_YEAR,1);
 		}
 		
-		//generate task map
-		taskMap.put(0, new ArrayList<Task>());
+		//generate task-combinations map
+		taskCombinationMap.put(0, new ArrayList<Task>());
 		for (int i=0; i<taskCombinations.size(); i++) {
-			taskMap.put(i+1, taskCombinations.get(i));
-		}		
+			taskCombinationMap.put(i+1, taskCombinations.get(i));
+		}	
+		
+		//generate task map and reverse task map
+		for (int i=0; i<tasks.size(); i++) {
+			taskMap.put(i, tasks.get(i));
+			reverseTaskMap.put(tasks.get(i), i);
+		}
 	}
 	
 	static public void generateMatrices() {
 		
 		//generate availability matrix
-		availabilityMatrix = new int[getNoOfShifts()][getNoOfEmployees()];
-		
+		availabilityMatrix = new int[getNoOfShifts()][getNoOfEmployees()];		
 		for (int s = 0; s < getNoOfShifts(); s++) {
             for (int e = 0; e < getNoOfEmployees(); e++) {
             	
-            	//Check, if employee no e is available for shift no s
-            	
-            	availabilityMatrix[s][e] = isAvailable(s,e);		// HIERMIT KANN ICH DANN AUCH MAL DEBUGGEN OB DAS MIT DEM ++e SO STIMMT!!
+            	//Check, if employee no e is available for shift no s            	
+            	availabilityMatrix[s][e] = isAvailable(s,e);
             }
         }
+		
+		//generate coverRequirementsMatrix
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		coverRequirementMatrix = new int[getNoOfShifts()][tasks.size()];
+		
+		for (int s = 0; s < getNoOfShifts(); s++) {
+
+			DayOfWeek dayOfWeek = DayOfWeek.of(calendar.get(Calendar.DAY_OF_WEEK));
+			ShiftType shiftType = shiftTypes.get(s % shiftTypes.size());
+			
+			//Check if shift is required today. If yes, check which tasks must be covered.
+			if (shiftCoverRequirements.get(dayOfWeek).contains(shiftType)) {
+				Map<Task,Integer> coverRequirements = shiftType.getTaskCoverRequirements().get(dayOfWeek);
+				
+				for (int t = 0; t < taskMap.size(); t++) {
+					coverRequirementMatrix[s][t] = coverRequirements.get(taskMap.get(t));
+				}
+			}
+			calendar.add(Calendar.DAY_OF_YEAR,1);
+        }
+        
 	}
 	
 	private static int isAvailable(int s, int e) {
@@ -267,7 +301,7 @@ public class InputService {
 	}
 
 	public static Map<Integer, List<Task>> getTaskMap() {
-		return taskMap;
+		return taskCombinationMap;
 	}
 
 	public static Date getStartDate() {
@@ -292,7 +326,7 @@ public class InputService {
 		return shiftMap.size();
 	}
 	public static int getNoOfTasks() {
-		return taskMap.size();
+		return taskCombinationMap.size();
 	}
 
 	public static int[][] getAvailabilityMatrix() {
