@@ -188,8 +188,9 @@ public class InputService {
 		}
 		
 		//generate task map
+		taskMap.put(0, new ArrayList<Task>());
 		for (int i=0; i<taskCombinations.size(); i++) {
-			taskMap.put(i, taskCombinations.get(i));
+			taskMap.put(i+1, taskCombinations.get(i));
 		}		
 	}
 	

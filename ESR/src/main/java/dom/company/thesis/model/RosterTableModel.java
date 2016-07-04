@@ -1,5 +1,7 @@
 package dom.company.thesis.model;
 
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 import dom.company.thesis.service.InputService;
@@ -34,7 +36,18 @@ public class RosterTableModel extends AbstractTableModel {
     
     @Override
 	public Object getValueAt(int row, int column) {
-       return roster == null ? null : roster.getValue(row, column);
+       //return roster == null ? null : roster.getValue(row, column);
+    	
+    	List<Task> tasks = InputService.getTaskMap().get(roster.getValue(row, column));
+    	String tasksString = "";
+    	
+    	if (tasks != null) {
+	    	for (Task task : tasks) {
+	    		tasksString +=  ";" + task.getId();
+	    	}
+    	}
+    	
+    	return tasksString.equals("") ? "-" : tasksString.substring(1);
     }
 
     @Override
