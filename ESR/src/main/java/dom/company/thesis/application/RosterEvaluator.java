@@ -18,8 +18,8 @@ public double getFitness(Roster candidate,
                           List<? extends Roster> population)
  {
     int panalty = 0;
-     for (int s = 0; s < candidate.getNoOfShifts(); ++s) {
-    	 for (int e = 0; e < candidate.getNoOfEmployees(); ++e) {
+     for (int s = 0; s < candidate.getNoOfShifts(); s++) {
+    	 for (int e = 0; e < candidate.getNoOfEmployees(); e++) {
     		 
     		 if (candidate.getAssignments()[s * candidate.getNoOfEmployees() + e] != 0 && InputService.getAvailabilityMatrix()[s][e] == 0) {
     			 panalty++;
