@@ -27,7 +27,6 @@ public class InputService {
 	static List<Task> tasks = new ArrayList<Task>();
 	static List<Employee> employees = new ArrayList<Employee>();
 	static List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
-	//Convert to employee, task and shiftType map!!	
 	static Map<Integer,Employee> employeeMap = new HashMap<Integer,Employee>();
 	static Map<Integer,ShiftType> shiftMap = new HashMap<Integer,ShiftType>();
 	static Map<Integer,Date> shiftDatesMap = new HashMap<Integer,Date>();
@@ -36,8 +35,9 @@ public class InputService {
 	static Map<Task, Integer> reverseTaskMap = new HashMap<Task, Integer>();
 	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
-	static int[][] availabilityMatrix;		//[shift][employee] = {0,1}
-	static int[][] coverRequirementMatrix;	//[shift][task]	= {0,1,2,...#combinations}
+	static int[][] availabilityMatrix;		// [shift][employee] = {0,1}
+	static int[][] abilityMatrix;			// [task][employee] = {0,1}
+	static int[][] coverRequirementMatrix;	// [shift][task]	= {0,1,2,...#combinations}
 		
 	public InputService() {
 	}
@@ -213,6 +213,16 @@ public class InputService {
             }
         }
 		
+		//generate ability matrix
+		abilityMatrix = new int[getNoOfTasks()][getNoOfEmployees()];		
+		for (int tc = 0; tc < getNoOfTasks(); tc++) {
+            for (int e = 0; e < getNoOfEmployees(); e++) {
+            	
+            	//Check, if employee no e is able to do task combination tc        	
+            	abilityMatrix[tc][e] = isAble(tc,e);
+            }
+        }
+		
 		//generate coverRequirementsMatrix
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
@@ -225,7 +235,7 @@ public class InputService {
 		
 		for (int s = 0; s < getNoOfShifts(); s++) {
 
-			DayOfWeek dayOfWeek = DayOfWeek.of(calendar.get(Calendar.DAY_OF_WEEK));
+			DayOfWeek dayOfWeek = DayOfWeek.of((calendar.get(Calendar.DAY_OF_WEEK) == 1 ? 7 : calendar.get(Calendar.DAY_OF_WEEK) - 1));
 			ShiftType shiftType = shiftTypes.get(s % shiftTypes.size());
 			
 			//Check if shift is required today. If yes, check which tasks must be covered.
@@ -233,10 +243,20 @@ public class InputService {
 				Map<Task,Integer> coverRequirements = shiftType.getTaskCoverRequirements().get(dayOfWeek);
 				
 				for (int t = 0; t < taskMap.size(); t++) {
-					coverRequirementMatrix[s][t] = coverRequirements.get(taskMap.get(t));
+					Integer taskCoverRequirement = coverRequirements.get(taskMap.get(t));
+					
+					if (taskCoverRequirement != null) {
+						coverRequirementMatrix[s][t] = coverRequirements.get(taskMap.get(t));
+					}
+					else {
+						coverRequirementMatrix[s][t] = 0;
+					}
+					
 				}
 			}
-			calendar.add(Calendar.DAY_OF_YEAR,1);
+			if (s % shiftTypes.size() == shiftTypes.size() -1) {
+				calendar.add(Calendar.DAY_OF_YEAR,1);
+			}
         }
         
 	}
@@ -261,6 +281,19 @@ public class InputService {
 			return 0;
 		}		
 		return 1;
+	}
+	
+	private static int isAble(int tc, int e) {
+		List<Task> taskCombination = getTaskMap().get(tc);
+		Employee employee = getEmployeeMap().get(e);
+		
+		for (Task task : taskCombination) {
+			if (!employee.getTaskQualifications().contains(task)) {
+				return 0;
+			}
+		}
+		return 1;
+	
 	}
 
 	private static void orderShifts(List<ShiftType> shiftTypes) {
