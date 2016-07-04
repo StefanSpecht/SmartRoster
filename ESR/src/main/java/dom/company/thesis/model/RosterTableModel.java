@@ -4,11 +4,6 @@ import javax.swing.table.AbstractTableModel;
 
 import dom.company.thesis.service.InputService;
 
-/**
- * {@link javax.swing.table.TableModel} for displaying a Roster
- * grid in a {@link javax.swing.JTable}.
- * @author Daniel Dyer
- */
 public class RosterTableModel extends AbstractTableModel {
   	private static final long serialVersionUID = 2957859970865531519L;
   	private Roster roster;
@@ -22,17 +17,23 @@ public class RosterTableModel extends AbstractTableModel {
         return roster;
     }
     
+    @Override
     public int getRowCount() {
         return InputService.getNoOfEmployees();
     }
 
-
+    @Override
     public int getColumnCount() {
         return InputService.getNoOfShifts();
     }
-
-
-    public Object getValueAt(int row, int column) {
+    
+    @Override
+	public String getColumnName(int column) {
+		return InputService.getShiftMap().get(column).getId();
+	}
+    
+    @Override
+	public Object getValueAt(int row, int column) {
        return roster == null ? null : roster.getValue(row, column);
     }
 

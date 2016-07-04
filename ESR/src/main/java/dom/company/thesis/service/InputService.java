@@ -32,6 +32,7 @@ public class InputService {
 	//Convert to employee, task and shiftType map!!	
 	static Map<Integer,Employee> employeeMap = new HashMap<Integer,Employee>();
 	static Map<Integer,ShiftType> shiftMap = new HashMap<Integer,ShiftType>();
+	static Map<Integer,Date> shiftDatesMap = new HashMap<Integer,Date>();
 	static Map<Integer,List<Task>> taskMap = new HashMap<Integer,List<Task>>();
 	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
@@ -170,7 +171,7 @@ public class InputService {
 			employeeMap.put(i, employees.get(i));
 		}
 		
-		//generate shift map
+		//generate shift map and shiftDates map
 		orderShifts(shiftTypes);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
@@ -181,8 +182,9 @@ public class InputService {
 		
 		for (int i=0; i<(shiftTypes.size() * noOfDays); i++) {
 			
-			
 			shiftMap.put(i, shiftTypes.get(i % shiftTypes.size()));
+			shiftDatesMap.put(i, new Date(calendar.getTimeInMillis()));
+			calendar.add(Calendar.DAY_OF_YEAR,1);
 		}
 		
 		//generate task map
@@ -295,6 +297,21 @@ public class InputService {
 	public static int[][] getAvailabilityMatrix() {
 		return availabilityMatrix;
 	}
+
+	public static List<Employee> getEmployees() {
+		return employees;
+	}
+	
+	public static int getNoOfShiftTypes() {
+		return shiftTypes.size();
+	}
+
+	public static Map<Integer, Date> getShiftDatesMap() {
+		return shiftDatesMap;
+	}
+	
+	
+	
 	
 
 	
