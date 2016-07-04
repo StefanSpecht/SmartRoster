@@ -199,7 +199,7 @@ public class InputService {
 		availabilityMatrix = new int[getNoOfShifts()][getNoOfEmployees()];
 		
 		for (int s = 0; s < getNoOfShifts(); s++) {
-            for (int e = 0; e < getNoOfEmployees(); ++e) {
+            for (int e = 0; e < getNoOfEmployees(); e++) {
             	
             	//Check, if employee no e is available for shift no s
             	
