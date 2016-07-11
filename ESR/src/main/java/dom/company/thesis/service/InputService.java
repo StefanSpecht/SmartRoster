@@ -36,7 +36,7 @@ public class InputService {
 	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
 	static int[][] availabilityMatrix;		// [shift][employee] = {0,1}
-	static int[][] abilityMatrix;			// [task][employee] = {0,1}
+	static int[][] abilityMatrix;			// [taskCombination][employee] = {0,1}
 	static int[][] coverRequirementMatrix;	// [shift][task]	= {0,1,2,...#combinations}
 		
 	public InputService() {
