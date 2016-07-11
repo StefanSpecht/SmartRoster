@@ -35,9 +35,14 @@ public class InputService {
 	static Map<Task, Integer> reverseTaskMap = new HashMap<Task, Integer>();
 	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
-	static int[][] availabilityMatrix;		// [shift][employee] = {0,1}
-	static int[][] abilityMatrix;			// [taskCombination][employee] = {0,1}
-	static int[][] coverRequirementMatrix;	// [shift][task]	= {0,1,2,...#combinations}
+	
+	//Hard Constraints
+	static int[][] availabilityMatrix;			// [shift][employee] = {0,1}
+	static int[][] abilityMatrix;				// [taskCombination][employee] = {0,1}
+	static int[][] coverRequirementMatrix;		// [shift][task]	= {0,1,2,...#combinations}
+	
+	//Soft Constraints
+	static int[][] shiftOffPreferenceMatrix;	// [shift][employee] = {0,1}
 		
 	public InputService() {
 	}
@@ -159,6 +164,32 @@ public class InputService {
 			
 			employee.setShiftUnavailabilities(shiftUnavailabilities);
 		}
+		
+		//Get shiftOffPreferences and add it to employee objects
+		for (Employee employee : employees) {
+			Map<Date,List<String>> shiftIdOffPreferences= new HashMap<Date,List<String>>();
+			Map<Date,List<ShiftType>> shiftOffPreferences= new HashMap<Date,List<ShiftType>>();
+			
+			shiftIdOffPreferences = inputParser.getShifIdOffPreferences(employee.getId(), startDate, endDate);
+			
+			//Convert shiftIds to shifts			
+			for(Entry<Date, List<String>> shiftIdOffPreference : shiftIdOffPreferences.entrySet()) {
+				List<ShiftType> currentShiftOffPreferences = new ArrayList<ShiftType>();
+				Date date = shiftIdOffPreference.getKey();
+				List<String> shiftIds = shiftIdOffPreference.getValue();
+				
+				for (String shiftId : shiftIds) {
+					ShiftType shiftType = getShiftType(shiftId);
+					currentShiftOffPreferences.add(shiftType);
+				}
+				
+				shiftOffPreferences.put(date, currentShiftOffPreferences);
+			}
+			
+			
+			employee.setShiftOffPreferences(shiftOffPreferences);
+		}
+		
 		//generate maps
 		generateMaps();
 		
@@ -258,7 +289,17 @@ public class InputService {
 				calendar.add(Calendar.DAY_OF_YEAR,1);
 			}
         }
-        
+		
+		//generate ShiftOffPreferences matrix
+		shiftOffPreferenceMatrix = new int[getNoOfShifts()][getNoOfEmployees()];		
+		for (int s = 0; s < getNoOfShifts(); s++) {
+            for (int e = 0; e < getNoOfEmployees(); e++) {
+            	
+            	//Check, if employee no e prefers to have a shift off            	
+            	shiftOffPreferenceMatrix[s][e] = hasShiftOffPreference(s,e);
+            }
+        }
+    
 	}
 	
 	private static int isAvailable(int s, int e) {
@@ -267,7 +308,7 @@ public class InputService {
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
-		calendar.add(Calendar.DAY_OF_YEAR,(int)dayIndex);
+		calendar.add(Calendar.DAY_OF_YEAR, (int) (s / (int)dayIndex));
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
@@ -295,7 +336,28 @@ public class InputService {
 		return 1;
 	
 	}
-
+	
+	private static int hasShiftOffPreference(int s, int e) {
+		
+		long dayIndex = getNoOfShifts() / noOfDays;
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		calendar.add(Calendar.DAY_OF_YEAR, (int) (s / (int)dayIndex));
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		Date date = new Date(calendar.getTimeInMillis());
+		ShiftType shiftType = shiftMap.get(s);
+		Employee employee = employeeMap.get(e);
+		
+		if (employee.getShiftOffPreferences().get(date).contains(shiftType)) {
+			return 1;
+		}		
+		return 0;
+	}
 	private static void orderShifts(List<ShiftType> shiftTypes) {
 
 	    Collections.sort(shiftTypes, new Comparator<ShiftType>() {
@@ -362,6 +424,10 @@ public class InputService {
 
 	public static int[][] getAvailabilityMatrix() {
 		return availabilityMatrix;
+	}
+	
+	public static int[][] getShiftOffPreferenceMatrix() {
+		return shiftOffPreferenceMatrix;
 	}
 
 	public static List<Employee> getEmployees() {
