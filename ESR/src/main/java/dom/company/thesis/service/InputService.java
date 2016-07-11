@@ -19,7 +19,7 @@ import dom.company.thesis.model.Task;
 
 public class InputService {
 	
-	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input2.xml";
+	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input3.xml";
 	
 	static Date startDate;
 	static Date endDate;	
@@ -134,30 +134,30 @@ public class InputService {
 			shiftCoverRequirements.put(dayOfWeek, shiftCovers);
 		}
 		
-		//Get shiftOffRequests and add it to employee objects
+		//Get shiftUnavailabilities and add it to employee objects
 		for (Employee employee : employees) {
-			Map<Date,List<String>> shiftIdOffRequests= new HashMap<Date,List<String>>();
-			Map<Date,List<ShiftType>> shiftOffRequests= new HashMap<Date,List<ShiftType>>();
+			Map<Date,List<String>> shiftIdUnavailabilities= new HashMap<Date,List<String>>();
+			Map<Date,List<ShiftType>> shiftUnavailabilities= new HashMap<Date,List<ShiftType>>();
 			
-			shiftIdOffRequests = inputParser.getShifIdOffRequests(employee.getId(), startDate, endDate);
+			shiftIdUnavailabilities = inputParser.getShifIdUnavailabilities(employee.getId(), startDate, endDate);
 			
 			//Convert shiftIds to shifts
 			
-			for(Entry<Date, List<String>> shiftIdOffRequest : shiftIdOffRequests.entrySet()) {
-				List<ShiftType> currentShiftOffRequests = new ArrayList<ShiftType>();
-				Date date = shiftIdOffRequest.getKey();
-				List<String> shiftIds = shiftIdOffRequest.getValue();
+			for(Entry<Date, List<String>> shiftIdUnavailability : shiftIdUnavailabilities.entrySet()) {
+				List<ShiftType> currentShiftUnavailabilities = new ArrayList<ShiftType>();
+				Date date = shiftIdUnavailability.getKey();
+				List<String> shiftIds = shiftIdUnavailability.getValue();
 				
 				for (String shiftId : shiftIds) {
 					ShiftType shiftType = getShiftType(shiftId);
-					currentShiftOffRequests.add(shiftType);
+					currentShiftUnavailabilities.add(shiftType);
 				}
 				
-				shiftOffRequests.put(date, currentShiftOffRequests);
+				shiftUnavailabilities.put(date, currentShiftUnavailabilities);
 			}
 			
 			
-			employee.setShiftOffRequests(shiftOffRequests);
+			employee.setShiftUnavailabilities(shiftUnavailabilities);
 		}
 		//generate maps
 		generateMaps();
@@ -277,7 +277,7 @@ public class InputService {
 		ShiftType shiftType = shiftMap.get(s);
 		Employee employee = employeeMap.get(e);
 		
-		if (employee.getShiftOffRequests().get(date).contains(shiftType)) {
+		if (employee.getShiftUnavailabilities().get(date).contains(shiftType)) {
 			return 0;
 		}		
 		return 1;

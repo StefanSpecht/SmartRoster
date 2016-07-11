@@ -10,7 +10,7 @@ public class Employee {
 	private String id;
 	private String name;
 	private List<Task> taskQualifications = new ArrayList<Task>();
-	private Map<Date,List<ShiftType>> shiftOffRequests;
+	private Map<Date,List<ShiftType>> shiftUnavailabilities;
 	
 	public Employee(String id, String name, List<Task> taskQualifications) {
 		super();
@@ -47,11 +47,11 @@ public class Employee {
 		this.taskQualifications = taskQualifications;
 	}
 	
-	public Map<Date, List<ShiftType>> getShiftOffRequests() {
-		return shiftOffRequests;
+	public Map<Date, List<ShiftType>> getShiftUnavailabilities() {
+		return shiftUnavailabilities;
 	}
-	public void setShiftOffRequests(Map<Date, List<ShiftType>> shiftOffRequests) {
-		this.shiftOffRequests = shiftOffRequests;
+	public void setShiftUnavailabilities(Map<Date, List<ShiftType>> shiftUnavailabilities) {
+		this.shiftUnavailabilities = shiftUnavailabilities;
 	}	
 	
 	

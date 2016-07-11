@@ -474,10 +474,10 @@ public List<String> getShiftTypeIds() {
 		return new java.sql.Date(date.getTime());
 	}
 
-	public Map<Date, List<String>> getShifIdOffRequests(String employeeId, Date startDate, Date endDate) {
+	public Map<Date, List<String>> getShifIdUnavailabilities(String employeeId, Date startDate, Date endDate) {
 		
 		XPath xPath =  XPathFactory.newInstance().newXPath();
-		Map<Date,List<String>> shiftIdOffRequests = new HashMap<Date,List<String>>();
+		Map<Date,List<String>> shiftIdUnavailabilities = new HashMap<Date,List<String>>();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar calendar = Calendar.getInstance();
 		long noOfDays = Math.abs(((endDate.getTime() - startDate.getTime()) / 86400000) + 1);
@@ -505,32 +505,32 @@ public List<String> getShiftTypeIds() {
 					List<String> currentShiftIds = new ArrayList<String>();
 					List<String> currentShiftOffExceptions = new ArrayList<String>();
 					
-					//Check, if there is a dayOffRequest for this date. If yes, add all shifts to the list
-					XPathExpression expression = xPath.compile("SchedulingPeriod/DayOffRequests/DayOffRequest[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and Date='" + currentDateString + "']");
-					NodeList dayOffRequestNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+					//Check, if there is a dayUnavailability for this date. If yes, add all shifts to the list
+					XPathExpression expression = xPath.compile("SchedulingPeriod/DayUnavailabilities/DayUnavailability[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and Date='" + currentDateString + "']");
+					NodeList dayUnavailabilityNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
 					
-					if (dayOffRequestNodes != null && dayOffRequestNodes.getLength() > 0) {
+					if (dayUnavailabilityNodes != null && dayUnavailabilityNodes.getLength() > 0) {
 						currentShiftIds.addAll(this.getShiftTypeIds());
 					} 
 					else {
-						//If there is no dayOffRequest, check for shiftOffRequsts
-						expression = xPath.compile("SchedulingPeriod/ShiftOffRequests/ShiftOffRequest[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and (Date='" + currentDateString + "' or not(Date))]/Shift");
-						NodeList shiftOffRequestNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
-						expression = xPath.compile("SchedulingPeriod/ShiftOffRequests/ShiftOffRequest[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and (Date='" + currentDateString + "' or not(Date))]/ShiftGroup");
-						NodeList shiftGroupOffRequestNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+						//If there is no dayUnavailability, check for shiftOffRequsts
+						expression = xPath.compile("SchedulingPeriod/ShiftUnavailabilities/ShiftUnavailability[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and (Date='" + currentDateString + "' or not(Date))]/Shift");
+						NodeList shiftUnavailabilityNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+						expression = xPath.compile("SchedulingPeriod/ShiftUnavailabilities/ShiftUnavailability[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and (Date='" + currentDateString + "' or not(Date))]/ShiftGroup");
+						NodeList shiftGroupUnavailabilityNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
 						
-						if (shiftOffRequestNodes != null) {
+						if (shiftUnavailabilityNodes != null) {
 													
-							for (int y = 0; y < shiftOffRequestNodes.getLength(); y++) {
-								String shiftId = shiftOffRequestNodes.item(y).getTextContent();
+							for (int y = 0; y < shiftUnavailabilityNodes.getLength(); y++) {
+								String shiftId = shiftUnavailabilityNodes.item(y).getTextContent();
 								currentShiftIds.add(shiftId);
 							}
 						}
 						
-						if (shiftGroupOffRequestNodes != null) {
+						if (shiftGroupUnavailabilityNodes != null) {
 							
-							for (int y = 0; y < shiftGroupOffRequestNodes.getLength(); y++) {
-								String shiftGroupId = shiftGroupOffRequestNodes.item(y).getTextContent();
+							for (int y = 0; y < shiftGroupUnavailabilityNodes.getLength(); y++) {
+								String shiftGroupId = shiftGroupUnavailabilityNodes.item(y).getTextContent();
 								List<String> shiftIdsInGroup = this.getShiftIdsFromGroupId(shiftGroupId);
 								currentShiftIds.addAll(shiftIdsInGroup);
 							}
@@ -557,13 +557,13 @@ public List<String> getShiftTypeIds() {
 								currentShiftIds.removeAll(shiftIdsInGroup);
 							}
 						}
-						shiftIdOffRequests.put(currentDate, currentShiftIds);
+						shiftIdUnavailabilities.put(currentDate, currentShiftIds);
 						
 					}
 					
-					// Add all shiftOffRequests to the map
+					// Add all shiftUnavailabilities to the map
 					if (!currentShiftIds.isEmpty()) {
-						shiftIdOffRequests.put(currentDate, currentShiftIds);
+						shiftIdUnavailabilities.put(currentDate, currentShiftIds);
 					}
 					
 				}
@@ -572,7 +572,7 @@ public List<String> getShiftTypeIds() {
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}
-		return shiftIdOffRequests;
+		return shiftIdUnavailabilities;
 	}
 
 	private List<String> getShiftIdsFromGroupId(String shiftGroupId) {
