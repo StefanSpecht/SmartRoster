@@ -11,6 +11,8 @@ public class Employee {
 	private String name;
 	private List<Task> taskQualifications = new ArrayList<Task>();
 	private Map<Date,List<ShiftType>> shiftUnavailabilities;
+	private Map<Date,List<ShiftType>> shiftOffPreferences;
+	
 	
 	public Employee(String id, String name, List<Task> taskQualifications) {
 		super();
@@ -52,6 +54,13 @@ public class Employee {
 	}
 	public void setShiftUnavailabilities(Map<Date, List<ShiftType>> shiftUnavailabilities) {
 		this.shiftUnavailabilities = shiftUnavailabilities;
+	}	
+	
+	public Map<Date, List<ShiftType>> getShiftOffPreferences() {
+		return shiftOffPreferences;
+	}
+	public void setShiftOffPreferences(Map<Date, List<ShiftType>> shiftOffPreferences) {
+		this.shiftOffPreferences = shiftOffPreferences;
 	}	
 	
 	
