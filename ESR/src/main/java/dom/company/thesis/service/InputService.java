@@ -140,61 +140,61 @@ public class InputService {
 		}
 		
 		//Get shiftUnavailabilities and add it to employee objects
-		for (Employee employee : employees) {
-			Map<Date,List<String>> shiftIdUnavailabilities= new HashMap<Date,List<String>>();
-			Map<Date,List<ShiftType>> shiftUnavailabilities= new HashMap<Date,List<ShiftType>>();
-			
-			shiftIdUnavailabilities = inputParser.getShifIdUnavailabilities(employee.getId(), startDate, endDate);
-			
-			//Convert shiftIds to shifts
-			
-			for(Entry<Date, List<String>> shiftIdUnavailability : shiftIdUnavailabilities.entrySet()) {
-				List<ShiftType> currentShiftUnavailabilities = new ArrayList<ShiftType>();
-				Date date = shiftIdUnavailability.getKey();
-				List<String> shiftIds = shiftIdUnavailability.getValue();
-				
-				for (String shiftId : shiftIds) {
-					ShiftType shiftType = getShiftType(shiftId);
-					currentShiftUnavailabilities.add(shiftType);
+				for (Employee employee : employees) {
+					Map<Date,List<String>> shiftIdUnavailabilities= new HashMap<Date,List<String>>();
+					Map<Date,List<ShiftType>> shiftUnavailabilities= new HashMap<Date,List<ShiftType>>();
+					
+					shiftIdUnavailabilities = inputParser.getShifIdUnavailabilities(employee.getId(), startDate, endDate);
+					
+					//Convert shiftIds to shifts
+					
+					for(Entry<Date, List<String>> shiftIdUnavailability : shiftIdUnavailabilities.entrySet()) {
+						List<ShiftType> currentShiftUnavailabilities = new ArrayList<ShiftType>();
+						Date date = shiftIdUnavailability.getKey();
+						List<String> shiftIds = shiftIdUnavailability.getValue();
+						
+						for (String shiftId : shiftIds) {
+							ShiftType shiftType = getShiftType(shiftId);
+							currentShiftUnavailabilities.add(shiftType);
+						}
+						
+						shiftUnavailabilities.put(date, currentShiftUnavailabilities);
+					}
+					
+					
+					employee.setShiftUnavailabilities(shiftUnavailabilities);
 				}
 				
-				shiftUnavailabilities.put(date, currentShiftUnavailabilities);
-			}
-			
-			
-			employee.setShiftUnavailabilities(shiftUnavailabilities);
-		}
-		
-		//Get shiftOffPreferences and add it to employee objects
-		for (Employee employee : employees) {
-			Map<Date,List<String>> shiftIdOffPreferences= new HashMap<Date,List<String>>();
-			Map<Date,List<ShiftType>> shiftOffPreferences= new HashMap<Date,List<ShiftType>>();
-			
-			shiftIdOffPreferences = inputParser.getShifIdOffPreferences(employee.getId(), startDate, endDate);
-			
-			//Convert shiftIds to shifts			
-			for(Entry<Date, List<String>> shiftIdOffPreference : shiftIdOffPreferences.entrySet()) {
-				List<ShiftType> currentShiftOffPreferences = new ArrayList<ShiftType>();
-				Date date = shiftIdOffPreference.getKey();
-				List<String> shiftIds = shiftIdOffPreference.getValue();
+				//generate maps
+				generateMaps();
 				
-				for (String shiftId : shiftIds) {
-					ShiftType shiftType = getShiftType(shiftId);
-					currentShiftOffPreferences.add(shiftType);
+				//Get shiftOffPreferences and add it to employee objects
+				for (Employee employee : employees) {
+					Map<Date,List<String>> shiftIdOffPreferences= new HashMap<Date,List<String>>();
+					Map<Date,List<ShiftType>> shiftOffPreferences= new HashMap<Date,List<ShiftType>>();
+					
+					shiftIdOffPreferences = inputParser.getShifIdOffPreferences(employee.getId(), startDate, endDate);
+					
+					//Convert shiftIds to shifts			
+					for(Entry<Date, List<String>> shiftIdOffPreference : shiftIdOffPreferences.entrySet()) {
+						List<ShiftType> currentShiftOffPreferences = new ArrayList<ShiftType>();
+						Date date = shiftIdOffPreference.getKey();
+						List<String> shiftIds = shiftIdOffPreference.getValue();
+						
+						for (String shiftId : shiftIds) {
+							ShiftType shiftType = getShiftType(shiftId);
+							currentShiftOffPreferences.add(shiftType);
+						}
+						
+						shiftOffPreferences.put(date, currentShiftOffPreferences);
+					}
+					
+					
+					employee.setShiftOffPreferences(shiftOffPreferences);
 				}
 				
-				shiftOffPreferences.put(date, currentShiftOffPreferences);
-			}
-			
-			
-			employee.setShiftOffPreferences(shiftOffPreferences);
-		}
-		
-		//generate maps
-		generateMaps();
-		
-		//generate matrices
-		generateMatrices();
+				//generate matrices
+				generateMatrices();
 	}
 	
 	static public void generateMaps() {
@@ -203,20 +203,25 @@ public class InputService {
 			employeeMap.put(i, employees.get(i));
 		}
 		
-		//generate shift map and shiftDates map
+		//generate shift map
 		orderShifts(shiftTypes);
+		for (int i=0; i<(shiftTypes.size() * noOfDays); i++) {			
+			shiftMap.put(i, shiftTypes.get(i % shiftTypes.size()));
+		}
+		
+		//generate shiftDates map
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
+		long dayIndex = getNoOfShifts() / noOfDays;
 		
 		for (int i=0; i<(shiftTypes.size() * noOfDays); i++) {
-			
-			shiftMap.put(i, shiftTypes.get(i % shiftTypes.size()));
+			calendar.setTime(startDate);
+			calendar.add(Calendar.DAY_OF_YEAR, (int) (i / (int)dayIndex));
 			shiftDatesMap.put(i, new Date(calendar.getTimeInMillis()));
-			calendar.add(Calendar.DAY_OF_YEAR,1);
 		}
 		
 		//generate task-combinations map
@@ -295,7 +300,7 @@ public class InputService {
 		for (int s = 0; s < getNoOfShifts(); s++) {
             for (int e = 0; e < getNoOfEmployees(); e++) {
             	
-            	//Check, if employee no e prefers to have a shift off            	
+            	//Check, if employee  e prefers to have a shift off            	
             	shiftOffPreferenceMatrix[s][e] = hasShiftOffPreference(s,e);
             }
         }
