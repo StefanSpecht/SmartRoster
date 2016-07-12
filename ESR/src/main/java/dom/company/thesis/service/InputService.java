@@ -441,11 +441,22 @@ public class InputService {
 	public static Map<Integer, Date> getShiftDatesMap() {
 		return shiftDatesMap;
 	}
-	
-	
-	
-	
 
+	public static int[][] getAbilityMatrix() {
+		return abilityMatrix;
+	}
+
+	public static int[][] getCoverRequirementMatrix() {
+		return coverRequirementMatrix;
+	}
+
+	public static Map<Integer, List<Task>> getTaskCombinationMap() {
+		return taskCombinationMap;
+	}
+
+	public static Map<Task, Integer> getReverseTaskMap() {
+		return reverseTaskMap;
+	}
 	
 	
 	

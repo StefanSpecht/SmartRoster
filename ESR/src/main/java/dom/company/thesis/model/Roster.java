@@ -14,15 +14,15 @@ public class Roster {
         this.noOfShifts = noOfShifts;
         this.noOfEmployees = noOfEmployees;
         
-        assignments = new int[noOfShifts * noOfEmployees];
-        for (int i = 0; i < noOfShifts * noOfEmployees ; i++) {
+        assignments = new int[noOfEmployees * noOfShifts];
+        for (int i = 0; i < noOfEmployees * noOfShifts ; i++) {
         	// 33:66 chance dass kein Task assigned wird
-        	int assignTask = rng.nextInt(3);
-        	if (assignTask == 0) {
-        		assignments[i] = rng.nextInt(noOfTasks+1);
-        	} else {
-        		assignments[i] = 0;
-        	}
+        	//int assignTask = rng.nextInt(3);
+        	//if (assignTask == 0) {
+        		assignments[i] = rng.nextInt(noOfTasks);
+        	//} else {
+        	//	assignments[i] = 0;
+        	//}
             
         }
 	}
@@ -54,18 +54,18 @@ public class Roster {
 	}
 	public void mutateAssignment(int i, Random rng) {
 		// 33:66 chance dass kein Task assigned wird
-    	int assignTask = rng.nextInt(3);
-    	if (assignTask == 0) {
-    		assignments[i] = rng.nextInt(noOfTasks+1);
-    	} else {
-    		assignments[i] = 0;
-    	}
+    	//int assignTask = rng.nextInt(3);
+    	//if (assignTask == 0) {
+    		assignments[i] = rng.nextInt(noOfTasks);
+    	//} else {
+    	//	assignments[i] = 0;
+    	//}
 	}
 	public int getValue(int e, int s) {
-		return this.assignments[s * this.getNoOfEmployees() + e];
+		return this.assignments[e * this.getNoOfShifts() + s];
 	}
 	public void setValue(int value, int e, int s) {
-		this.assignments[s * this.getNoOfEmployees() + e] = value;
+		this.assignments[e * this.getNoOfShifts() + s] = value;
 	}
 	
 }
