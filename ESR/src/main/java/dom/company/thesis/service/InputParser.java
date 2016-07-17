@@ -573,6 +573,58 @@ public List<String> getShiftTypeIds() {
 		}
 		return shiftIdUnavailabilities;
 	}
+	
+	public boolean isCompleteWeekendsEnabled(String employeeId) {
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+				
+		//Get all EmployeeGroupIds for the employee
+		List<String> employeeGroupIds = this.getEmployeeGroupIds(employeeId);
+		
+		try {
+			
+			for (String employeeGroupId : employeeGroupIds) {
+				
+								
+				//Check, if there is a ConstraintSet for the employee or it's group that has the CompleteWeekends Constraint enabled
+				XPathExpression expression = xPath.compile("SchedulingPeriod/ConstraintSets/ConstraintSet[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and CompleteWeekends]");
+				NodeList constraintSetNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+				
+				if (constraintSetNodes != null && constraintSetNodes.getLength() > 0) {
+					return true;
+				}
+			}				
+							
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public int getMaxAssignmentsPerWeek(String employeeId) {
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+				
+		//Get all EmployeeGroupIds for the employee
+		List<String> employeeGroupIds = this.getEmployeeGroupIds(employeeId);
+		
+		try {
+			
+			for (String employeeGroupId : employeeGroupIds) {
+				
+								
+				//Check, if there is a ConstraintSet for the employee or it's group that has the CompleteWeekends Constraint enabled
+				XPathExpression expression = xPath.compile("SchedulingPeriod/ConstraintSets/ConstraintSet[(EmployeeGroup='" + employeeGroupId + "' or Employee='" + employeeId + "') and AssignmentsPerWeek]/AssignmentsPerWeek");
+				NodeList constraintSetNodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+				
+				if (constraintSetNodes != null && constraintSetNodes.getLength() > 0) {
+					return Integer.parseInt(constraintSetNodes.item(0).getTextContent());
+				}
+			}				
+							
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
 
 	private List<String> getShiftIdsFromGroupId(String shiftGroupId) {
 		

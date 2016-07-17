@@ -112,7 +112,7 @@ public class Employee {
 	public boolean isMaxAssignmentsPerWeekEnabled() {
 		return maxAssignmentsPerWeekEnabled;
 	}
-	public void setMaxAssignmentsPerWeekEnabled(boolean maxAssignmentsPerWeekEnabled) {
+	private void setMaxAssignmentsPerWeekEnabled(boolean maxAssignmentsPerWeekEnabled) {
 		this.maxAssignmentsPerWeekEnabled = maxAssignmentsPerWeekEnabled;
 	}
 	public int[] getShiftOffPrefNumbering() {
@@ -126,6 +126,14 @@ public class Employee {
 	}
 	public void setMaxAssignementsPerWeek(int maxAssignementsPerWeek) {
 		this.maxAssignementsPerWeek = maxAssignementsPerWeek;
+		this.setMaxAssignmentsPerWeekEnabled(true);
+	}
+	
+	public boolean isAble(Task task) {
+		if (taskQualifications.contains(task)) {
+			return true;
+		}
+		return false;
 	}
 	
 	

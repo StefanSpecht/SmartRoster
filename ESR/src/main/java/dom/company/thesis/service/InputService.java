@@ -28,13 +28,17 @@ public class InputService {
 	static List<Employee> employees = new ArrayList<Employee>();
 	static List<ShiftType> shiftTypes = new ArrayList<ShiftType>();
 	static Map<Integer,Employee> employeeMap = new HashMap<Integer,Employee>();
+	static Map<Employee, Integer> reverseEmployeeMap = new HashMap<Employee, Integer>();
 	static Map<Integer,ShiftType> shiftMap = new HashMap<Integer,ShiftType>();
 	static Map<Integer,Date> shiftDatesMap = new HashMap<Integer,Date>();
 	static Map<Integer,List<Task>> taskCombinationMap = new HashMap<Integer,List<Task>>();
+	static Map<List<Task>, Integer> reverseTaskCombinationMap = new HashMap<List<Task>, Integer>();
 	static Map<Integer,Task> taskMap = new HashMap<Integer,Task>();
 	static Map<Task, Integer> reverseTaskMap = new HashMap<Task, Integer>();
 	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
+	static int[] weekendNumbering;
+	static int[] maxAssignmentsPerWeekNumbering;
 	
 	//Hard Constraints
 	static int[][] availabilityMatrix;			// [shift][employee] = {0,1}
@@ -139,68 +143,95 @@ public class InputService {
 			shiftCoverRequirements.put(dayOfWeek, shiftCovers);
 		}
 		
-		//Get shiftUnavailabilities and add it to employee objects
-				for (Employee employee : employees) {
-					Map<Date,List<String>> shiftIdUnavailabilities= new HashMap<Date,List<String>>();
-					Map<Date,List<ShiftType>> shiftUnavailabilities= new HashMap<Date,List<ShiftType>>();
-					
-					shiftIdUnavailabilities = inputParser.getShifIdUnavailabilities(employee.getId(), startDate, endDate);
-					
-					//Convert shiftIds to shifts
-					
-					for(Entry<Date, List<String>> shiftIdUnavailability : shiftIdUnavailabilities.entrySet()) {
-						List<ShiftType> currentShiftUnavailabilities = new ArrayList<ShiftType>();
-						Date date = shiftIdUnavailability.getKey();
-						List<String> shiftIds = shiftIdUnavailability.getValue();
-						
-						for (String shiftId : shiftIds) {
-							ShiftType shiftType = getShiftType(shiftId);
-							currentShiftUnavailabilities.add(shiftType);
-						}
-						
-						shiftUnavailabilities.put(date, currentShiftUnavailabilities);
-					}
-					
-					
-					employee.setShiftUnavailabilities(shiftUnavailabilities);
+		//Set Soft constraints
+		for (Employee employee : employees) {
+			Map<Date,List<String>> shiftIdUnavailabilities= new HashMap<Date,List<String>>();
+			Map<Date,List<ShiftType>> shiftUnavailabilities= new HashMap<Date,List<ShiftType>>();
+			boolean assignCompleteWeekendsEnabled;
+			int maxAssignmentsPerWeek;
+			
+			//Check for AssignCompleteWeekends Constraint
+			assignCompleteWeekendsEnabled = inputParser.isCompleteWeekendsEnabled(employee.getId());
+			employee.setCompleteWeekendsEnabled(assignCompleteWeekendsEnabled);
+			
+			//Check for MaxAssignmentsPerWeek
+			maxAssignmentsPerWeek = inputParser.getMaxAssignmentsPerWeek(employee.getId());
+			if (maxAssignmentsPerWeek != -1) {
+				employee.setMaxAssignementsPerWeek(maxAssignmentsPerWeek);
+			}
+			
+			//Check for shift Unavailabilities
+			shiftIdUnavailabilities = inputParser.getShifIdUnavailabilities(employee.getId(), startDate, endDate);
+								
+			//Convert shiftIds to shifts			
+			for(Entry<Date, List<String>> shiftIdUnavailability : shiftIdUnavailabilities.entrySet()) {
+				List<ShiftType> currentShiftUnavailabilities = new ArrayList<ShiftType>();
+				Date date = shiftIdUnavailability.getKey();
+				List<String> shiftIds = shiftIdUnavailability.getValue();
+				
+				for (String shiftId : shiftIds) {
+					ShiftType shiftType = getShiftType(shiftId);
+					currentShiftUnavailabilities.add(shiftType);
 				}
 				
-				//generate maps
-				generateMaps();
+				shiftUnavailabilities.put(date, currentShiftUnavailabilities);
+			}					
+			employee.setShiftUnavailabilities(shiftUnavailabilities);
+		}
+		
+		//generate maps
+		generateMaps();
+		
+		//Get shiftOffPreferences and add it to employee objects
+		for (Employee employee : employees) {
+			Map<Date,List<String>> shiftIdOffPreferences= new HashMap<Date,List<String>>();
+			Map<Date,List<ShiftType>> shiftOffPreferences= new HashMap<Date,List<ShiftType>>();
+			
+			shiftIdOffPreferences = inputParser.getShifIdOffPreferences(employee.getId(), startDate, endDate);
+			
+			//Convert shiftIds to shifts			
+			for(Entry<Date, List<String>> shiftIdOffPreference : shiftIdOffPreferences.entrySet()) {
+				List<ShiftType> currentShiftOffPreferences = new ArrayList<ShiftType>();
+				Date date = shiftIdOffPreference.getKey();
+				List<String> shiftIds = shiftIdOffPreference.getValue();
 				
-				//Get shiftOffPreferences and add it to employee objects
-				for (Employee employee : employees) {
-					Map<Date,List<String>> shiftIdOffPreferences= new HashMap<Date,List<String>>();
-					Map<Date,List<ShiftType>> shiftOffPreferences= new HashMap<Date,List<ShiftType>>();
-					
-					shiftIdOffPreferences = inputParser.getShifIdOffPreferences(employee.getId(), startDate, endDate);
-					
-					//Convert shiftIds to shifts			
-					for(Entry<Date, List<String>> shiftIdOffPreference : shiftIdOffPreferences.entrySet()) {
-						List<ShiftType> currentShiftOffPreferences = new ArrayList<ShiftType>();
-						Date date = shiftIdOffPreference.getKey();
-						List<String> shiftIds = shiftIdOffPreference.getValue();
-						
-						for (String shiftId : shiftIds) {
-							ShiftType shiftType = getShiftType(shiftId);
-							currentShiftOffPreferences.add(shiftType);
-						}
-						
-						shiftOffPreferences.put(date, currentShiftOffPreferences);
-					}
-					
-					
-					employee.setShiftOffPreferences(shiftOffPreferences);
+				for (String shiftId : shiftIds) {
+					ShiftType shiftType = getShiftType(shiftId);
+					currentShiftOffPreferences.add(shiftType);
 				}
 				
-				//generate matrices
-				generateMatrices();
+				shiftOffPreferences.put(date, currentShiftOffPreferences);
+			}
+			
+			
+			employee.setShiftOffPreferences(shiftOffPreferences);
+		}
+		
+		//generate matrices
+		generateMatrices();
+		
+		//generate weekendNumbering
+		generateWeekendNumbering();
+		
+		//Generate maxAssignmentsPerWeekNumbering
+		generateMaxAssignmentsPerWeekNumbering();
 	}
 	
+	private static void generateMaxAssignmentsPerWeekNumbering() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void generateWeekendNumbering() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	static public void generateMaps() {
-		//generate employee map
+		//generate employee map and reverse map
 		for (int i=0; i<employees.size(); i++) {
 			employeeMap.put(i, employees.get(i));
+			reverseEmployeeMap.put(employees.get(i), i);
 		}
 		
 		//generate shift map
@@ -224,10 +255,12 @@ public class InputService {
 			shiftDatesMap.put(i, new Date(calendar.getTimeInMillis()));
 		}
 		
-		//generate task-combinations map
+		//generate task-combinations map and its reverse map
 		taskCombinationMap.put(0, new ArrayList<Task>());
+		reverseTaskCombinationMap.put(new ArrayList<Task>(), 0);
 		for (int i=0; i<taskCombinations.size(); i++) {
 			taskCombinationMap.put(i+1, taskCombinations.get(i));
+			reverseTaskCombinationMap.put(taskCombinations.get(i), i+1);
 		}	
 		
 		//generate task map and reverse task map
@@ -463,7 +496,28 @@ public class InputService {
 		return reverseTaskMap;
 	}
 	
+	public static Map<Integer,Task> getSingleTaskMap() {
+		return taskMap;
+	}
+
+	public static Map<Employee, Integer> getReverseEmployeeMap() {
+		return reverseEmployeeMap;
+	}
+
+	public static List<List<Task>> getTaskCombinations() {
+		return taskCombinations;
+	}
 	
+	public static boolean isValidTaskCombination(List<Task> taskCombination) {
+		if (taskCombinations.contains(taskCombination)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static Map<List<Task>, Integer> getReverseTaskCombinationMap() {
+		return reverseTaskCombinationMap;
+	}
 	
 	
 }

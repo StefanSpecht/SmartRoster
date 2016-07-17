@@ -1,6 +1,16 @@
 package dom.company.thesis.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
+
+import dom.company.thesis.service.InputService;
 
 public class Roster {
 
@@ -13,9 +23,21 @@ public class Roster {
 		this.noOfTasks = noOfTasks;
         this.noOfShifts = noOfShifts;
         this.noOfEmployees = noOfEmployees;
+        this.assignments = new int[noOfEmployees * noOfShifts];
         
-        assignments = new int[noOfEmployees * noOfShifts];
-        for (int i = 0; i < noOfEmployees * noOfShifts ; i++) {
+        smartInit();        
+	}
+	
+	public Roster(int noOfEmployees, int noOfShifts, int noOfTasks, int[] assignments) {
+		this.noOfTasks = noOfTasks;
+        this.noOfShifts = noOfShifts;
+        this.noOfEmployees = noOfEmployees;
+        
+        this.assignments = assignments;
+	}
+	
+	private void randomInit(Random rng) {
+		for (int i = 0; i < noOfEmployees * noOfShifts ; i++) {
         	// 33:66 chance dass kein Task assigned wird
         	//int assignTask = rng.nextInt(3);
         	//if (assignTask == 0) {
@@ -26,12 +48,73 @@ public class Roster {
             
         }
 	}
-	public Roster(int noOfEmployees, int noOfShifts, int noOfTasks, int[] assignments) {
-		this.noOfTasks = noOfTasks;
-        this.noOfShifts = noOfShifts;
-        this.noOfEmployees = noOfEmployees;
-        
-        this.assignments = assignments;
+	
+	private void zeroInit() {
+		for (int i = 0; i < noOfEmployees * noOfShifts ; i++) {
+        	assignments[i] = 0;
+        }
+	}
+	
+	private void smartInit() {
+		
+		zeroInit();
+		Map<Integer,List<Task>> taskCombinationMap= InputService.getTaskCombinationMap();
+		Map<List<Task>, Integer> reverseTaskCombinationMap= InputService.getReverseTaskCombinationMap();
+		
+		for (int s = 0; s < noOfShifts ; s++) {
+			
+			int[] uncoveredTasks = InputService.getCoverRequirementMatrix()[s];
+			int[] employeeAvailability = InputService.getAvailabilityMatrix()[s];
+			
+			List<Employee> availableEmployees = new ArrayList<Employee>();
+			
+			//Generate list of employees that are available for that shift
+			for (int i=0; i < employeeAvailability.length; i++) {
+				if (employeeAvailability[i] == 1) {
+					availableEmployees.add(InputService.getEmployeeMap().get(i));
+				}
+			}
+			
+			//
+			for (int t = 0; t < uncoveredTasks.length; t++) {
+				
+				Task task = InputService.getSingleTaskMap().get(t);
+				
+				//Shuffle list of available employees
+				Collections.shuffle(availableEmployees);
+				
+				Iterator<Employee> empIterator = availableEmployees.iterator();
+				
+				while (uncoveredTasks[t] != 0 && empIterator.hasNext()) {
+					
+					//Check employees for task ability
+					Employee employee = empIterator.next();						
+					int employeeIndex = InputService.getReverseEmployeeMap().get(employee);
+					
+					//Check general ability
+					if (employee.isAble(task)) {
+						
+						//Check if new task combination would be possible							
+						int currentTaskCombinationAssignment = this.getValue(InputService.getReverseEmployeeMap().get(employee), s);
+						
+						//translate taskCombination to list of tasks
+						List<Task> currentTaskAssignments = new ArrayList<Task>(taskCombinationMap.get(currentTaskCombinationAssignment));
+						
+						//check if currentTaskAssignment new task would be a valid combination
+						currentTaskAssignments.add(task);
+						if (reverseTaskCombinationMap.get(currentTaskAssignments) != null) {
+							
+							//assign employee to new task combination
+							int taskCombinationIndex = reverseTaskCombinationMap.get(currentTaskAssignments);
+							this.setValue(taskCombinationIndex, employeeIndex, s);
+							
+							uncoveredTasks[t]--;
+						}
+					}					
+				}		
+			}
+			
+		}
 	}
 
 	public int getNoOfTasks() {

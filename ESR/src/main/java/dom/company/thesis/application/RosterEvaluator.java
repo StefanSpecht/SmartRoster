@@ -28,19 +28,17 @@ public double getFitness(Roster candidate, List<? extends Roster> population) {
 			//check for availability
     		if (assignedTaskCombination != 0 && InputService.getAvailabilityMatrix()[s][e] == 0) {
     			penalty++;
-    			break;
     		}
     		 
     		//check for ability
     		if (InputService.getAbilityMatrix()[assignedTaskCombination][e] != 1) {
     			penalty++;
-    			break;
     		}
     		 
     		for (Task task : InputService.getTaskCombinationMap().get(assignedTaskCombination)) {
     			int taskNr = InputService.getReverseTaskMap().get(task);
     			if (uncoveredTasks[taskNr] > 0) {
-    				uncoveredTasks[taskNr] --;
+    				uncoveredTasks[taskNr]--;
     			}
     			else {
     				//penalty++;
