@@ -62,7 +62,7 @@ public class RosterRenderer implements Renderer<Roster,JComponent> {
 		    
 		    for (int i = 0; i < InputService.getNoOfDays(); i++) {
 		    	
-		    	String dayLabel = new SimpleDateFormat("dd.MM").format(shiftDatesMap.get(i));
+		    	String dayLabel = new SimpleDateFormat("dd.MM").format(shiftDatesMap.get(i * InputService.getNoOfShiftTypes()));
 		    	ColumnGroup dayGroup = new ColumnGroup(dayLabel);
 		    	for (int j = 0; j < InputService.getNoOfShiftTypes(); j++) {
 		    		dayGroup.add(columnModel.getColumn(i* InputService.getNoOfShiftTypes() + j));
