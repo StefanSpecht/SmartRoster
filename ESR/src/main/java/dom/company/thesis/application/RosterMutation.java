@@ -10,11 +10,13 @@ import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 
 import dom.company.thesis.model.Roster;
+import dom.company.thesis.service.InputService;
 
 public class RosterMutation implements EvolutionaryOperator<Roster>
 {
     private final NumberGenerator<Probability> mutationProbability;
-    private final NumberGenerator<Integer> mutationCount;
+    private final double mutationProbabilityValue;
+    private int nextMutation;
 
 
     /**
@@ -24,33 +26,20 @@ public class RosterMutation implements EvolutionaryOperator<Roster>
      */
     public RosterMutation(Probability mutationProbability)
     {
-        this(new ConstantGenerator<Probability>(mutationProbability),
-             new ConstantGenerator<Integer>(1));
+        this.mutationProbability = new ConstantGenerator<Probability>(mutationProbability);
+        this.mutationProbabilityValue = mutationProbability.doubleValue();
     }
-
-
-    /**
-     * Creates a mutation operator for bit strings, with the probability that any
-     * given bit will be flipped governed by the specified number generator.
-     * @param mutationProbability The (possibly variable) probability of a candidate
-     * bit string being mutated at all.
-     * @param mutationCount The (possibly variable) number of bits that will be flipped
-     * on any candidate bit string that is selected for mutation.
-     */
-    public RosterMutation(NumberGenerator<Probability> mutationProbability,
-                             NumberGenerator<Integer> mutationCount)
+    
+    public RosterMutation(NumberGenerator<Probability> mutationProbability)
     {
         this.mutationProbability = mutationProbability;
-        this.mutationCount = mutationCount;
+        this.mutationProbabilityValue = mutationProbability.nextValue().doubleValue();
     }
-    public RosterMutation(NumberGenerator<Probability> mutationProbability)
-	{
-	this(mutationProbability, new ConstantGenerator<Integer>(1));
-	}
-
 
     public List<Roster> apply(List<Roster> selectedCandidates, Random rng)
     {
+        nextMutation = getNextMutationIndex(0,rng);
+        
         List<Roster> mutatedPopulation = new ArrayList<Roster>(selectedCandidates.size());
         for (Roster roster : selectedCandidates)
         {
@@ -59,6 +48,11 @@ public class RosterMutation implements EvolutionaryOperator<Roster>
         return mutatedPopulation;
     }
 
+    int getNextMutationIndex(int current, Random rng) {
+    	double random = rng.nextDouble();
+    	int next = current + (int)(Math.log(random) / Math.log(1 - mutationProbabilityValue));
+    	return next;
+    }
 
     /**
      * Mutate a single bit string.  Zero or more bits may be flipped.  The
@@ -70,16 +64,15 @@ public class RosterMutation implements EvolutionaryOperator<Roster>
      */
     private Roster mutateRoster(Roster roster, Random rng)
     {
-        if (mutationProbability.nextValue().nextEvent(rng))
-        {
-            Roster mutatedRoster = roster.clone();
-            int mutations = mutationCount.nextValue();
-            for (int i = 0; i < mutations; i++)
-            {
-                mutatedRoster.mutateAssignment(rng.nextInt(mutatedRoster.getAssignments().length), rng);
-            }
-            return mutatedRoster;
+        Roster mutatedRoster = roster.clone();
+        
+        while (nextMutation < mutatedRoster.getAssignments().length) {
+        	mutatedRoster.mutateAssignment(nextMutation,rng);
+        	nextMutation = getNextMutationIndex(nextMutation, rng);
         }
+        nextMutation = nextMutation - mutatedRoster.getAssignments().length;
+    	
         return roster;
     }
 }
+

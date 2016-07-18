@@ -129,7 +129,50 @@ public class Roster {
 		return new Roster(noOfEmployees, noOfShifts, noOfTasks, assignments);
 	}
 	public void mutateAssignment(int i, Random rng) {
-		assignments[i] = rng.nextInt(noOfTasks);
+		
+		//Add a random task
+		if (rng.nextBoolean()) {
+			
+			//get employee and shift indices
+			int employeeIndex = (int) i / InputService.getNoOfShifts();
+			Employee employee = InputService.getEmployeeMap().get(employeeIndex);
+			int shiftIndex = i % InputService.getNoOfShifts();
+			
+			//Check if employee is available
+			if (InputService.getAvailabilityMatrix()[shiftIndex][employeeIndex] == 1) {
+				
+				//list of current task assignments
+				List<Task> currentTaskAssignments = InputService.getTaskCombinationMap().get(assignments[i]);
+				
+				//Possible new assignments
+				List<Task> taskQualifications = new ArrayList<Task>(employee.getTaskQualifications());
+				taskQualifications.removeAll(currentTaskAssignments);
+				
+				if (!taskQualifications.isEmpty()) {
+					List<Task> taskCombinationToAdd = new ArrayList<Task>();
+					taskCombinationToAdd.add(taskQualifications.get(rng.nextInt(taskQualifications.size())));
+					if (InputService.getReverseTaskCombinationMap().get(taskCombinationToAdd) != null) {
+						assignments[i] = InputService.getReverseTaskCombinationMap().get(taskCombinationToAdd);
+					}
+				}
+			}
+					
+		}
+		//Remove a random task
+		else {
+			
+			if (assignments[i] != 0) {
+				
+				//list of current task assignments
+				List<Task> taskAssignments = new ArrayList<Task>(InputService.getTaskCombinationMap().get(assignments[i]));
+				
+				//remove a random assignment from list
+				taskAssignments.remove(rng.nextInt(taskAssignments.size()));
+				
+				//Assign new task combination value
+				assignments[i] = InputService.getReverseTaskCombinationMap().get(taskAssignments);
+			}
+		}
 	}
 	public int[] getAssignmentByEmployee(int employeeIndex) {
 		return Arrays.copyOfRange(assignments, employeeIndex * this.getNoOfShifts(), employeeIndex * this.getNoOfShifts() + this.getNoOfShifts());
