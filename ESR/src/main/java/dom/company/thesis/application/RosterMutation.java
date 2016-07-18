@@ -15,7 +15,7 @@ import dom.company.thesis.service.InputService;
 public class RosterMutation implements EvolutionaryOperator<Roster>
 {
     private final NumberGenerator<Probability> mutationProbability;
-    private final double mutationProbabilityValue;
+    private double mutationProbabilityValue;
     private int nextMutation;
 
 
@@ -39,6 +39,7 @@ public class RosterMutation implements EvolutionaryOperator<Roster>
     public List<Roster> apply(List<Roster> selectedCandidates, Random rng)
     {
     	List<Roster> mutatedPopulation = new ArrayList<Roster>(selectedCandidates.size());
+    	this.mutationProbabilityValue = mutationProbability.nextValue().doubleValue();
     	
     	if (mutationProbabilityValue > 0) {
     		nextMutation = getNextMutationIndex(0,rng);
