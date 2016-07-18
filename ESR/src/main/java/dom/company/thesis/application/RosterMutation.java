@@ -38,13 +38,21 @@ public class RosterMutation implements EvolutionaryOperator<Roster>
 
     public List<Roster> apply(List<Roster> selectedCandidates, Random rng)
     {
-        nextMutation = getNextMutationIndex(0,rng);
-        
-        List<Roster> mutatedPopulation = new ArrayList<Roster>(selectedCandidates.size());
-        for (Roster roster : selectedCandidates)
-        {
-            mutatedPopulation.add(mutateRoster(roster, rng));
-        }
+    	List<Roster> mutatedPopulation = new ArrayList<Roster>(selectedCandidates.size());
+    	
+    	if (mutationProbabilityValue > 0) {
+    		nextMutation = getNextMutationIndex(0,rng);
+            for (Roster roster : selectedCandidates)
+            {
+                mutatedPopulation.add(mutateRoster(roster, rng));
+            }
+    	}
+    	else {
+    		for (Roster roster : selectedCandidates)
+            {
+                mutatedPopulation.add(roster.clone());
+            }
+    	}
         return mutatedPopulation;
     }
 

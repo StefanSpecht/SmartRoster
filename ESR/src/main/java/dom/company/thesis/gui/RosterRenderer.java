@@ -46,8 +46,7 @@ public class RosterRenderer implements Renderer<Roster,JComponent> {
 			          return new GroupableTableHeader(columnModel);
 			      }
 			};
-			
-			
+						
 			//Add row headers (employee names)
 			JList<String> rowHeader = new JList<String>(employeeListModel);
 			//rowHeader.setFixedCellWidth(30);

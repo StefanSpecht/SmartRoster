@@ -85,7 +85,7 @@ public double getFitness(Roster candidate, List<? extends Roster> population) {
     				uncoveredTasks[taskNr]--;
     			}
     			else {
-    				//penalty++;
+    				penaltyCoverRequirements++;
     			}
     		}
     		 
