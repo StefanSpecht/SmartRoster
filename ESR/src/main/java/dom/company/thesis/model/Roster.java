@@ -38,14 +38,7 @@ public class Roster {
 	
 	private void randomInit(Random rng) {
 		for (int i = 0; i < noOfEmployees * noOfShifts ; i++) {
-        	// 33:66 chance dass kein Task assigned wird
-        	//int assignTask = rng.nextInt(3);
-        	//if (assignTask == 0) {
         		assignments[i] = rng.nextInt(noOfTasks);
-        	//} else {
-        	//	assignments[i] = 0;
-        	//}
-            
         }
 	}
 	
@@ -63,7 +56,7 @@ public class Roster {
 		
 		for (int s = 0; s < noOfShifts ; s++) {
 			
-			int[] uncoveredTasks = InputService.getCoverRequirementMatrix()[s];
+			int[] uncoveredTasks = InputService.getCoverRequirementMatrix()[s].clone();
 			int[] employeeAvailability = InputService.getAvailabilityMatrix()[s];
 			
 			List<Employee> availableEmployees = new ArrayList<Employee>();
@@ -136,13 +129,10 @@ public class Roster {
 		return new Roster(noOfEmployees, noOfShifts, noOfTasks, assignments);
 	}
 	public void mutateAssignment(int i, Random rng) {
-		// 33:66 chance dass kein Task assigned wird
-    	//int assignTask = rng.nextInt(3);
-    	//if (assignTask == 0) {
-    		assignments[i] = rng.nextInt(noOfTasks);
-    	//} else {
-    	//	assignments[i] = 0;
-    	//}
+		assignments[i] = rng.nextInt(noOfTasks);
+	}
+	public int[] getAssignmentByEmployee(int employeeIndex) {
+		return Arrays.copyOfRange(assignments, employeeIndex * this.getNoOfShifts(), employeeIndex * this.getNoOfShifts() + this.getNoOfShifts());
 	}
 	public int getValue(int e, int s) {
 		return this.assignments[e * this.getNoOfShifts() + s];
@@ -150,5 +140,6 @@ public class Roster {
 	public void setValue(int value, int e, int s) {
 		this.assignments[e * this.getNoOfShifts() + s] = value;
 	}
+	
 	
 }

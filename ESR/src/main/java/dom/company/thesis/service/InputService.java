@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,8 +38,8 @@ public class InputService {
 	static Map<Task, Integer> reverseTaskMap = new HashMap<Task, Integer>();
 	static List<List<Task>> taskCombinations = new ArrayList<List<Task>>();
 	static Map<DayOfWeek,List<ShiftType>> shiftCoverRequirements = new HashMap<DayOfWeek,List<ShiftType>>();
-	static int[] weekendNumbering;
-	static int[] maxAssignmentsPerWeekNumbering;
+	static int[] weekendNumberingPattern;
+	static int[] maxAssignmentsPerWeekNumberingPattern;
 	
 	//Hard Constraints
 	static int[][] availabilityMatrix;			// [shift][employee] = {0,1}
@@ -210,21 +211,42 @@ public class InputService {
 		//generate matrices
 		generateMatrices();
 		
-		//generate weekendNumbering
-		generateWeekendNumbering();
+		//generate weekendNumberingPattern
+		generateWeekendNumberingPattern();
 		
-		//Generate maxAssignmentsPerWeekNumbering
-		generateMaxAssignmentsPerWeekNumbering();
+		//Generate maxAssignmentsPerWeekNumberingPattern
+		generateMaxAssignmentsPerWeekNumberingPattern();
 	}
 	
-	private static void generateMaxAssignmentsPerWeekNumbering() {
-		// TODO Auto-generated method stub
-		
+	private static void generateMaxAssignmentsPerWeekNumberingPattern() {
+		maxAssignmentsPerWeekNumberingPattern = new int[getNoOfShifts()];
+		int number = 0;
+		for (int i = 0; i < getNoOfShifts(); i++) {
+			
+			Date date = getShiftDatesMap().get(i);
+			if (getDayOfWeekByDate(date).equals(DayOfWeek.SATURDAY) && i % getNoOfShiftTypes() == 0 && i != 0) {
+				number++;
+			}
+			maxAssignmentsPerWeekNumberingPattern[i] = number;
+		}
 	}
 
-	private static void generateWeekendNumbering() {
-		// TODO Auto-generated method stub
-		
+	private static void generateWeekendNumberingPattern() {
+		weekendNumberingPattern = new int[getNoOfShifts()];
+		int number = 0;
+		for (int i = 0; i < getNoOfShifts(); i++) {
+			
+			Date date = getShiftDatesMap().get(i);
+			if (getDayOfWeekByDate(date).equals(DayOfWeek.SATURDAY) || getDayOfWeekByDate(date).equals(DayOfWeek.SUNDAY)) {
+				weekendNumberingPattern[i] = number;
+				if (i % getNoOfShiftTypes() == getNoOfShiftTypes() -1) {
+					number++;
+				}
+			}
+			else {
+				weekendNumberingPattern[i] = Integer.MIN_VALUE;
+			}
+		}
 	}
 
 	static public void generateMaps() {
@@ -519,5 +541,23 @@ public class InputService {
 		return reverseTaskCombinationMap;
 	}
 	
-	
+	private static DayOfWeek getDayOfWeekByDate(Date date) {
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		return DayOfWeek.of((calendar.get(Calendar.DAY_OF_WEEK) == 1 ? 7 : calendar.get(Calendar.DAY_OF_WEEK) - 1));
+	}
+
+	public static int[] getWeekendNumberingPattern() {
+		return weekendNumberingPattern;
+	}
+
+	public static int[] getMaxAssignmentsPerWeekNumberingPattern() {
+		return maxAssignmentsPerWeekNumberingPattern;
+	}	
 }

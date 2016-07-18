@@ -21,7 +21,7 @@ public class Employee {
 	boolean maxAssignmentsPerWeekEnabled;
 	
 	private Map<Date,List<ShiftType>> shiftOffPreferences;
-	int[] shiftOffPrefNumbering;
+	int[] shiftOffPrefNumberingPattern;
 	int maxAssignementsPerWeek;	
 	
 	public Employee(String id, String name, List<Task> taskQualifications) {
@@ -77,7 +77,7 @@ public class Employee {
 	}
 	public void setShiftOffPreferences(Map<Date, List<ShiftType>> shiftOffPreferences) {
 		this.shiftOffPreferences = shiftOffPreferences;
-		this.shiftOffPrefNumbering = new int[InputService.getNoOfShifts()];
+		this.shiftOffPrefNumberingPattern = new int[InputService.getNoOfShifts()];
 		
 		Map<Integer,ShiftType> shiftMap = InputService.getShiftMap();
 		Map<Integer,Date> shiftDatesMap = InputService.getShiftDatesMap();
@@ -89,10 +89,10 @@ public class Employee {
 			Date shiftDate = shiftDatesMap.get(i);
 			
 			if (shiftOffPreferences.get(shiftDate).contains(shiftType)) {
-				this.shiftOffPrefNumbering[i] = number++;
+				this.shiftOffPrefNumberingPattern[i] = number++;
 			}
 			else {
-				this.shiftOffPrefNumbering[i] = Integer.MIN_VALUE;
+				this.shiftOffPrefNumberingPattern[i] = Integer.MIN_VALUE;
 			}
 		}
 	}
@@ -115,11 +115,11 @@ public class Employee {
 	private void setMaxAssignmentsPerWeekEnabled(boolean maxAssignmentsPerWeekEnabled) {
 		this.maxAssignmentsPerWeekEnabled = maxAssignmentsPerWeekEnabled;
 	}
-	public int[] getShiftOffPrefNumbering() {
-		return shiftOffPrefNumbering;
+	public int[] getshiftOffPrefNumberingPattern() {
+		return shiftOffPrefNumberingPattern;
 	}
-	public void setShiftOffPrefNumbering(int[] shiftOffPrefNumbering) {
-		this.shiftOffPrefNumbering = shiftOffPrefNumbering;
+	public void setshiftOffPrefNumberingPattern(int[] shiftOffPrefNumberingPattern) {
+		this.shiftOffPrefNumberingPattern = shiftOffPrefNumberingPattern;
 	}
 	public int getMaxAssignementsPerWeek() {
 		return maxAssignementsPerWeek;
