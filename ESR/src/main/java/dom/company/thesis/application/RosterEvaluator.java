@@ -23,7 +23,7 @@ public double getFitness(Roster candidate, List<? extends Roster> population) {
 	int penaltyCompleteWeekends = 0;
 	int penaltyMaxAssignmentsPerWeek = 0;
 	int penaltyCoverRequirements = 0;
-	int costCoverRequirements = 10;
+	int costCoverRequirements = 2;
 	
 	//Evaluate each employee
 	for (int e = 0; e < InputService.getNoOfEmployees(); e++) {
@@ -95,7 +95,10 @@ public double getFitness(Roster candidate, List<? extends Roster> population) {
 		}
 	}
 	
-     return penaltyShiftOffPreferences + penaltyCompleteWeekends + penaltyMaxAssignmentsPerWeek + (costCoverRequirements * penaltyCoverRequirements);
+     return penaltyShiftOffPreferences 
+    		 + penaltyCompleteWeekends 
+    		 + penaltyMaxAssignmentsPerWeek 
+    		 + (costCoverRequirements * penaltyCoverRequirements);
  }
 
 

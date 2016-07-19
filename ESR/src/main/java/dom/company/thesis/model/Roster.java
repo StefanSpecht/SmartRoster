@@ -130,50 +130,86 @@ public class Roster {
 	}
 	public void mutateAssignment(int i, Random rng) {
 		
+		//adjust i to correspond to an available employee
+		i = getAdjustedMutationIndex(i);
+				
 		//Add a random task
-		if (rng.nextBoolean()) {
-			
-			//get employee and shift indices
-			int employeeIndex = (int) i / InputService.getNoOfShifts();
-			Employee employee = InputService.getEmployeeMap().get(employeeIndex);
-			int shiftIndex = i % InputService.getNoOfShifts();
-			
-			//Check if employee is available
-			if (InputService.getAvailabilityMatrix()[shiftIndex][employeeIndex] == 1) {
-				
-				//list of current task assignments
-				List<Task> currentTaskAssignments = InputService.getTaskCombinationMap().get(assignments[i]);
-				
-				//Possible new assignments
-				List<Task> taskQualifications = new ArrayList<Task>(employee.getTaskQualifications());
-				taskQualifications.removeAll(currentTaskAssignments);
-				
-				if (!taskQualifications.isEmpty()) {
-					List<Task> taskCombinationToAdd = new ArrayList<Task>();
-					taskCombinationToAdd.add(taskQualifications.get(rng.nextInt(taskQualifications.size())));
-					if (InputService.getReverseTaskCombinationMap().get(taskCombinationToAdd) != null) {
-						assignments[i] = InputService.getReverseTaskCombinationMap().get(taskCombinationToAdd);
-					}
-				}
-			}
-					
+		if (assignments[i] == 0) {
+			addRandomTask(i, rng);					
 		}
+		
 		//Remove a random task
 		else {
-			
-			if (assignments[i] != 0) {
-				
-				//list of current task assignments
-				List<Task> taskAssignments = new ArrayList<Task>(InputService.getTaskCombinationMap().get(assignments[i]));
-				
-				//remove a random assignment from list
-				taskAssignments.remove(rng.nextInt(taskAssignments.size()));
-				
-				//Assign new task combination value
-				assignments[i] = InputService.getReverseTaskCombinationMap().get(taskAssignments);
+			if (rng.nextBoolean()) {
+				addRandomTask(i, rng);
+			}
+			else {
+				removeRandomTask(i, rng);
 			}
 		}
 	}
+	
+	private int getAdjustedMutationIndex(int i) {
+		int employeeIndex = (int) i / InputService.getNoOfShifts();
+		int shiftIndex =  i % InputService.getNoOfShifts();
+		
+		while (InputService.getAvailabilityMatrix()[shiftIndex][employeeIndex] != 1)  {
+			i++;
+			
+			if (i >= assignments.length) {
+				i -= assignments.length;
+			}
+			
+			employeeIndex = (int) i / InputService.getNoOfShifts();
+			shiftIndex = i % InputService.getNoOfShifts();		
+		} 
+		return i;
+	}
+	
+	private void addRandomTask(int i, Random rng) {
+		//get employee and shift indices
+		int employeeIndex = (int) i / InputService.getNoOfShifts();
+		Employee employee = InputService.getEmployeeMap().get(employeeIndex);
+		int shiftIndex = i % InputService.getNoOfShifts();
+		
+		//list of current task assignments
+		List<Task> currentTaskAssignments = InputService.getTaskCombinationMap().get(assignments[i]);
+		
+		//Possible new assignments
+		List<Task> taskQualifications = new ArrayList<Task>(employee.getTaskQualifications());
+		taskQualifications.removeAll(currentTaskAssignments);
+		
+		//remove task that are not required for that shift
+		int[] coverRequirements = InputService.getCoverRequirementMatrix()[shiftIndex];
+		for (int j = 0; j < coverRequirements.length; j++) {
+			if (coverRequirements[j] == 0 && taskQualifications.contains(InputService.getSingleTaskMap().get(j))) {
+				taskQualifications.remove(InputService.getSingleTaskMap().get(j));
+			}
+		}		
+		
+		if (!taskQualifications.isEmpty()) {
+			List<Task> taskCombinationToAdd = new ArrayList<Task>();
+			taskCombinationToAdd.add(taskQualifications.get(rng.nextInt(taskQualifications.size())));
+			if (InputService.getReverseTaskCombinationMap().get(taskCombinationToAdd) != null) {
+				assignments[i] = InputService.getReverseTaskCombinationMap().get(taskCombinationToAdd);
+			}
+		}
+		
+	}
+	private void removeRandomTask(int i, Random rng) {
+		if (assignments[i] != 0) {
+			
+			//list of current task assignments
+			List<Task> taskAssignments = new ArrayList<Task>(InputService.getTaskCombinationMap().get(assignments[i]));
+			
+			//remove a random assignment from list
+			taskAssignments.remove(rng.nextInt(taskAssignments.size()));
+			
+			//Assign new task combination value
+			assignments[i] = InputService.getReverseTaskCombinationMap().get(taskAssignments);
+		}		
+	}
+	
 	public int[] getAssignmentByEmployee(int employeeIndex) {
 		return Arrays.copyOfRange(assignments, employeeIndex * this.getNoOfShifts(), employeeIndex * this.getNoOfShifts() + this.getNoOfShifts());
 	}
