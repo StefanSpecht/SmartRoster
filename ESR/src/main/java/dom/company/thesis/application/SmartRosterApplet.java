@@ -10,10 +10,12 @@ import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
@@ -51,11 +53,28 @@ public class SmartRosterApplet extends AbstractApplet
 	
 	private JButton startButton;
 	private AbortControl abort;
+	private JLabel populationLabel;
+	private JLabel elitismLabel;
+	private JLabel selectionLabel;
 	private JSpinner populationSpinner;
 	private JSpinner elitismSpinner;
-	private ProbabilityParameterControl selectionPressureControl;
+	
+	private JLabel weekendWeightLabel;
+	private JSpinner weekendWeightSpinner;
+	private JLabel shiftOffWeightLabel;
+	private JSpinner shiftOffWeightSpinner;
+	private JLabel maxAssignWeightLabel;
+	private JSpinner maxAssignWeightSpinner;	
+	private JLabel coverWeightLabel;
+	private JSpinner coverWeightSpinner;
+	//private ProbabilityParameterControl selectionPressureControl;
+	private JPanel selectionButtonPanel;
+	private JRadioButton rankSelectionRadioButton;
+	private JRadioButton rouletteWheelSelectionRadioButton;
+	private JRadioButton susSelectionRadioButton;
+	private ButtonGroup selectionButtonGroup;
 	private ProbabilitiesPanel probabilitiesPanel;
-	private CustomEvolutionMonitor<Roster> evolutionMonitor;	
+	private CustomEvolutionMonitor<Roster> evolutionMonitor;
 	
 
 	/**Delete if no additional initialization needed**/	
@@ -81,9 +100,7 @@ public class SmartRosterApplet extends AbstractApplet
 	     controlsPanel.add(createParametersPanel(), BorderLayout.NORTH);
 	     controlsPanel.add(probabilitiesPanel, BorderLayout.SOUTH);
 	     container.add(controlsPanel, BorderLayout.NORTH);
-	     
-	     
-	     
+	     	     
 	     Renderer<Roster, JComponent> renderer = new RosterRenderer();
 	     
 	     evolutionMonitor = new CustomEvolutionMonitor<Roster>(renderer,
@@ -95,27 +112,35 @@ public class SmartRosterApplet extends AbstractApplet
 	 }
 	 
 	 private JComponent createParametersPanel() {
+		 Box parameterBox = Box.createVerticalBox();
+		 parameterBox.add(createGeneralParametersPanel());
+		 parameterBox.add(createPenaltyWeightParametersPanel());
+		 
+		 return parameterBox;
+	 }
 	 
-	 		 
+	 
+	 private JComponent createGeneralParametersPanel() {
+	 	 		 
         Box parameterBox = Box.createHorizontalBox();
         parameterBox.add(Box.createHorizontalStrut(10));
-        final JLabel populationLabel = new JLabel("Population Size: ");
+        populationLabel = new JLabel("Population Size: ");
         parameterBox.add(populationLabel);
-        parameterBox.add(Box.createHorizontalStrut(10));
-        
-        populationSpinner = new JSpinner(new SpinnerNumberModel(10, 2, 10000, 1));
+        parameterBox.add(Box.createHorizontalStrut(5));
+        populationSpinner = new JSpinner(new SpinnerNumberModel(100, 2, 10000, 1));
         populationSpinner.setMaximumSize(populationSpinner.getMinimumSize());
         parameterBox.add(populationSpinner);
         parameterBox.add(Box.createHorizontalStrut(10));
-        final JLabel elitismLabel = new JLabel("Elitism: ");
-        parameterBox.add(elitismLabel);
-        parameterBox.add(Box.createHorizontalStrut(10));
         
-        elitismSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 1000, 1));
+        elitismLabel = new JLabel("Elitism: ");
+        parameterBox.add(elitismLabel);
+        parameterBox.add(Box.createHorizontalStrut(5));        
+        elitismSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 10000, 1));
         elitismSpinner.setMaximumSize(elitismSpinner.getMinimumSize());
         parameterBox.add(elitismSpinner);
         parameterBox.add(Box.createHorizontalStrut(10));
 
+        /**
         parameterBox.add(new JLabel("Selection Pressure: "));
         parameterBox.add(Box.createHorizontalStrut(10));
         selectionPressureControl = new ProbabilityParameterControl(Probability.EVENS,
@@ -124,10 +149,30 @@ public class SmartRosterApplet extends AbstractApplet
                                                                    new Probability(0.7));
         parameterBox.add(selectionPressureControl.getControl());
         parameterBox.add(Box.createHorizontalStrut(10));
-
-        startButton = new JButton("Start");
+		**/
+        selectionLabel = new JLabel("Selection: ");
+        parameterBox.add(selectionLabel);
+        parameterBox.add(Box.createHorizontalStrut(5));        
+        rouletteWheelSelectionRadioButton = new JRadioButton("Roulette");
+        rankSelectionRadioButton = new JRadioButton("Rank");
+        susSelectionRadioButton = new JRadioButton("SUS");
         
+        selectionButtonGroup = new ButtonGroup();
+        selectionButtonGroup.add(rouletteWheelSelectionRadioButton);
+        selectionButtonGroup.add(rankSelectionRadioButton);
+        selectionButtonGroup.add(susSelectionRadioButton);
         
+        selectionButtonPanel = new JPanel();
+        rouletteWheelSelectionRadioButton.setSelected(true);
+        selectionButtonPanel.add(rouletteWheelSelectionRadioButton);
+        selectionButtonPanel.add(rankSelectionRadioButton);
+        selectionButtonPanel.add(susSelectionRadioButton);
+        parameterBox.add(selectionButtonPanel);
+        parameterBox.add(Box.createHorizontalStrut(10));  
+        
+        coverWeightLabel = new JLabel("Panalty weight");
+        
+        startButton = new JButton("Start");        
         startButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {  
         		RosterRenderer.disable();
@@ -136,6 +181,19 @@ public class SmartRosterApplet extends AbstractApplet
                 populationSpinner.setEnabled(false);
                 elitismLabel.setEnabled(false);
                 elitismSpinner.setEnabled(false);
+                selectionLabel.setEnabled(false);
+                selectionButtonPanel.setEnabled(false);
+                rouletteWheelSelectionRadioButton.setEnabled(false);
+                rankSelectionRadioButton.setEnabled(false);
+                susSelectionRadioButton.setEnabled(false);
+                weekendWeightLabel.setEnabled(false);
+            	weekendWeightSpinner.setEnabled(false);
+            	shiftOffWeightLabel.setEnabled(false);
+            	shiftOffWeightSpinner.setEnabled(false);
+            	maxAssignWeightLabel.setEnabled(false);
+            	maxAssignWeightSpinner.setEnabled(false);	
+            	coverWeightLabel.setEnabled(false);
+            	coverWeightSpinner.setEnabled(false);
                 startButton.setEnabled(false);
                 new EvolutionTask((Integer) populationSpinner.getValue(),
                                   (Integer) elitismSpinner.getValue(),
@@ -154,6 +212,47 @@ public class SmartRosterApplet extends AbstractApplet
         parameterBox.setBorder(BorderFactory.createTitledBorder("Parameters"));
         return parameterBox;
      }
+	 
+	 private JComponent createPenaltyWeightParametersPanel() {
+	 		 
+	        Box parameterBox = Box.createHorizontalBox();
+	        parameterBox.add(Box.createHorizontalStrut(10));
+	        
+	        shiftOffWeightLabel = new JLabel("Shift-off preference: ");
+	        parameterBox.add(shiftOffWeightLabel);
+	        parameterBox.add(Box.createHorizontalStrut(5));
+	        shiftOffWeightSpinner = new JSpinner(new SpinnerNumberModel(1, 0, 100, 1));
+	        shiftOffWeightSpinner.setMaximumSize(shiftOffWeightSpinner.getMinimumSize());
+	        parameterBox.add(shiftOffWeightSpinner);
+	        parameterBox.add(Box.createHorizontalStrut(10));
+	        
+	        weekendWeightLabel = new JLabel("Complete Weekends: ");
+	        parameterBox.add(weekendWeightLabel);
+	        parameterBox.add(Box.createHorizontalStrut(5));
+	        weekendWeightSpinner = new JSpinner(new SpinnerNumberModel(1, 0, 100, 1));
+	        weekendWeightSpinner.setMaximumSize(weekendWeightSpinner.getMinimumSize());
+	        parameterBox.add(weekendWeightSpinner);
+	        parameterBox.add(Box.createHorizontalStrut(10));
+	        
+	        maxAssignWeightLabel = new JLabel("Maximum Assignments: ");
+	        parameterBox.add(maxAssignWeightLabel);
+	        parameterBox.add(Box.createHorizontalStrut(5));
+	        maxAssignWeightSpinner = new JSpinner(new SpinnerNumberModel(1, 0, 100, 1));
+	        maxAssignWeightSpinner.setMaximumSize(maxAssignWeightSpinner.getMinimumSize());
+	        parameterBox.add(maxAssignWeightSpinner);
+	        parameterBox.add(Box.createHorizontalStrut(10));
+	        
+	        coverWeightLabel = new JLabel("Cover Requirements: ");
+	        parameterBox.add(coverWeightLabel);
+	        parameterBox.add(Box.createHorizontalStrut(5));
+	        coverWeightSpinner = new JSpinner(new SpinnerNumberModel(5, 0, 100, 1));
+	        coverWeightSpinner.setMaximumSize(coverWeightSpinner.getMinimumSize());
+	        parameterBox.add(coverWeightSpinner);
+	        parameterBox.add(Box.createHorizontalStrut(10));
+	        
+	        parameterBox.setBorder(BorderFactory.createTitledBorder("Penalty weights"));
+	        return parameterBox;
+	     }
 	
 	 private class EvolutionTask extends SwingBackgroundTask<Roster> {
 		 		 
@@ -198,8 +297,23 @@ public class SmartRosterApplet extends AbstractApplet
         {
             abort.reset();
             abort.getControl().setEnabled(false);
+            populationLabel.setEnabled(true);
             populationSpinner.setEnabled(true);
+            elitismLabel.setEnabled(true);
             elitismSpinner.setEnabled(true);
+            selectionLabel.setEnabled(true);
+            selectionButtonPanel.setEnabled(true);
+            rouletteWheelSelectionRadioButton.setEnabled(true);
+            rankSelectionRadioButton.setEnabled(true);
+            susSelectionRadioButton.setEnabled(true);
+            weekendWeightLabel.setEnabled(true);
+        	weekendWeightSpinner.setEnabled(true);
+        	shiftOffWeightLabel.setEnabled(true);
+        	shiftOffWeightSpinner.setEnabled(true);
+        	maxAssignWeightLabel.setEnabled(true);
+        	maxAssignWeightSpinner.setEnabled(true);	
+        	coverWeightLabel.setEnabled(true);
+        	coverWeightSpinner.setEnabled(true);            
             startButton.setEnabled(true);
         }
 

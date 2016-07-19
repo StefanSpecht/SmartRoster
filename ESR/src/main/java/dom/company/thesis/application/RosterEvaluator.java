@@ -85,20 +85,20 @@ public double getFitness(Roster candidate, List<? extends Roster> population) {
     				uncoveredTasks[taskNr]--;
     			}
     			else {
-    				penaltyCoverRequirements++;
+    				penaltyCoverRequirements += costCoverRequirements;
     			}
     		}
     		 
 		}
 		for (int i = 0; i < uncoveredTasks.length; i++) {
-			penaltyCoverRequirements += uncoveredTasks[i];
+			penaltyCoverRequirements += uncoveredTasks[i] * costCoverRequirements;
 		}
 	}
 	
      return penaltyShiftOffPreferences 
     		 + penaltyCompleteWeekends 
     		 + penaltyMaxAssignmentsPerWeek 
-    		 + (costCoverRequirements * penaltyCoverRequirements);
+    		 + penaltyCoverRequirements;
  }
 
 
