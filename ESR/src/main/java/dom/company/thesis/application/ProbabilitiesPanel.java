@@ -17,11 +17,18 @@ package dom.company.thesis.application;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 import org.uncommons.maths.number.ConstantGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
@@ -34,47 +41,148 @@ import org.uncommons.watchmaker.framework.operators.ListCrossover;
 import org.uncommons.watchmaker.framework.operators.ListOperator;
 import org.uncommons.watchmaker.framework.operators.StringCrossover;
 import org.uncommons.watchmaker.framework.operators.StringMutation;
+import org.uncommons.watchmaker.framework.termination.TargetFitness;
 import org.uncommons.watchmaker.swing.ProbabilityParameterControl;
 
+import dom.company.thesis.application.SmartRosterApplet.EvolutionTask;
+import dom.company.thesis.gui.RosterRenderer;
 import dom.company.thesis.model.Roster;
 
 class ProbabilitiesPanel extends JPanel
 {
     private static final Probability ONE_TENTH = new Probability(0.1d);
+    private static final Probability ONE_HUNDREDTH = new Probability(0.01d);
     
-    private final ProbabilityParameterControl crossoverControl;
-    private final ProbabilityParameterControl mutationControl;
+    private final ProbabilityParameterControl classicCrossoverControl;
+    private final ProbabilityParameterControl advancedCrossoverControl;
+    private final ProbabilityParameterControl flipMutationControl;
+    private final ProbabilityParameterControl swapMutationControl;
+    
+    private ButtonGroup classicCrossOverButtonGroup;
+    private ButtonGroup advancedCrossOverButtonGroup;
+    private JRadioButton classicCrossOverPointsRadioButton;
+    private JRadioButton classicUniformCrossOverRadioButton;
+    private JRadioButton advancedCrossOverPointsRadioButton;
+    private JRadioButton advancedUniformCrossOverRadioButton;
+    private JPanel classicCrossOverButtonPanel;
+    private JPanel advancedCrossOverButtonPanel;
+    
+    private JSpinner classicCrossOverPointsSpinner;
+    private JSpinner advancedCrossOverPointsSpinner;
         
     ProbabilitiesPanel()
     {
         super(new SpringLayout());
         
-        crossoverControl = new ProbabilityParameterControl(
+        //Classic Crossover
+        
+        classicCrossoverControl = new ProbabilityParameterControl(
         		Probability.ZERO,
         		Probability.ONE,
                 2,
                 Probability.ONE);
         
-        add(new JLabel("Cross-over: "));
-        add(crossoverControl.getControl());
-        crossoverControl.setDescription("For each PAIR of solutions, the probability that "
-        		+ "2-point cross-over is applied.");
         
-        mutationControl = new ProbabilityParameterControl(Probability.ZERO,
+        classicCrossOverPointsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
+        
+        classicCrossOverPointsRadioButton = new JRadioButton("# X-over points");
+        classicUniformCrossOverRadioButton = new JRadioButton("Uniform Cross-over"); 
+        classicCrossOverPointsRadioButton.setSelected(true);
+        classicCrossOverPointsRadioButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {  
+        		classicCrossOverPointsSpinner.setEnabled(true);
+            }
+        });
+        classicUniformCrossOverRadioButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {  
+        		classicCrossOverPointsSpinner.setEnabled(false);
+            }
+        });
+        classicCrossOverButtonGroup = new ButtonGroup();
+        classicCrossOverButtonGroup.add(classicCrossOverPointsRadioButton);
+        classicCrossOverButtonGroup.add(classicUniformCrossOverRadioButton);
+        
+        classicCrossOverButtonPanel = new JPanel();
+        classicCrossOverButtonPanel.add(classicCrossOverPointsRadioButton);
+        classicCrossOverButtonPanel.add(classicCrossOverPointsSpinner);
+        classicCrossOverButtonPanel.add(classicUniformCrossOverRadioButton);
+                
+        add(new JLabel("Classic Cross-over: "));
+        add(classicCrossoverControl.getControl());
+        classicCrossoverControl.setDescription("For each pair of solutions, the probability that "
+        		+ "classic cross-over is applied.");
+        
+        add(classicCrossOverButtonPanel);
+        
+        // Advanced Cross-over
+        
+        advancedCrossoverControl = new ProbabilityParameterControl(
+        		Probability.ZERO,
+        		Probability.ONE,
+                2,
+                Probability.ONE);
+        
+        
+        advancedCrossOverPointsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
+        
+        advancedCrossOverPointsRadioButton = new JRadioButton("# X-over points");
+        advancedUniformCrossOverRadioButton = new JRadioButton("Uniform Cross-over"); 
+        advancedCrossOverPointsRadioButton.setSelected(true);
+        advancedCrossOverPointsRadioButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {  
+        		advancedCrossOverPointsSpinner.setEnabled(true);
+            }
+        });
+        advancedUniformCrossOverRadioButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {  
+        		advancedCrossOverPointsSpinner.setEnabled(false);
+            }
+        });
+        advancedCrossOverButtonGroup = new ButtonGroup();
+        advancedCrossOverButtonGroup.add(advancedCrossOverPointsRadioButton);
+        advancedCrossOverButtonGroup.add(advancedUniformCrossOverRadioButton);
+        
+        advancedCrossOverButtonPanel = new JPanel();
+        advancedCrossOverButtonPanel.add(advancedCrossOverPointsRadioButton);
+        advancedCrossOverButtonPanel.add(advancedCrossOverPointsSpinner);
+        advancedCrossOverButtonPanel.add(advancedUniformCrossOverRadioButton);
+                
+        add(new JLabel("advanced Cross-over: "));
+        add(advancedCrossoverControl.getControl());
+        advancedCrossoverControl.setDescription("For each pair of solutions, the probability that "
+        		+ "advanced cross-over is applied.");
+        
+        add(advancedCrossOverButtonPanel);
+        
+        // flip Mutation
+        flipMutationControl = new ProbabilityParameterControl(Probability.ZERO,
                                                                ONE_TENTH,
-                                                               3,
-                                                               new Probability(0.02));
-        add(new JLabel("Mutation: "));
-        add(mutationControl.getControl());
-        mutationControl.setDescription("For each solution, the probability that a "
-                                            + "randomly-selected allel will be mutated.");
+                                                               4,
+                                                               new Probability(0.01));
+        add(new JLabel("Flip Mutation: "));
+        add(flipMutationControl.getControl());
+        flipMutationControl.setDescription("For each allel, the probability that "
+                                            + "it is changed randomly");
+        add(new JLabel(""));
+        
+        // swap Mutation
+        swapMutationControl = new ProbabilityParameterControl(Probability.ZERO,
+                                                               ONE_TENTH,
+                                                               4,
+                                                               new Probability(0.01));
+        add(new JLabel("Swap Mutation: "));
+        add(swapMutationControl.getControl());
+        swapMutationControl.setDescription("For each allel, the probability that "
+                                            + "it is swapped with another allel");
+        add(new JLabel(""));
 
        
+        /**
         // Set component names for easy look-up from tests.
         crossoverControl.getControl().setName("Crossover");
-        mutationControl.getControl().setName("Mutation");
-       
-        SpringUtilities.makeCompactGrid(this, 1, 4, 10, 0, 10, 0);
+        flipMutationControl.getControl().setName("flipMutation");
+       **/
+        SpringUtilities.makeCompactGrid(this, 4, 3, 10, 0, 10, 0);
     }
 
 
@@ -82,10 +190,10 @@ class ProbabilitiesPanel extends JPanel
     	
         List<EvolutionaryOperator<Roster>> operators
             = new LinkedList<EvolutionaryOperator<Roster>>();
-        operators.add(new RosterCrossover(new ConstantGenerator<Integer>(2),crossoverControl.getNumberGenerator()));
+        //operators.add(new RosterCrossover(new ConstantGenerator<Integer>(2),crossoverControl.getNumberGenerator()));
         //operators.add(new UniformRosterCrossover());
         //operators.add(new StringMutation(getAlphabet(), mutationControl.getNumberGenerator()));
-        operators.add(new RosterMutation(mutationControl.getNumberGenerator()));
+        //operators.add(new RosterMutation(mutationControl.getNumberGenerator()));
        
         return new EvolutionPipeline<Roster>(operators);
     }

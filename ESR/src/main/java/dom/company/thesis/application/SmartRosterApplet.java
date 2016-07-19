@@ -254,7 +254,7 @@ public class SmartRosterApplet extends AbstractApplet
 	        return parameterBox;
 	     }
 	
-	 private class EvolutionTask extends SwingBackgroundTask<Roster> {
+	 public class EvolutionTask extends SwingBackgroundTask<Roster> {
 		 		 
 		 private final int populationSize;
 	     private final int eliteCount;
