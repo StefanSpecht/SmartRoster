@@ -128,6 +128,16 @@ public class Roster {
 	public Roster clone() {
 		return new Roster(noOfEmployees, noOfShifts, noOfTasks, assignments);
 	}
+	
+	public void swapMutateAssignment(int i, Random rng) {
+		
+		//adjust i to correspond to an available employee
+		i = getAdjustedMutationIndex(i);
+		
+		
+	}
+	
+	
 	public void mutateAssignment(int i, Random rng) {
 		
 		//adjust i to correspond to an available employee
