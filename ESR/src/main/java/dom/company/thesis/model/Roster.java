@@ -42,15 +42,8 @@ public class Roster {
         }
 	}
 	
-	private void zeroInit() {
-		for (int i = 0; i < noOfEmployees * noOfShifts ; i++) {
-        	assignments[i] = 0;
-        }
-	}
-	
 	private void smartInit() {
 		
-		zeroInit();
 		Map<Integer,List<Task>> taskCombinationMap= InputService.getTaskCombinationMap();
 		Map<List<Task>, Integer> reverseTaskCombinationMap= InputService.getReverseTaskCombinationMap();
 		
