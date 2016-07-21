@@ -33,7 +33,9 @@ import org.uncommons.watchmaker.framework.TerminationCondition;
 import org.uncommons.watchmaker.framework.factories.BitStringFactory;
 import org.uncommons.watchmaker.framework.factories.StringFactory;
 import org.uncommons.watchmaker.framework.interactive.Renderer;
+import org.uncommons.watchmaker.framework.selection.RankSelection;
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
+import org.uncommons.watchmaker.framework.selection.StochasticUniversalSampling;
 import org.uncommons.watchmaker.framework.selection.TournamentSelection;
 import org.uncommons.watchmaker.framework.termination.Stagnation;
 import org.uncommons.watchmaker.framework.termination.TargetFitness;
@@ -273,13 +275,26 @@ public class SmartRosterApplet extends AbstractApplet
         protected Roster performTask() throws Exception
         {
             Random rng = new MersenneTwisterRNG();
-            RosterEvaluator fitnessEvaluator = new RosterEvaluator();
-            RosterFactory rosterFactory = new RosterFactory(InputService.getNoOfEmployees(), InputService.getNoOfShifts(), InputService.getNoOfTasks());
-            
+            RosterEvaluator fitnessEvaluator = new RosterEvaluator(
+            		(Integer) shiftOffWeightSpinner.getValue(),
+            		(Integer) weekendWeightSpinner.getValue(),
+            		(Integer) maxAssignWeightSpinner.getValue(),
+            		(Integer) coverWeightSpinner.getValue()            		
+            		);
+            RosterFactory rosterFactory = new RosterFactory(InputService.getNoOfEmployees(), InputService.getNoOfShifts(), InputService.getNoOfTasks());            
             EvolutionaryOperator<Roster> pipeline = probabilitiesPanel.createEvolutionPipeline();
+            SelectionStrategy<Object> selection;
+            
+            if (rouletteWheelSelectionRadioButton.isSelected()) {
+            	selection = new RouletteWheelSelection();
+            }
+            else if (rankSelectionRadioButton.isSelected()) {
+            	selection = new RankSelection();
+            }
+            else {
+            	selection = new StochasticUniversalSampling();
+            }
 
-            SelectionStrategy<Object> selection = new RouletteWheelSelection();
-            //selectionPressureControl.getNumberGenerator()
             EvolutionEngine<Roster> engine = new GenerationalEvolutionEngine<Roster>(
             		rosterFactory,
             		pipeline,

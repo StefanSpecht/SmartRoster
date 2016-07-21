@@ -157,7 +157,7 @@ class ProbabilitiesPanel extends JPanel
         // flip Mutation
         flipMutationControl = new ProbabilityParameterControl(Probability.ZERO,
                                                                ONE_TENTH,
-                                                               4,
+                                                               5,
                                                                new Probability(0.01));
         add(new JLabel("Flip Mutation: "));
         add(flipMutationControl.getControl());
@@ -190,10 +190,18 @@ class ProbabilitiesPanel extends JPanel
     	
         List<EvolutionaryOperator<Roster>> operators
             = new LinkedList<EvolutionaryOperator<Roster>>();
-        //operators.add(new RosterCrossover(new ConstantGenerator<Integer>(2),crossoverControl.getNumberGenerator()));
+        
+        if (classicCrossOverPointsRadioButton.isSelected()) {
+        	operators.add(new ClassicRosterCrossover(new ConstantGenerator<Integer>((Integer)classicCrossOverPointsSpinner.getValue()),classicCrossoverControl.getNumberGenerator()));
+        }
+        else {
+        	operators.add(new UniformClassicRosterCrossover());
+        }
+        
+        //operators.add(new ClassicRosterCrossover(new ConstantGenerator<Integer>(2),crossoverControl.getNumberGenerator()));
         //operators.add(new UniformRosterCrossover());
         //operators.add(new StringMutation(getAlphabet(), mutationControl.getNumberGenerator()));
-        //operators.add(new RosterMutation(mutationControl.getNumberGenerator()));
+        operators.add(new RosterFlipMutation(flipMutationControl.getNumberGenerator()));
        
         return new EvolutionPipeline<Roster>(operators);
     }

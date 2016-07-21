@@ -12,7 +12,7 @@ import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 import dom.company.thesis.model.Roster;
 import dom.company.thesis.service.InputService;
 
-public class RosterMutation implements EvolutionaryOperator<Roster>
+public class RosterFlipMutation implements EvolutionaryOperator<Roster>
 {
     private final NumberGenerator<Probability> mutationProbability;
     private double mutationProbabilityValue;
@@ -24,13 +24,13 @@ public class RosterMutation implements EvolutionaryOperator<Roster>
      * bit string will be mutated, with exactly one bit being flipped.
      * @param mutationProbability The probability of a candidate being mutated.
      */
-    public RosterMutation(Probability mutationProbability)
+    public RosterFlipMutation(Probability mutationProbability)
     {
         this.mutationProbability = new ConstantGenerator<Probability>(mutationProbability);
         this.mutationProbabilityValue = mutationProbability.doubleValue();
     }
     
-    public RosterMutation(NumberGenerator<Probability> mutationProbability)
+    public RosterFlipMutation(NumberGenerator<Probability> mutationProbability)
     {
         this.mutationProbability = mutationProbability;
         this.mutationProbabilityValue = mutationProbability.nextValue().doubleValue();

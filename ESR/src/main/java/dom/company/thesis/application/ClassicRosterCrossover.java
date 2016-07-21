@@ -30,12 +30,12 @@ import dom.company.thesis.service.InputService;
  * arrays of primitive ints.
  * @author Daniel Dyer
  */
-public class UniformRosterCrossover extends AbstractCrossover<Roster>
+public class ClassicRosterCrossover extends AbstractCrossover<Roster>
 {
     /**
      * Default is single-point cross-over, applied to all parents.
      */
-    public UniformRosterCrossover()
+    public ClassicRosterCrossover()
     {
         this(1);
     }
@@ -46,7 +46,7 @@ public class UniformRosterCrossover extends AbstractCrossover<Roster>
      * @param crossoverPoints The constant number of cross-over points
      * to use for all cross-over operations.
      */
-    public UniformRosterCrossover(int crossoverPoints)
+    public ClassicRosterCrossover(int crossoverPoints)
     {
         super(crossoverPoints);
     }
@@ -62,7 +62,7 @@ public class UniformRosterCrossover extends AbstractCrossover<Roster>
      * a pair of parents will be subjected to cross-over rather than
      * being copied, unchanged, into the output population.
      */
-    public UniformRosterCrossover(int crossoverPoints, Probability crossoverProbability)
+    public ClassicRosterCrossover(int crossoverPoints, Probability crossoverProbability)
     {
         super(crossoverPoints, crossoverProbability);
     }
@@ -73,7 +73,7 @@ public class UniformRosterCrossover extends AbstractCrossover<Roster>
      * @param crossoverPointsVariable A random variable that provides a number
      * of cross-over points for each cross-over operation.
      */
-    public UniformRosterCrossover(NumberGenerator<Integer> crossoverPointsVariable)
+    public ClassicRosterCrossover(NumberGenerator<Integer> crossoverPointsVariable)
     {
         super(crossoverPointsVariable);
     }
@@ -91,7 +91,7 @@ public class UniformRosterCrossover extends AbstractCrossover<Roster>
      * that, once selected, a pair of parents will be subjected to cross-over rather
      * than being copied, unchanged, into the output population.
      */
-    public UniformRosterCrossover(NumberGenerator<Integer> crossoverPointsVariable,
+    public ClassicRosterCrossover(NumberGenerator<Integer> crossoverPointsVariable,
                              NumberGenerator<Probability> crossoverProbabilityVariable)
     {
         super(crossoverPointsVariable, crossoverProbabilityVariable);
@@ -121,12 +121,12 @@ public class UniformRosterCrossover extends AbstractCrossover<Roster>
         System.arraycopy(parent2vector, 0, offspring2vector, 0, parent2vector.length);
         // Apply as many cross-overs as required.
         int[] temp = new int[parent1vector.length];
-        for (int i = 0; i < parent1vector.length-1; i++)
+        for (int i = 0; i < numberOfCrossoverPoints; i++)
         {
             // Cross-over index is always greater than zero and less than
             // the length of the parent so that we always pick a point that
             // will result in a meaningful cross-over.
-            int crossoverIndex = (1 + i);
+            int crossoverIndex = (1 + rng.nextInt(parent1vector.length - 1));
             System.arraycopy(offspring1vector, 0, temp, 0, crossoverIndex);
             System.arraycopy(offspring2vector, 0, offspring1vector, 0, crossoverIndex);
             System.arraycopy(temp, 0, offspring2vector, 0, crossoverIndex);
