@@ -191,6 +191,7 @@ class ProbabilitiesPanel extends JPanel
         List<EvolutionaryOperator<Roster>> operators
             = new LinkedList<EvolutionaryOperator<Roster>>();
         
+        //Classic Cross-over
         if (classicCrossOverPointsRadioButton.isSelected()) {
         	operators.add(new ClassicRosterCrossover(new ConstantGenerator<Integer>((Integer)classicCrossOverPointsSpinner.getValue()),classicCrossoverControl.getNumberGenerator()));
         }
@@ -198,6 +199,13 @@ class ProbabilitiesPanel extends JPanel
         	operators.add(new UniformClassicRosterCrossover());
         }
         
+        //Advanced Cross-over
+        if (advancedCrossOverPointsRadioButton.isSelected()) {
+        	operators.add(new AdvancedRosterCrossover(new ConstantGenerator<Integer>((Integer)advancedCrossOverPointsSpinner.getValue()),advancedCrossoverControl.getNumberGenerator()));
+        }
+        else {
+        	operators.add(new UniformAdvancedRosterCrossover());
+        }
         //operators.add(new ClassicRosterCrossover(new ConstantGenerator<Integer>(2),crossoverControl.getNumberGenerator()));
         //operators.add(new UniformRosterCrossover());
         //operators.add(new StringMutation(getAlphabet(), mutationControl.getNumberGenerator()));
