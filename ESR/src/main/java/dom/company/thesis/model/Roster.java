@@ -214,13 +214,19 @@ public class Roster {
 	}
 	
 	public int[] getAssignmentByEmployee(int employeeIndex) {
-		return Arrays.copyOfRange(assignments, employeeIndex * this.getNoOfShifts(), employeeIndex * this.getNoOfShifts() + this.getNoOfShifts());
+		int[] employeeAssignment = new int[noOfShifts];
+		
+		for (int s = 0; s < noOfShifts; s++) {
+			employeeAssignment[s] = getValue(employeeIndex, s);
+		}
+		
+		return employeeAssignment;
 	}
 	public int getValue(int e, int s) {
-		return this.assignments[e * this.getNoOfShifts() + s];
+		return this.assignments[s * this.getNoOfShifts() + e];
 	}
 	public void setValue(int value, int e, int s) {
-		this.assignments[e * this.getNoOfShifts() + s] = value;
+		this.assignments[s * this.getNoOfShifts() + e] = value;
 	}
 	
 	
