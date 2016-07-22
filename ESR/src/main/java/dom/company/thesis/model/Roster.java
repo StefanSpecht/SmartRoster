@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import dom.company.thesis.service.InputService;
@@ -36,11 +38,13 @@ public class Roster {
         this.assignments = assignments;
 	}
 	
+	/**
 	private void randomInit(Random rng) {
 		for (int i = 0; i < noOfEmployees * noOfShifts ; i++) {
         		assignments[i] = rng.nextInt(noOfTasks);
         }
 	}
+	**/
 	
 	private void smartInit() {
 		
@@ -124,8 +128,69 @@ public class Roster {
 	
 	public void swapMutateAssignment(int i, Random rng) {
 		
-		//adjust i to correspond to an available employee
-		i = getAdjustedMutationIndex(i);
+		if (assignments[i] == 0 && isAvailable(i)) {
+			
+			int s = getShiftIndex(i);
+			List<Integer> assignedEmployees = getAssignedEmployeeByShift(s);
+			Collections.shuffle(assignedEmployees);
+			boolean isSwapped = false;
+			Iterator<Integer> empIndexIterator = assignedEmployees.iterator();
+			
+			while (!isSwapped && empIndexIterator.hasNext()) {
+				int e = empIndexIterator.next();
+				int taskCombinationAssignment = getValue(e,s);
+				
+				List<Task> sourceTaskList = new ArrayList<Task>(
+						InputService.getTaskCombinationMap()
+						.get(taskCombinationAssignment));
+				Collections.shuffle(sourceTaskList);
+				Iterator<Task> taskIterator = sourceTaskList.iterator();
+				
+				while (!isSwapped && taskIterator.hasNext()) {
+					List<Task> singleTaskList = new ArrayList<Task>();
+					singleTaskList.add(taskIterator.next());
+					int taskCombination = InputService.getReverseTaskCombinationMap().get(singleTaskList);
+					
+					if (isAble(i, taskCombination)) {
+						//un-assign task from source
+						List<Task> newSourceTaskList = new ArrayList<Task>(sourceTaskList);
+						newSourceTaskList.removeAll(singleTaskList);
+						
+						if (newSourceTaskList.isEmpty()) {
+							setValue(0, e,s);
+							assignments[i] = taskCombination;
+							isSwapped = true;
+						}
+						else {
+							Set<Task> sourceTaskCombinationSet = new HashSet<Task>();
+							sourceTaskCombinationSet.addAll(newSourceTaskList);					
+							List<List<Task>> validTaskCombinations = InputService.getTaskCombinations();
+							
+							for (List<Task> validTaskCombination : validTaskCombinations) {
+								Set<Task> validTaskCombinationSet = new HashSet<Task>();
+								validTaskCombinationSet.addAll(validTaskCombination);
+								
+								if (sourceTaskCombinationSet.equals(validTaskCombinationSet)) {
+									int newSourceTaskCombination = InputService.getReverseTaskCombinationMap().get(validTaskCombination);
+									setValue(newSourceTaskCombination, e,s);
+									
+									//assign task to destination
+									assignments[i] = taskCombination;
+									isSwapped = true;
+									
+									break;
+								}
+							}
+						}
+					}
+					
+				}
+			}
+		}
+
+		
+		
+		
 		
 		
 	}
@@ -152,9 +217,36 @@ public class Roster {
 		}
 	}
 	
+	private boolean isAvailable(int i) {
+		int employeeIndex = getEmployeeIndex(i);
+		int shiftIndex =  getShiftIndex(i);
+		
+		if (InputService.getAvailabilityMatrix()[shiftIndex][employeeIndex] == 1) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isAble(int i, int tc) {
+		int employeeIndex = getEmployeeIndex(i);
+		
+		if (InputService.getAbilityMatrix()[tc][employeeIndex] == 1) {
+			return true;
+		}
+		return false;
+	}
+	
+	private int getEmployeeIndex(int i) {
+		return i % InputService.getNoOfEmployees();
+	}
+	
+	private int getShiftIndex(int i) {
+		return (int) i / InputService.getNoOfEmployees();
+	}
+	
 	private int getAdjustedMutationIndex(int i) {
-		int employeeIndex = (int) i / InputService.getNoOfShifts();
-		int shiftIndex =  i % InputService.getNoOfShifts();
+		int employeeIndex = getEmployeeIndex(i);
+		int shiftIndex =  getShiftIndex(i);
 		
 		while (InputService.getAvailabilityMatrix()[shiftIndex][employeeIndex] != 1)  {
 			i++;
@@ -222,6 +314,18 @@ public class Roster {
 		
 		return employeeAssignment;
 	}
+	
+	private List<Integer> getAssignedEmployeeByShift(int s) {
+		
+		List<Integer> assignedEmployees = new ArrayList<Integer>();
+		for (int e = 0; e < noOfEmployees; e++) {
+			if (getValue(e, s) != 0) {
+				assignedEmployees.add(e);
+			}
+		}
+		return assignedEmployees;
+	}
+	
 	public int getValue(int e, int s) {
 		return this.assignments[s * this.getNoOfEmployees() + e];
 	}

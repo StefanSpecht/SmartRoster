@@ -125,7 +125,7 @@ public class Numbering {
 		if (total > maxTotal) {
 			penaltyMaxTotal += costMaxTotal * (total - maxTotal);
 		}
-		if (total < maxTotal) {
+		if (total < minTotal) {
 			penaltyMinTotal += costMinTotal * (minTotal - total);
 		}
 		if (consecutive > maxConsecutive) {

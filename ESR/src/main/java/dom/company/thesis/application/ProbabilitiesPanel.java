@@ -210,6 +210,7 @@ class ProbabilitiesPanel extends JPanel
         //operators.add(new UniformRosterCrossover());
         //operators.add(new StringMutation(getAlphabet(), mutationControl.getNumberGenerator()));
         operators.add(new RosterFlipMutation(flipMutationControl.getNumberGenerator()));
+        operators.add(new RosterSwapMutation(swapMutationControl.getNumberGenerator()));
        
         return new EvolutionPipeline<Roster>(operators);
     }
