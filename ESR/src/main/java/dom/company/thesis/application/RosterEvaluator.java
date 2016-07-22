@@ -75,7 +75,8 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 			int[] uncoveredTasks = InputService.getCoverRequirementMatrix()[s].clone();
 			 
 			for (int e = 0; e < candidate.getNoOfEmployees(); e++) {
-				Integer assignedTaskCombination = candidate.getAssignments()[e * candidate.getNoOfShifts() + s];
+				//Integer assignedTaskCombination = candidate.getAssignments()[e * candidate.getNoOfShifts() + s];
+				Integer assignedTaskCombination = candidate.getValue(e, s);
 				 
 				/**
 				//check for availability

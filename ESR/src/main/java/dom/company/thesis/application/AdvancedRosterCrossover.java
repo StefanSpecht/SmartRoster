@@ -126,7 +126,9 @@ public class AdvancedRosterCrossover extends AbstractCrossover<Roster>
             // Cross-over index is always greater than zero and less than
             // the length of the parent so that we always pick a point that
             // will result in a meaningful cross-over.
-            int crossoverIndex = (parent1.getNoOfShifts() + parent1.getNoOfShifts() * (rng.nextInt(parent1.getNoOfEmployees() - 2)));
+            
+        	//int crossoverIndex = (parent1.getNoOfShifts() + parent1.getNoOfShifts() * (rng.nextInt(parent1.getNoOfEmployees() - 2)));
+        	int crossoverIndex = (parent1.getNoOfEmployees() + parent1.getNoOfEmployees() * (rng.nextInt(parent1.getNoOfShifts() - 2)));
             System.arraycopy(offspring1vector, 0, temp, 0, crossoverIndex);
             System.arraycopy(offspring2vector, 0, offspring1vector, 0, crossoverIndex);
             System.arraycopy(temp, 0, offspring2vector, 0, crossoverIndex);
