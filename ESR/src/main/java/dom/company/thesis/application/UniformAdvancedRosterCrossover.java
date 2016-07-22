@@ -121,12 +121,15 @@ public class UniformAdvancedRosterCrossover extends AbstractCrossover<Roster>
         System.arraycopy(parent2vector, 0, offspring2vector, 0, parent2vector.length);
         // Apply as many cross-overs as required.
         int[] temp = new int[parent1vector.length];
-        for (int i = 0; i < parent1.getNoOfEmployees() - 1; i++)
+        for (int i = 0; i < parent1.getNoOfShifts() - 1; i++)
         {
             // Cross-over index is always greater than zero and less than
             // the length of the parent so that we always pick a point that
             // will result in a meaningful cross-over.
-            int crossoverIndex = (parent1.getNoOfShifts() + i * parent1.getNoOfShifts());
+            
+        	//int crossoverIndex = (parent1.getNoOfShifts() + i * parent1.getNoOfShifts());
+        	int crossoverIndex = (parent1.getNoOfEmployees() + parent1.getNoOfEmployees() * i);
+        	
             System.arraycopy(offspring1vector, 0, temp, 0, crossoverIndex);
             System.arraycopy(offspring2vector, 0, offspring1vector, 0, crossoverIndex);
             System.arraycopy(temp, 0, offspring2vector, 0, crossoverIndex);
