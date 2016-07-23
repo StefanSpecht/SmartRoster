@@ -58,8 +58,8 @@ import dom.company.thesis.service.InputService;
 public class SmartRosterApplet extends AbstractApplet
 {
 	private static final long serialVersionUID = 9082082587988054878L;
-	private final int EXPERIMENT_POPULATION_MIN = 100;
-	private final int EXPERIMENT_POPULATION_MAX = 150;
+	private final int EXPERIMENT_POPULATION_MIN = 10;
+	private final int EXPERIMENT_POPULATION_MAX = 500;
 	private final int EXPERIMENT_POPULATION_GRAN = 10;
 	
 	private JButton startButton;
@@ -226,6 +226,7 @@ public class SmartRosterApplet extends AbstractApplet
                                  // abort.getTerminationCondition())
                                   //.execute();
                                   abort.getTerminationCondition(),
+                                  new Stagnation(100, false),
                                   new TargetFitness(0, false)).execute();
             }
         });
@@ -582,6 +583,11 @@ public class SmartRosterApplet extends AbstractApplet
             if (isPopulationSizeExperiment) {
             	this.populationSizeExperimentParams.remove(0);
             	if (!populationSizeExperimentParams.isEmpty()) {
+            		
+            		if (populationSizeExperimentParams.size() == 1 || (populationSize == populationSizeExperimentParams.get(0) && populationSize != populationSizeExperimentParams.get(1))) {
+            			evolutionMonitor.setRollup(true);
+            		}
+            		
             		EvolutionTask evolutionTask = new EvolutionTask(this.populationSize,
                             this.eliteCount,
                             abort.getTerminationCondition(),

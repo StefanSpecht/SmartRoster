@@ -64,6 +64,7 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
     private TerminationCondition[] terminationConditions;
 
     private final boolean islands;
+    private boolean rollup;
 
     /**
      * <p>Creates an CustomEvolutionMonitor with a single panel that graphs the fitness scores
@@ -179,6 +180,10 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
     		
     		//log statistics to csv
     		final String logPath = InputService.getLogFileFolder();
+    		final String rollupLogPath = InputService.getRollupLogFilePath();
+    		final String detailedLogPath = InputService.getDetailedLogFilePath();
+    		
+    		
     		String[] logData = new String[]{
     				String.valueOf(populationData.getPopulationSize()),
     				String.valueOf(populationData.getEliteCount()),
@@ -204,6 +209,74 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+    		
+    		//rollup data if required
+    		if (rollup) {
+    			try {
+    				int avgPopulationSize;
+    				int avgEliteCount;
+    				double avgBestCandidateFitness;
+    				double avgMeanFitness;
+    				double avgStandardDeviation;
+    				int avgGenerationNumber;
+    				long avgElapsedTime;
+    				String[] rollUpData = new String[7];
+    				
+        			//Read current data, save and remove log header
+    				CSVReader csvReader = new CSVReader(new FileReader(logPath));
+    				List<String[]> allLogData = csvReader.readAll();
+    				String[] logHeader = allLogData.get(0);
+    				allLogData.remove(0);
+    				csvReader.close();
+    				
+    				//append current data to detailed log
+    				csvReader = new CSVReader(new FileReader(detailedLogPath));
+    				List<String[]> allDetailedLogData = csvReader.readAll();
+    				csvReader.close();
+    				allDetailedLogData.addAll(allLogData);
+    				CSVWriter csvWriter = new CSVWriter(new FileWriter(detailedLogPath));
+    				csvWriter.writeAll(allDetailedLogData);
+    				csvWriter.close();
+    				
+    				//calculate avg
+    				avgPopulationSize = getIntAverage(allLogData,0);
+    				avgEliteCount = getIntAverage(allLogData,1);
+    				avgBestCandidateFitness = getDoubleAverage(allLogData,2);
+    				avgMeanFitness = getDoubleAverage(allLogData,3);
+    				avgStandardDeviation = getDoubleAverage(allLogData,4);
+    				avgGenerationNumber = getIntAverage(allLogData,5);
+    				avgElapsedTime = getLongAverage(allLogData,6);
+    				
+    				//create new dataset
+    				rollUpData[0] = String.valueOf(avgPopulationSize);
+    				rollUpData[1] = String.valueOf(avgEliteCount);
+    				rollUpData[2] = String.valueOf(avgBestCandidateFitness);
+    				rollUpData[3] = String.valueOf(avgMeanFitness);
+    				rollUpData[4] = String.valueOf(avgStandardDeviation);
+    				rollUpData[5] = String.valueOf(avgGenerationNumber);
+    				rollUpData[6] = String.valueOf(avgElapsedTime);
+    				
+    				//append rollup dataset to rollup file
+    				csvReader = new CSVReader(new FileReader(rollupLogPath));
+    				List<String[]> allRollupLogData = csvReader.readAll();
+    				csvReader.close();
+    				allRollupLogData.add(rollUpData);
+    				csvWriter = new CSVWriter(new FileWriter(rollupLogPath));
+    				csvWriter.writeAll(allRollupLogData);
+    				csvWriter.close();
+    				
+    				//Empty current logfile, except header
+    				csvWriter = new CSVWriter(new FileWriter(logPath));
+    				csvWriter.writeNext(logHeader);
+    				csvWriter.close();
+    				
+    				//disable rollup for next run
+    				setRollup(false);
+    				
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    		}
     		
     	}
     	
@@ -297,4 +370,38 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
         newWindow.setVisible(true);
         this.window = newWindow;
     }
+
+
+	public boolean isRollup() {
+		return rollup;
+	}
+
+
+	public void setRollup(boolean rollup) {
+		this.rollup = rollup;
+	} 
+	
+	private int getIntAverage(List<String[]> statistics, int i) {
+		int sum = 0;
+		for (String[] dataset : statistics) {
+			sum += Integer.valueOf(dataset[i]);
+		}
+		return sum / statistics.size();
+	}
+	
+	private double getDoubleAverage(List<String[]> statistics, int i) {
+		double sum = 0;
+		for (String[] dataset : statistics) {
+			sum += Double.valueOf(dataset[i]);
+		}
+		return sum / statistics.size();
+	}
+	
+	private long getLongAverage(List<String[]> statistics, int i) {
+		long sum = 0;
+		for (String[] dataset : statistics) {
+			sum += Long.valueOf(dataset[i]);
+		}
+		return sum / statistics.size();
+	}
 }

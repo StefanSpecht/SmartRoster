@@ -1,5 +1,7 @@
 package dom.company.thesis.service;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.DayOfWeek;
@@ -14,6 +16,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.opencsv.CSVWriter;
+
 import dom.company.thesis.model.Employee;
 import dom.company.thesis.model.ShiftType;
 import dom.company.thesis.model.Task;
@@ -23,6 +27,7 @@ public class InputService {
 	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input3.xml";
 	static private final String LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment.csv";
 	static private final String ROLLUP_LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment_rollup.csv";
+	static private final String DETAILED_LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment_detailed.csv";
 	
 	static Date startDate;
 	static Date endDate;	
@@ -51,7 +56,26 @@ public class InputService {
 	//Soft Constraints
 	static int[][] shiftOffPreferenceMatrix;	// [shift][employee] = {0,1}
 		
-	public InputService() {
+	public InputService() {		
+	}
+	static {
+		String[] csvHeader = new String[] {"PopulationSize","EliteCount","BestFitness","MeanFitness","StandardDeviation","Generations","ElapsedTime"};
+		CSVWriter csvWriter;
+		try {
+			csvWriter = new CSVWriter(new FileWriter(LOG_FILE_PATH));
+			csvWriter.writeNext(csvHeader);
+			csvWriter.close();
+			
+			csvWriter = new CSVWriter(new FileWriter(ROLLUP_LOG_FILE_PATH));
+			csvWriter.writeNext(csvHeader);
+			csvWriter.close();
+			
+			csvWriter = new CSVWriter(new FileWriter(DETAILED_LOG_FILE_PATH));
+			csvWriter.writeNext(csvHeader);
+			csvWriter.close();			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	static public void parse() {	//Later XML String as input
@@ -571,6 +595,15 @@ public class InputService {
 
 	public static String getLogFileFolder() {
 		return LOG_FILE_PATH;
+	}
+
+	public static String getRollupLogFilePath() {
+		return ROLLUP_LOG_FILE_PATH;
+	}
+
+	public static String getDetailedLogFilePath() {
+		return DETAILED_LOG_FILE_PATH;
 	}	
+	
 	
 }
