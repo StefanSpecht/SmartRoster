@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -128,9 +129,9 @@ public class Roster {
 	
 	public void swapMutateAssignment(int i, Random rng) {
 		
+		int s = getShiftIndex(i);
+		
 		if (assignments[i] == 0 && isAvailable(i)) {
-			
-			int s = getShiftIndex(i);
 			List<Integer> assignedEmployees = getAssignedEmployeeByShift(s);
 			Collections.shuffle(assignedEmployees);
 			boolean isSwapped = false;
@@ -187,12 +188,61 @@ public class Roster {
 				}
 			}
 		}
-
+		else if (assignments[i] != 0 ) {
+			
+			int sourceTaskCombination = assignments[i];
+			List<Task> sourceTasks = InputService.getTaskCombinationMap().get(sourceTaskCombination);
+			int[] availabilityVector = InputService.getAvailabilityMatrix()[s];
+			
+			for (Task sourceTask : sourceTasks) {
+				boolean isSwapped = false;
+				List<Employee> ableEmployees = new ArrayList<Employee>();
+				
+				for (int e=0; e < noOfEmployees; e++) {
+					if (availabilityVector[e] == 1) {
+						Employee employee = InputService.getEmployeeMap().get(e);
+						
+						if (employee.isAble(sourceTask)) {
+							ableEmployees.add(employee);
+						}
+					}
+				}
+				
+				Collections.shuffle(ableEmployees);
+				Iterator<Employee> empIterator = ableEmployees.iterator();
+				
+				while (empIterator.hasNext() && !isSwapped)  {
+					
+					Employee ableEmployee = empIterator.next();
+					int e = InputService.getReverseEmployeeMap().get(ableEmployee);
+					int destTaskCombination = getValue(e, s);
+					Set<Task>  destTaskSet = new HashSet<Task>();
+					destTaskSet.addAll(InputService.getTaskCombinationMap().get(destTaskCombination));
+					destTaskSet.add(sourceTask);
+					List<List<Task>> validTaskCombinations = InputService.getTaskCombinations();
+					
+					for (List<Task> validTaskCombination : validTaskCombinations) {
+						Set<Task> validTaskCombinationSet = new HashSet<Task>();
+						validTaskCombinationSet.addAll(validTaskCombination);
+						
+						if (destTaskSet.equals(validTaskCombinationSet)) {
+							int newDestTaskCombination = InputService.getReverseTaskCombinationMap().get(validTaskCombination);
+							setValue(newDestTaskCombination, e,s);
+							
+							//un-assign task from source
+							int currSourceTaskCombination = assignments[i];
+							List<Task> newSourceTasks = new ArrayList<Task>(InputService.getTaskCombinationMap().get(currSourceTaskCombination));
+							newSourceTasks.remove(sourceTask);
+							int newSourceTaskCombination = InputService.getReverseTaskCombinationMap().get(newSourceTasks);
+							assignments[i] = newSourceTaskCombination;
+							isSwapped = true;
 		
-		
-		
-		
-		
+							break;
+						}
+					}					
+				}
+			}
+		}
 	}
 	
 	

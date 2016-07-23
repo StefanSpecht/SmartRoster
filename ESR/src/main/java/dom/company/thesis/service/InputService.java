@@ -21,6 +21,7 @@ import dom.company.thesis.model.Task;
 public class InputService {
 	
 	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input3.xml";
+	static private final String LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment.csv";
 	
 	static Date startDate;
 	static Date endDate;	
@@ -237,10 +238,16 @@ public class InputService {
 		for (int i = 0; i < getNoOfShifts(); i++) {
 			
 			Date date = getShiftDatesMap().get(i);
-			if (getDayOfWeekByDate(date).equals(DayOfWeek.SATURDAY) || getDayOfWeekByDate(date).equals(DayOfWeek.SUNDAY)) {
+			if (getDayOfWeekByDate(date).equals(DayOfWeek.SATURDAY)) {
 				weekendNumberingPattern[i] = number;
 				if (i % getNoOfShiftTypes() == getNoOfShiftTypes() -1) {
 					number++;
+				}
+			}
+			else if (getDayOfWeekByDate(date).equals(DayOfWeek.SUNDAY)) {
+				weekendNumberingPattern[i] = number;
+				if (i % getNoOfShiftTypes() == getNoOfShiftTypes() -1) {
+					number += 2;
 				}
 			}
 			else {
@@ -559,5 +566,10 @@ public class InputService {
 
 	public static int[] getMaxAssignmentsPerWeekNumberingPattern() {
 		return maxAssignmentsPerWeekNumberingPattern;
+	}
+
+	public static String getLogFilePath() {
+		return LOG_FILE_PATH;
 	}	
+	
 }

@@ -49,7 +49,7 @@ public class Numbering {
 		this.assignmentPattern = new int[numPattern.length];
 		
 		//Initialize counters
-		this.lastNr = 0;
+		this.lastNr = -1;
 		this.maxNr=this.getMaxNr();
 		this.total = 0;
 		this.consecutive = 0;
@@ -102,10 +102,10 @@ public class Numbering {
 				}
 				else if (nr > lastNr + 1) {
 					
-					if (consecutive < minConsecutive) {
+					if (consecutive < minConsecutive && consecutive != 0) {
 						penaltyMinConsecutive += costMinConsecutive * (minConsecutive - consecutive);
 					}
-					if (consecutive > maxConsecutive) {
+					if (consecutive > maxConsecutive && consecutive != 0) {
 						penaltyMaxConsecutive += costMaxConsecutive * (maxConsecutive - consecutive);
 					}
 					if (nr - lastNr - 1 < minBetween) {
@@ -114,6 +114,7 @@ public class Numbering {
 					if (nr - lastNr - 1 > maxBetween) {
 						penaltyMaxBetween += costMaxBetween * ((nr - lastNr - 1) - maxBetween);
 					}
+					consecutive = 1;
 				}
 				pert[nr]++;
 				lastNr = nr;
@@ -128,10 +129,10 @@ public class Numbering {
 		if (total < minTotal) {
 			penaltyMinTotal += costMinTotal * (minTotal - total);
 		}
-		if (consecutive > maxConsecutive) {
+		if (consecutive > maxConsecutive && consecutive != 0) {
 			penaltyMaxConsecutive += costMaxConsecutive * (consecutive - maxConsecutive);
 		}
-		if (consecutive < minConsecutive) {
+		if (consecutive < minConsecutive && consecutive != 0) {
 			penaltyMinConsecutive += costMinConsecutive * (minConsecutive - consecutive);
 		}
 		
