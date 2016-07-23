@@ -17,6 +17,9 @@ package dom.company.thesis.ga;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +41,11 @@ import org.uncommons.watchmaker.framework.islands.IslandEvolutionObserver;
 import org.uncommons.watchmaker.swing.ObjectSwingRenderer;
 import org.uncommons.watchmaker.swing.evolutionmonitor.StatusBar;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+
 import dom.company.thesis.gui.RosterRenderer;
+import dom.company.thesis.service.InputService;
 
 /**
  * The Evolution Monitor is a component that can be attached to an
@@ -166,8 +173,38 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
     {
         for (IslandEvolutionObserver<? super T> view : views)
         {
+        	//if termination condition is met, enable the renderer and log statistics to csv
         	if (EvolutionUtils.shouldContinue(populationData, terminationConditions) != null) {
+        		
+        		//Enable renderer
         		RosterRenderer.enable();
+        		
+        		//log statistics to csv
+        		final String logPath = InputService.getLogFilePath();
+        		String[] logData = new String[]{
+        				String.valueOf(populationData.getBestCandidateFitness()),
+        				String.valueOf(populationData.getMeanFitness()),
+        				String.valueOf(populationData.getFitnessStandardDeviation()),
+        				String.valueOf(populationData.getGenerationNumber()),
+        				String.valueOf(populationData.getElapsedTime())        				
+        		};
+        		
+        		try {
+        			//read current data
+					CSVReader csvReader = new CSVReader(new FileReader(logPath));
+					List<String[]> allLogData = csvReader.readAll();
+					csvReader.close();
+					
+					//add new data and write to disk
+					allLogData.add(logData);
+					CSVWriter csvWriter = new CSVWriter(new FileWriter(logPath));
+					csvWriter.writeAll(allLogData);
+					csvWriter.close();
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        		
         	}
         	view.populationUpdate(populationData);
         }
