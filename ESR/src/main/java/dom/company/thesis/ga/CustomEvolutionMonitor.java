@@ -171,41 +171,44 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
      */
     public void populationUpdate(PopulationData<? extends T> populationData)
     {
+    	//if termination condition is met, enable the renderer and log statistics to csv
+    	if (EvolutionUtils.shouldContinue(populationData, terminationConditions) != null) {
+    		
+    		//Enable renderer
+    		RosterRenderer.enable();
+    		
+    		//log statistics to csv
+    		final String logPath = InputService.getLogFileFolder();
+    		String[] logData = new String[]{
+    				String.valueOf(populationData.getPopulationSize()),
+    				String.valueOf(populationData.getEliteCount()),
+    				String.valueOf(populationData.getBestCandidateFitness()),
+    				String.valueOf(populationData.getMeanFitness()),
+    				String.valueOf(populationData.getFitnessStandardDeviation()),
+    				String.valueOf(populationData.getGenerationNumber()),
+    				String.valueOf(populationData.getElapsedTime())        				
+    		};
+    		
+    		try {
+    			//read current data
+				CSVReader csvReader = new CSVReader(new FileReader(logPath));
+				List<String[]> allLogData = csvReader.readAll();
+				csvReader.close();
+				
+				//add new data and write to disk
+				allLogData.add(logData);
+				CSVWriter csvWriter = new CSVWriter(new FileWriter(logPath));
+				csvWriter.writeAll(allLogData);
+				csvWriter.close();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		
+    	}
+    	
         for (IslandEvolutionObserver<? super T> view : views)
         {
-        	//if termination condition is met, enable the renderer and log statistics to csv
-        	if (EvolutionUtils.shouldContinue(populationData, terminationConditions) != null) {
-        		
-        		//Enable renderer
-        		RosterRenderer.enable();
-        		
-        		//log statistics to csv
-        		final String logPath = InputService.getLogFilePath();
-        		String[] logData = new String[]{
-        				String.valueOf(populationData.getBestCandidateFitness()),
-        				String.valueOf(populationData.getMeanFitness()),
-        				String.valueOf(populationData.getFitnessStandardDeviation()),
-        				String.valueOf(populationData.getGenerationNumber()),
-        				String.valueOf(populationData.getElapsedTime())        				
-        		};
-        		
-        		try {
-        			//read current data
-					CSVReader csvReader = new CSVReader(new FileReader(logPath));
-					List<String[]> allLogData = csvReader.readAll();
-					csvReader.close();
-					
-					//add new data and write to disk
-					allLogData.add(logData);
-					CSVWriter csvWriter = new CSVWriter(new FileWriter(logPath));
-					csvWriter.writeAll(allLogData);
-					csvWriter.close();
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-        		
-        	}
         	view.populationUpdate(populationData);
         }
     }

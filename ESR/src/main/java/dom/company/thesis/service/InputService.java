@@ -22,6 +22,7 @@ public class InputService {
 	
 	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input3.xml";
 	static private final String LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment.csv";
+	static private final String ROLLUP_LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment_rollup.csv";
 	
 	static Date startDate;
 	static Date endDate;	
@@ -568,7 +569,7 @@ public class InputService {
 		return maxAssignmentsPerWeekNumberingPattern;
 	}
 
-	public static String getLogFilePath() {
+	public static String getLogFileFolder() {
 		return LOG_FILE_PATH;
 	}	
 	
