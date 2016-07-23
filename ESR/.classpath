@@ -32,5 +32,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Steff/CloudStation/Thesis/SmartRoster/jars/opencsv-3.8.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
