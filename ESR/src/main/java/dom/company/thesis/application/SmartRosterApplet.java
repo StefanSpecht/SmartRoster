@@ -71,13 +71,13 @@ public class SmartRosterApplet extends AbstractApplet
 	private JSpinner elitismSpinner;
 	
 	private JLabel weekendWeightLabel;
-	private JSpinner weekendWeightSpinner;
+	private static JSpinner weekendWeightSpinner;
 	private JLabel shiftOffWeightLabel;
-	private JSpinner shiftOffWeightSpinner;
+	private static JSpinner shiftOffWeightSpinner;
 	private JLabel maxAssignWeightLabel;
-	private JSpinner maxAssignWeightSpinner;	
+	private static JSpinner maxAssignWeightSpinner;	
 	private JLabel coverWeightLabel;
-	private JSpinner coverWeightSpinner;
+	private static JSpinner coverWeightSpinner;
 	//private ProbabilityParameterControl selectionPressureControl;
 	private JPanel selectionButtonPanel;
 	private JRadioButton rankSelectionRadioButton;
@@ -619,6 +619,26 @@ public class SmartRosterApplet extends AbstractApplet
         	this.populationSizeExperimentParams = populationSizes;
         	this.isPopulationSizeExperiment = true;
         }
-        
 	 }
+
+	public static JSpinner getWeekendWeightSpinner() {
+		return weekendWeightSpinner;
+	}
+
+
+	public static JSpinner getShiftOffWeightSpinner() {
+		return shiftOffWeightSpinner;
+	}
+
+
+	public static JSpinner getMaxAssignWeightSpinner() {
+		return maxAssignWeightSpinner;
+	}
+
+
+	public static JSpinner getCoverWeightSpinner() {
+		return coverWeightSpinner;
+	}
+	 
+	 
 }
