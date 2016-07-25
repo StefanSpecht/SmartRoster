@@ -58,8 +58,8 @@ import dom.company.thesis.service.InputService;
 public class SmartRosterApplet extends AbstractApplet
 {
 	private static final long serialVersionUID = 9082082587988054878L;
-	private final int EXPERIMENT_POPULATION_MIN = 10;
-	private final int EXPERIMENT_POPULATION_MAX = 500;
+	private final int EXPERIMENT_POPULATION_MIN = 100;
+	private final int EXPERIMENT_POPULATION_MAX = 120;
 	private final int EXPERIMENT_POPULATION_GRAN = 10;
 	
 	private JButton startButton;
@@ -223,8 +223,6 @@ public class SmartRosterApplet extends AbstractApplet
                 startButton.setEnabled(false);
                 new EvolutionTask((Integer) populationSpinner.getValue(),
                                   (Integer) elitismSpinner.getValue(),
-                                 // abort.getTerminationCondition())
-                                  //.execute();
                                   abort.getTerminationCondition(),
                                   new Stagnation(100, false),
                                   new TargetFitness(0, false)).execute();
@@ -319,8 +317,9 @@ public class SmartRosterApplet extends AbstractApplet
 	        		}
 	        		else {
 	        			setExperimentParametersEnabled(false);
-	        			setPopulationParametersEnabled(true);
-	        			setSelectionParametersEnabled(true);
+	        			setGeneralParametersEnabled(true);
+	        			//setPopulationParametersEnabled(true);
+	        			//setSelectionParametersEnabled(true);
 	        		}
 	            }
 	        });
@@ -400,8 +399,6 @@ public class SmartRosterApplet extends AbstractApplet
 		 
 		 EvolutionTask evolutionTask = new EvolutionTask((Integer) populationSpinner.getValue(),
                  (Integer) elitismSpinner.getValue(),
-                // abort.getTerminationCondition())
-                 //.execute();
                  abort.getTerminationCondition(),
                  new Stagnation(100, false),
                  new TargetFitness(0, false));
@@ -472,7 +469,7 @@ public class SmartRosterApplet extends AbstractApplet
 			experimentIterationsLabel.setEnabled(false);
 			experimentIterationsSpinner.setEnabled(false);
 			startExperimentButton.setEnabled(false);
-			startButton.setEnabled(true);
+			//startButton.setEnabled(true);
 		}
 	 }
 	 
@@ -588,6 +585,10 @@ public class SmartRosterApplet extends AbstractApplet
             			evolutionMonitor.setRollup(true);
             		}
             		
+            		RosterRenderer.disable();
+	                setGeneralParametersEnabled(false);
+	                setExperimentParametersEnabled(false);
+            		
             		EvolutionTask evolutionTask = new EvolutionTask(this.populationSize,
                             this.eliteCount,
                             abort.getTerminationCondition(),
@@ -595,6 +596,16 @@ public class SmartRosterApplet extends AbstractApplet
                             new TargetFitness(0, false));
            		 evolutionTask.setPopulationSizeExperimentParams(populationSizeExperimentParams);
            		 evolutionTask.execute();
+            	}
+            	else {
+            		setExperimentParametersEnabled(true);
+        	    	
+        	    	if (populationSizeExperimentRadioButton.isSelected()) {
+        	    		setPopulationParametersEnabled(false);
+        	    	}
+        	    	if (selectionExperimentRadioButton.isSelected()) {
+        	    		setSelectionParametersEnabled(false);
+        	    	}
             	}
             }
         }
