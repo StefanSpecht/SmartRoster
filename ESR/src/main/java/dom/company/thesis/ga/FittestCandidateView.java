@@ -64,8 +64,8 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
         this.renderer = renderer;
 
         JPanel header = new JPanel(new BorderLayout());
-        JLabel label = new JLabel((rightPadding("Fitness",20) + (rightPadding("ShiftOff",20)) + (rightPadding("Weekends",20)) + (rightPadding("MaxAssign",20)) + (rightPadding("TaskCover",20)) ), JLabel.CENTER);
-        //label.setFont(BIG_FONT);
+        JLabel label = new JLabel((rightPadding("Fitness",60) + (rightPadding("Penalty",30))), JLabel.CENTER);
+        label.setFont(BIG_FONT);
         header.add(label, BorderLayout.NORTH);
         //fitnessLabel.setFont(BIG_FONT);
         header.add(fitnessLabel, BorderLayout.CENTER);
@@ -99,11 +99,11 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
                 		);
                 rosterEvaluator.getFitness((Roster) fittestCandidate, emptyList);
                 
-                fitnessLabel.setText(rightPadding(String.valueOf(populationData.getBestCandidateFitness()), 24)
-                		+ rightPadding(String.valueOf(rosterEvaluator.getPenaltyShiftOffPreferences()), 24)   
-                		+ rightPadding(String.valueOf(rosterEvaluator.getPenaltyCompleteWeekends()), 24)
-                		+ rightPadding(String.valueOf(rosterEvaluator.getPenaltyMaxAssignmentsPerWeek()), 24)
-                		+ rightPadding(String.valueOf(rosterEvaluator.getPenaltyCoverRequirements()), 24)
+                fitnessLabel.setText(rightPadding(String.valueOf(populationData.getBestCandidateFitness()), 40)
+                		+ rightPadding("ShiftOff: " + String.valueOf(rosterEvaluator.getPenaltyShiftOffPreferences()), 15)
+                		+ rightPadding("Weekends: " + String.valueOf(rosterEvaluator.getPenaltyCompleteWeekends()), 15)
+                		+ rightPadding("MaxAssign: " + String.valueOf(rosterEvaluator.getPenaltyMaxAssignmentsPerWeek()), 15)
+                		+ rightPadding("CoverReq: " + String.valueOf(rosterEvaluator.getPenaltyCoverRequirements()), 3)
                 		);       
                 renderedCandidate = renderer.render(fittestCandidate);
                 scroller.setViewportView(renderedCandidate);
