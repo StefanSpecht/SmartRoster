@@ -18,6 +18,10 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 	private int costCompleteWeekends;
 	private int costMaxAssignmentsPerWeek;
 	private int costCoverRequirements;
+	private int penaltyShiftOffPreferences = 0;
+	private int penaltyCompleteWeekends = 0;
+	private int penaltyMaxAssignmentsPerWeek = 0;
+	private int penaltyCoverRequirements = 0;
 	
 	 public RosterEvaluator() {    
 	 }
@@ -31,10 +35,10 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 	
 	public double getFitness(Roster candidate, List<? extends Roster> population) {
 		
-		int penaltyShiftOffPreferences = 0;
-		int penaltyCompleteWeekends = 0;
-		int penaltyMaxAssignmentsPerWeek = 0;
-		int penaltyCoverRequirements = 0;
+		penaltyShiftOffPreferences = 0;
+		penaltyCompleteWeekends = 0;
+		penaltyMaxAssignmentsPerWeek = 0;
+		penaltyCoverRequirements = 0;
 		
 		//Evaluate each employee
 		for (int e = 0; e < InputService.getNoOfEmployees(); e++) {
@@ -119,4 +123,22 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 	 {
 	     return false;
 	 }
+
+	public int getPenaltyShiftOffPreferences() {
+		return penaltyShiftOffPreferences;
+	}
+
+	public int getPenaltyCompleteWeekends() {
+		return penaltyCompleteWeekends;
+	}
+
+	public int getPenaltyMaxAssignmentsPerWeek() {
+		return penaltyMaxAssignmentsPerWeek;
+	}
+
+	public int getPenaltyCoverRequirements() {
+		return penaltyCoverRequirements;
+	}
+	 
+	 
 }
