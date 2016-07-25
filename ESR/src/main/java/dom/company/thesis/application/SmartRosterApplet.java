@@ -58,8 +58,8 @@ import dom.company.thesis.service.InputService;
 public class SmartRosterApplet extends AbstractApplet
 {
 	private static final long serialVersionUID = 9082082587988054878L;
-	private final int EXPERIMENT_POPULATION_MIN = 100;
-	private final int EXPERIMENT_POPULATION_MAX = 120;
+	private final int EXPERIMENT_POPULATION_MIN = 300;
+	private final int EXPERIMENT_POPULATION_MAX = 300;
 	private final int EXPERIMENT_POPULATION_GRAN = 10;
 	
 	private JButton startButton;
