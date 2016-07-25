@@ -46,7 +46,7 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
 
     private final Renderer<? super T, JComponent> renderer;
     private final JLabel fitnessLabel = new JLabel("N/A", JLabel.CENTER);
-    private final JLabel penaltyLabel = new JLabel("ShiftOff: N/A Weekends: N/A MaxAssign: N/A TaskCover: N/A", JLabel.CENTER);
+    //private final JLabel penaltyLabel = new JLabel("ShiftOff: N/A Weekends: N/A MaxAssign: N/A TaskCover: N/A", JLabel.CENTER);
     private final JScrollPane scroller = new JScrollPane();
 
     private T fittestCandidate = null;
@@ -64,11 +64,12 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
         this.renderer = renderer;
 
         JPanel header = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Fitness", JLabel.CENTER);
+        JLabel label = new JLabel((rightPadding("Fitness",20) + (rightPadding("ShiftOff",20)) + (rightPadding("Weekends",20)) + (rightPadding("MaxAssign",20)) + (rightPadding("TaskCover",20)) ), JLabel.CENTER);
+        //label.setFont(BIG_FONT);
         header.add(label, BorderLayout.NORTH);
-        fitnessLabel.setFont(BIG_FONT);
+        //fitnessLabel.setFont(BIG_FONT);
         header.add(fitnessLabel, BorderLayout.CENTER);
-        header.add(penaltyLabel, BorderLayout.SOUTH);
+        //header.add(penaltyLabel, BorderLayout.SOUTH);
         add(header, BorderLayout.NORTH);
 
         scroller.setBackground(null);
@@ -87,7 +88,6 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
         {
             public void run()
             {
-                fitnessLabel.setText(String.valueOf(populationData.getBestCandidateFitness()));
                 fittestCandidate = populationData.getBestCandidate();
                 
                 List<Roster> emptyList = new ArrayList<Roster>();
@@ -98,14 +98,13 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
                 		(Integer) SmartRosterApplet.getCoverWeightSpinner().getValue()            		
                 		);
                 rosterEvaluator.getFitness((Roster) fittestCandidate, emptyList);
-                penaltyLabel.setText(
-                		"ShiftOff: " + rosterEvaluator.getPenaltyShiftOffPreferences()
-                		+ "Weekends" + rosterEvaluator.getPenaltyCompleteWeekends()
-                		+ "MaxAssign" + rosterEvaluator.getPenaltyMaxAssignmentsPerWeek()
-                		+ "TaskCover" + rosterEvaluator.getPenaltyCoverRequirements()
-                		);
-                		
                 
+                fitnessLabel.setText(rightPadding(String.valueOf(populationData.getBestCandidateFitness()), 24)
+                		+ rightPadding(String.valueOf(rosterEvaluator.getPenaltyShiftOffPreferences()), 24)   
+                		+ rightPadding(String.valueOf(rosterEvaluator.getPenaltyCompleteWeekends()), 24)
+                		+ rightPadding(String.valueOf(rosterEvaluator.getPenaltyMaxAssignmentsPerWeek()), 24)
+                		+ rightPadding(String.valueOf(rosterEvaluator.getPenaltyCoverRequirements()), 24)
+                		);       
                 renderedCandidate = renderer.render(fittestCandidate);
                 scroller.setViewportView(renderedCandidate);
                 
@@ -118,4 +117,8 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
     {
         // Do nothing.        
     }
+    
+    private String rightPadding(String str, int num) {
+        return String.format("%1$-" + num + "s", str);
+      }
 }
