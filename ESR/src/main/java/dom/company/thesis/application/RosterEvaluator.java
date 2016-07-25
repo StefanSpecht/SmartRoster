@@ -18,10 +18,10 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 	private int costCompleteWeekends;
 	private int costMaxAssignmentsPerWeek;
 	private int costCoverRequirements;
-	private int penaltyShiftOffPreferences = 0;
-	private int penaltyCompleteWeekends = 0;
-	private int penaltyMaxAssignmentsPerWeek = 0;
-	private int penaltyCoverRequirements = 0;
+	private int globalPenaltyShiftOffPreferences;
+	private int globalPenaltyCompleteWeekends;
+	private int globalPenaltyMaxAssignmentsPerWeek;
+	private int globalPenaltyCoverRequirements;
 	
 	 public RosterEvaluator() {    
 	 }
@@ -35,10 +35,10 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 	
 	public double getFitness(Roster candidate, List<? extends Roster> population) {
 		
-		penaltyShiftOffPreferences = 0;
-		penaltyCompleteWeekends = 0;
-		penaltyMaxAssignmentsPerWeek = 0;
-		penaltyCoverRequirements = 0;
+		int penaltyShiftOffPreferences = 0;
+		int penaltyCompleteWeekends = 0;
+		int penaltyMaxAssignmentsPerWeek = 0;
+		int penaltyCoverRequirements = 0;
 		
 		//Evaluate each employee
 		for (int e = 0; e < InputService.getNoOfEmployees(); e++) {
@@ -109,6 +109,11 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 			}
 		}
 		
+		this.globalPenaltyShiftOffPreferences = penaltyShiftOffPreferences;
+		this.globalPenaltyCompleteWeekends = penaltyCompleteWeekends;
+		this.globalPenaltyMaxAssignmentsPerWeek = penaltyMaxAssignmentsPerWeek;
+		this.globalPenaltyCoverRequirements = penaltyCoverRequirements;
+		
 	     return penaltyShiftOffPreferences 
 	    		 + penaltyCompleteWeekends 
 	    		 + penaltyMaxAssignmentsPerWeek 
@@ -125,19 +130,19 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 	 }
 
 	public int getPenaltyShiftOffPreferences() {
-		return penaltyShiftOffPreferences;
+		return globalPenaltyShiftOffPreferences;
 	}
 
 	public int getPenaltyCompleteWeekends() {
-		return penaltyCompleteWeekends;
+		return globalPenaltyCompleteWeekends;
 	}
 
 	public int getPenaltyMaxAssignmentsPerWeek() {
-		return penaltyMaxAssignmentsPerWeek;
+		return globalPenaltyMaxAssignmentsPerWeek;
 	}
 
 	public int getPenaltyCoverRequirements() {
-		return penaltyCoverRequirements;
+		return globalPenaltyCoverRequirements;
 	}
 	 
 	 
