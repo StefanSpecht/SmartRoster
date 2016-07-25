@@ -17,6 +17,9 @@ package dom.company.thesis.ga;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.util.List;
+import java.util.ArrayList;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,6 +28,10 @@ import javax.swing.SwingUtilities;
 import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.interactive.Renderer;
 import org.uncommons.watchmaker.framework.islands.IslandEvolutionObserver;
+
+import dom.company.thesis.application.RosterEvaluator;
+import dom.company.thesis.application.SmartRosterApplet;
+import dom.company.thesis.model.Roster;
 
 /**
  * {@link EvolutionMonitor} view for displaying a graphical representation
@@ -39,6 +46,7 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
 
     private final Renderer<? super T, JComponent> renderer;
     private final JLabel fitnessLabel = new JLabel("N/A", JLabel.CENTER);
+    private final JLabel penaltyLabel = new JLabel("ShiftOff: N/A Weekends: N/A MaxAssign: N/A TaskCover: N/A", JLabel.CENTER);
     private final JScrollPane scroller = new JScrollPane();
 
     private T fittestCandidate = null;
@@ -60,6 +68,7 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
         header.add(label, BorderLayout.NORTH);
         fitnessLabel.setFont(BIG_FONT);
         header.add(fitnessLabel, BorderLayout.CENTER);
+        header.add(penaltyLabel, BorderLayout.SOUTH);
         add(header, BorderLayout.NORTH);
 
         scroller.setBackground(null);
@@ -79,8 +88,24 @@ class FittestCandidateView<T> extends JPanel implements IslandEvolutionObserver<
             public void run()
             {
                 fitnessLabel.setText(String.valueOf(populationData.getBestCandidateFitness()));
-                
                 fittestCandidate = populationData.getBestCandidate();
+                
+                List<Roster> emptyList = new ArrayList<Roster>();
+                RosterEvaluator rosterEvaluator = new RosterEvaluator(
+                		(Integer) SmartRosterApplet.getShiftOffWeightSpinner().getValue(),
+                		(Integer) SmartRosterApplet.getWeekendWeightSpinner().getValue(),
+                		(Integer) SmartRosterApplet.getMaxAssignWeightSpinner().getValue(),
+                		(Integer) SmartRosterApplet.getCoverWeightSpinner().getValue()            		
+                		);
+                rosterEvaluator.getFitness((Roster) fittestCandidate, emptyList);
+                penaltyLabel.setText(
+                		"ShiftOff: " + rosterEvaluator.getPenaltyShiftOffPreferences()
+                		+ "Weekends" + rosterEvaluator.getPenaltyCompleteWeekends()
+                		+ "MaxAssign" + rosterEvaluator.getPenaltyMaxAssignmentsPerWeek()
+                		+ "TaskCover" + rosterEvaluator.getPenaltyCoverRequirements()
+                		);
+                		
+                
                 renderedCandidate = renderer.render(fittestCandidate);
                 scroller.setViewportView(renderedCandidate);
                 
