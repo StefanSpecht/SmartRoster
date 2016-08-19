@@ -58,9 +58,10 @@ import dom.company.thesis.service.InputService;
 public class SmartRosterApplet extends AbstractApplet
 {
 	private static final long serialVersionUID = 9082082587988054878L;
-	private final int EXPERIMENT_POPULATION_MIN = 300;
-	private final int EXPERIMENT_POPULATION_MAX = 300;
-	private final int EXPERIMENT_POPULATION_GRAN = 10;
+	private final int TERMINATION_STAGNATION = 50;
+	private final int EXPERIMENT_POPULATION_MIN = 50;
+	private final int EXPERIMENT_POPULATION_MAX = 2000;
+	private final int EXPERIMENT_POPULATION_GRAN = 50;
 	
 	private JButton startButton;
 	private AbortControl abort;
@@ -130,7 +131,7 @@ public class SmartRosterApplet extends AbstractApplet
 	     evolutionMonitor = new CustomEvolutionMonitor<Roster>(renderer,
 	    		 false, 
 	    		 (TerminationCondition) new TargetFitness(0, false),
-	    		 new Stagnation(100, false),
+	    		 new Stagnation(TERMINATION_STAGNATION, false),
 	    		 abort.getTerminationCondition());
 	     
 	     container.add(evolutionMonitor.getGUIComponent(), BorderLayout.CENTER);
@@ -224,7 +225,7 @@ public class SmartRosterApplet extends AbstractApplet
                 new EvolutionTask((Integer) populationSpinner.getValue(),
                                   (Integer) elitismSpinner.getValue(),
                                   abort.getTerminationCondition(),
-                                  new Stagnation(100, false),
+                                  new Stagnation(TERMINATION_STAGNATION, false),
                                   new TargetFitness(0, false)).execute();
             }
         });
@@ -400,7 +401,7 @@ public class SmartRosterApplet extends AbstractApplet
 		 EvolutionTask evolutionTask = new EvolutionTask((Integer) populationSpinner.getValue(),
                  (Integer) elitismSpinner.getValue(),
                  abort.getTerminationCondition(),
-                 new Stagnation(100, false),
+                 new Stagnation(TERMINATION_STAGNATION, false),
                  new TargetFitness(0, false));
 		 evolutionTask.setPopulationSizeExperimentParams(populationSizes);
 		 evolutionTask.execute();
@@ -592,7 +593,7 @@ public class SmartRosterApplet extends AbstractApplet
             		EvolutionTask evolutionTask = new EvolutionTask(this.populationSize,
                             this.eliteCount,
                             abort.getTerminationCondition(),
-                            new Stagnation(100, false),
+                            new Stagnation(TERMINATION_STAGNATION, false),
                             new TargetFitness(0, false));
            		 evolutionTask.setPopulationSizeExperimentParams(populationSizeExperimentParams);
            		 evolutionTask.execute();
