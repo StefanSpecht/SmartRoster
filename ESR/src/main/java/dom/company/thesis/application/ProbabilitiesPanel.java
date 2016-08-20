@@ -51,12 +51,12 @@ import dom.company.thesis.model.Roster;
 class ProbabilitiesPanel extends JPanel
 {
     private static final Probability ONE_TENTH = new Probability(0.1d);
-    private static final Probability ONE_HUNDREDTH = new Probability(0.01d);
+    //private static final Probability ONE_HUNDREDTH = new Probability(0.01d);
     
     private final ProbabilityParameterControl classicCrossoverControl;
-    private final ProbabilityParameterControl advancedCrossoverControl;
-    private final ProbabilityParameterControl flipMutationControl;
-    private final ProbabilityParameterControl swapMutationControl;
+    private ProbabilityParameterControl advancedCrossoverControl;
+    //private final ProbabilityParameterControl flipMutationControl;
+    private ProbabilityParameterControl swapMutationControl;
     
     private ButtonGroup classicCrossOverButtonGroup;
     private ButtonGroup advancedCrossOverButtonGroup;
@@ -147,13 +147,14 @@ class ProbabilitiesPanel extends JPanel
         advancedCrossOverButtonPanel.add(advancedCrossOverPointsSpinner);
         advancedCrossOverButtonPanel.add(advancedUniformCrossOverRadioButton);
                 
-        add(new JLabel("advanced Cross-over: "));
+        add(new JLabel("segmented Cross-over: "));
         add(advancedCrossoverControl.getControl());
         advancedCrossoverControl.setDescription("For each pair of solutions, the probability that "
         		+ "advanced cross-over is applied.");
         
         add(advancedCrossOverButtonPanel);
         
+        /*
         // flip Mutation
         flipMutationControl = new ProbabilityParameterControl(Probability.ZERO,
                                                                ONE_TENTH,
@@ -164,13 +165,14 @@ class ProbabilitiesPanel extends JPanel
         flipMutationControl.setDescription("For each allel, the probability that "
                                             + "it is changed randomly");
         add(new JLabel(""));
+        */
         
         // swap Mutation
         swapMutationControl = new ProbabilityParameterControl(Probability.ZERO,
                                                                ONE_TENTH,
                                                                4,
                                                                new Probability(0.01));
-        add(new JLabel("Swap Mutation: "));
+        add(new JLabel("Pull-Push-Mutation: "));
         add(swapMutationControl.getControl());
         swapMutationControl.setDescription("For each allel, the probability that "
                                             + "it is swapped with another allel");
@@ -182,7 +184,7 @@ class ProbabilitiesPanel extends JPanel
         crossoverControl.getControl().setName("Crossover");
         flipMutationControl.getControl().setName("flipMutation");
        **/
-        SpringUtilities.makeCompactGrid(this, 4, 3, 10, 0, 10, 0);
+        SpringUtilities.makeCompactGrid(this, 3, 3, 10, 0, 10, 0);
     }
 
 
@@ -209,10 +211,33 @@ class ProbabilitiesPanel extends JPanel
         //operators.add(new ClassicRosterCrossover(new ConstantGenerator<Integer>(2),crossoverControl.getNumberGenerator()));
         //operators.add(new UniformRosterCrossover());
         //operators.add(new StringMutation(getAlphabet(), mutationControl.getNumberGenerator()));
-        operators.add(new RosterFlipMutation(flipMutationControl.getNumberGenerator()));
+        //operators.add(new RosterFlipMutation(flipMutationControl.getNumberGenerator()));
         operators.add(new RosterSwapMutation(swapMutationControl.getNumberGenerator()));
        
         return new EvolutionPipeline<Roster>(operators);
+    }
+    /*
+    public void setCrossPointParametersEnabled(boolean enabled) {
+    	classicCrossoverControl.getControl().setEnabled(enabled);
+    	classicCrossOverButtonPanel.setEnabled(enabled);
+    	advancedCrossOverButtonPanel.setEnabled(enabled);
+	 }
+	 */
+    public void setCrossPoints(int i) {
+    	this.advancedCrossOverPointsSpinner.setValue((Object) i);
+    }
+    public void setPc(float i) {
+    	this.advancedCrossoverControl = new ProbabilityParameterControl(
+        		Probability.ZERO,
+        		Probability.ONE,
+                2,
+                new Probability(i));
+    }
+    public void setPm(float i) {
+    	this.swapMutationControl = new ProbabilityParameterControl(Probability.ZERO,
+                ONE_TENTH,
+                4,
+                new Probability(i));
     }
 
 }

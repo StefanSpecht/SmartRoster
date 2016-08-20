@@ -59,9 +59,20 @@ public class SmartRosterApplet extends AbstractApplet
 {
 	private static final long serialVersionUID = 9082082587988054878L;
 	private final int TERMINATION_STAGNATION = 50;
-	private final int EXPERIMENT_POPULATION_MIN = 50;
-	private final int EXPERIMENT_POPULATION_MAX = 2000;
+	private final int EXPERIMENT_POPULATION_MIN = 1500;
+	private final int EXPERIMENT_POPULATION_MAX = 2500;
 	private final int EXPERIMENT_POPULATION_GRAN = 50;
+	private final int EXPERIMENT_CROSSPOINTS_MIN = 1;
+	private final int EXPERIMENT_CROSSPOINTS_MAX = 10;
+	private final int EXPERIMENT_CROSSPOINTS_GRAN = 1;
+	private final int EXPERIMENT_PC_MIN = 1050;
+	private final int EXPERIMENT_PC_MAX = 2500;
+	private final int EXPERIMENT_PC_GRAN = 50;
+	private final int EXPERIMENT_PM_MIN = 1050;
+	private final int EXPERIMENT_PM_MAX = 2500;
+	private final int EXPERIMENT_PM_GRAN = 50;
+	
+	
 	
 	private JButton startButton;
 	private AbortControl abort;
@@ -93,7 +104,9 @@ public class SmartRosterApplet extends AbstractApplet
 	//private JLabel populationSizeExperimentLabel;
 	private JRadioButton populationSizeExperimentRadioButton;
 	//private JLabel selectionExperimentLabel;
-	private JRadioButton selectionExperimentRadioButton;
+	private JRadioButton pcExperimentRadioButton;
+	private JRadioButton pmExperimentRadioButton;
+	private JRadioButton crossPointExperimentRadioButton;
 	private ButtonGroup experimentButtonGroup;
 	private JLabel experimentLabel;
 	private JPanel experimentPanel;
@@ -285,13 +298,19 @@ public class SmartRosterApplet extends AbstractApplet
 		 	experimentLabel = new JLabel("Experiment:");
 	        populationSizeExperimentRadioButton = new JRadioButton("Population Size");
 	        populationSizeExperimentRadioButton.setSelected(true);
-	    	selectionExperimentRadioButton = new JRadioButton("Selection");
+	    	crossPointExperimentRadioButton = new JRadioButton("X-points");
+	    	pcExperimentRadioButton = new JRadioButton("P(C)");
+	    	pmExperimentRadioButton = new JRadioButton("P(M)");	    	
 	    	experimentButtonGroup = new ButtonGroup();
 	    	experimentPanel = new JPanel();	    	
 	    	experimentButtonGroup.add(populationSizeExperimentRadioButton);
-	    	experimentButtonGroup.add(selectionExperimentRadioButton);
+	    	experimentButtonGroup.add(crossPointExperimentRadioButton);
+	    	experimentButtonGroup.add(pcExperimentRadioButton);
+	    	experimentButtonGroup.add(pmExperimentRadioButton);
 	    	experimentPanel.add(populationSizeExperimentRadioButton);
-	    	experimentPanel.add(selectionExperimentRadioButton);
+	    	experimentPanel.add(crossPointExperimentRadioButton);
+	    	experimentPanel.add(pcExperimentRadioButton);
+	    	experimentPanel.add(pmExperimentRadioButton);
 	    	experimentIterationsLabel = new JLabel("Iterations per setting");
 	    	experimentIterationsSpinner = new JSpinner(new SpinnerNumberModel(1, 0, 1000, 1));
 	    	experimentIterationsSpinner.setMaximumSize(shiftOffWeightSpinner.getMinimumSize());
@@ -299,7 +318,9 @@ public class SmartRosterApplet extends AbstractApplet
 	    	
 	    	experimentLabel.setEnabled(false);
 	    	populationSizeExperimentRadioButton.setEnabled(false);
-	    	selectionExperimentRadioButton.setEnabled(false);
+	    	crossPointExperimentRadioButton.setEnabled(false);
+	    	pcExperimentRadioButton.setEnabled(false);
+	    	pmExperimentRadioButton.setEnabled(false);	    	
 	    	experimentIterationsLabel.setEnabled(false);
 	    	experimentIterationsSpinner.setEnabled(false);
 	    	startExperimentButton.setEnabled(false);
@@ -311,9 +332,6 @@ public class SmartRosterApplet extends AbstractApplet
 	        	    	
 	        	    	if (populationSizeExperimentRadioButton.isSelected()) {
 	        	    		setPopulationParametersEnabled(false);
-	        	    	}
-	        	    	if (selectionExperimentRadioButton.isSelected()) {
-	        	    		setSelectionParametersEnabled(false);
 	        	    	}
 	        		}
 	        		else {
@@ -336,19 +354,7 @@ public class SmartRosterApplet extends AbstractApplet
 	        		}
 				}
 	        });
-	    	
-	    	selectionExperimentRadioButton.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent event) {
-					if (event.getStateChange() == ItemEvent.SELECTED) {
-						setSelectionParametersEnabled(false);
-	        		}
-	        		else {
-	        			setSelectionParametersEnabled(true);
-	        		}
-				}
-	        });
-	    	
+	    		    	
 	    	startExperimentButton = new JButton("Start Experiment");        
 	        startExperimentButton.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent event) {  
@@ -362,6 +368,26 @@ public class SmartRosterApplet extends AbstractApplet
 	                			EXPERIMENT_POPULATION_MAX,
 	                			EXPERIMENT_POPULATION_GRAN);
 	                }
+	                if(crossPointExperimentRadioButton.isSelected()) {
+	                	startCrossPointExperiment((int)experimentIterationsSpinner.getValue(),
+	                			EXPERIMENT_CROSSPOINTS_MIN,
+	                			EXPERIMENT_CROSSPOINTS_MAX,
+	                			EXPERIMENT_CROSSPOINTS_GRAN);
+	                }
+	                /*
+	                if(populationSizeExperimentRadioButton.isSelected()) {
+	                	startPcExperiment((int)experimentIterationsSpinner.getValue(),
+	                			EXPERIMENT_PC_MIN,
+	                			EXPERIMENT_PC_MAX,
+	                			EXPERIMENT_PC_GRAN);
+	                }
+	                if(populationSizeExperimentRadioButton.isSelected()) {
+	                	startPmExperiment((int)experimentIterationsSpinner.getValue(),
+	                			EXPERIMENT_PM_MIN,
+	                			EXPERIMENT_PM_MAX,
+	                			EXPERIMENT_PM_GRAN);
+	                }
+	                */
 	             }
 	        });
 	   		 
@@ -406,6 +432,26 @@ public class SmartRosterApplet extends AbstractApplet
 		 evolutionTask.setPopulationSizeExperimentParams(populationSizes);
 		 evolutionTask.execute();
 	}
+	
+	 protected void startCrossPointExperiment(int iterations, int crossPointsMin,
+				int crossPointsMax, int crossPointsGran) {
+			 
+			 	List<Integer> crossPoints = new ArrayList<Integer>();
+			 
+			 for (int i = crossPointsMin; i <= crossPointsMax; i += crossPointsGran) {
+				 for (int j = 0; j < iterations; j++) {
+					 crossPoints.add(i);
+				 }
+			 }
+			 
+			 EvolutionTask evolutionTask = new EvolutionTask((Integer) populationSpinner.getValue(),
+	                 (Integer) elitismSpinner.getValue(),
+	                 abort.getTerminationCondition(),
+	                 new Stagnation(TERMINATION_STAGNATION, false),
+	                 new TargetFitness(0, false));
+			 evolutionTask.setCrossPointExperimentParams(crossPoints);
+			 evolutionTask.execute();
+		}
 		
 
 	private void setGeneralParametersEnabled(boolean enabled) {
@@ -456,7 +502,9 @@ public class SmartRosterApplet extends AbstractApplet
 		 if (enabled) {
 			 experimentLabel.setEnabled(true);
 			 populationSizeExperimentRadioButton.setEnabled(true);
-			 selectionExperimentRadioButton.setEnabled(true);
+			 pcExperimentRadioButton.setEnabled(true);
+			 pmExperimentRadioButton.setEnabled(true);
+			 crossPointExperimentRadioButton.setEnabled(true);
 			 experimentIterationsLabel.setEnabled(true);
 			 experimentIterationsSpinner.setEnabled(true);
 			 startExperimentButton.setEnabled(true);
@@ -466,7 +514,9 @@ public class SmartRosterApplet extends AbstractApplet
 			
 			experimentLabel.setEnabled(false);
 			populationSizeExperimentRadioButton.setEnabled(false);
-			selectionExperimentRadioButton.setEnabled(false);
+			pcExperimentRadioButton.setEnabled(false);
+			pmExperimentRadioButton.setEnabled(false);
+			crossPointExperimentRadioButton.setEnabled(false);
 			experimentIterationsLabel.setEnabled(false);
 			experimentIterationsSpinner.setEnabled(false);
 			startExperimentButton.setEnabled(false);
@@ -484,27 +534,17 @@ public class SmartRosterApplet extends AbstractApplet
 		 	populationSpinner.setEnabled(false);
 		 }
 	 }
-	 private void setSelectionParametersEnabled(boolean enabled) {
-		 if (enabled) {
-			 selectionLabel.setEnabled(true);
-	    	rankSelectionRadioButton.setEnabled(true);
-	    	rouletteWheelSelectionRadioButton.setEnabled(true);
-	    	susSelectionRadioButton.setEnabled(true);
-		}
-		else {
-			selectionLabel.setEnabled(false);
- 	    	rankSelectionRadioButton.setEnabled(false);
- 	    	rouletteWheelSelectionRadioButton.setEnabled(false);
- 	    	susSelectionRadioButton.setEnabled(false);
-		 }
-	 }
+	 
 	
 	 public class EvolutionTask extends SwingBackgroundTask<Roster> {
 		 		 
 		 private int populationSize;
+		 private int crossPoints;
 	     private int eliteCount;
 	     private List<Integer> populationSizeExperimentParams;
+	     private List<Integer> crossPointExperimentParams;
 	     private boolean isPopulationSizeExperiment;
+	     private boolean isCrossPointExperiment;
 	     private SelectionStrategy<Object> selection;
 	     private TerminationCondition[] terminationConditions;
 
@@ -521,7 +561,11 @@ public class SmartRosterApplet extends AbstractApplet
         {
            	if(isPopulationSizeExperiment) {
            		this.populationSize = populationSizeExperimentParams.get(0);
-           	}           	
+           	} 
+           	if(isCrossPointExperiment) {
+           		this.crossPoints = crossPointExperimentParams.get(0);
+           		probabilitiesPanel.setCrossPoints(crossPoints);
+           	} 
         	RosterRenderer.disable();
         	Random rng = new MersenneTwisterRNG();
             RosterEvaluator fitnessEvaluator = new RosterEvaluator(
@@ -604,8 +648,34 @@ public class SmartRosterApplet extends AbstractApplet
         	    	if (populationSizeExperimentRadioButton.isSelected()) {
         	    		setPopulationParametersEnabled(false);
         	    	}
-        	    	if (selectionExperimentRadioButton.isSelected()) {
-        	    		setSelectionParametersEnabled(false);
+            	}
+            }
+            
+            if (isCrossPointExperiment) {
+            	this.crossPointExperimentParams.remove(0);
+            	if (!crossPointExperimentParams.isEmpty()) {
+            		
+            		if (crossPointExperimentParams.size() == 1 || (crossPoints == crossPointExperimentParams.get(0) && crossPoints != crossPointExperimentParams.get(1))) {
+            			evolutionMonitor.setRollup(true);
+            		}
+            		
+            		RosterRenderer.disable();
+	                setGeneralParametersEnabled(false);
+	                setExperimentParametersEnabled(false);
+            		
+            		EvolutionTask evolutionTask = new EvolutionTask(this.populationSize,
+                            this.eliteCount,
+                            abort.getTerminationCondition(),
+                            new Stagnation(TERMINATION_STAGNATION, false),
+                            new TargetFitness(0, false));
+           		 evolutionTask.setCrossPointExperimentParams(crossPointExperimentParams);
+           		 evolutionTask.execute();
+            	}
+            	else {
+            		setExperimentParametersEnabled(true);
+        	    	
+        	    	if (populationSizeExperimentRadioButton.isSelected()) {
+        	    		setPopulationParametersEnabled(false);
         	    	}
             	}
             }
@@ -619,6 +689,10 @@ public class SmartRosterApplet extends AbstractApplet
         protected void setPopulationSizeExperimentParams(List<Integer> populationSizes) {
         	this.populationSizeExperimentParams = populationSizes;
         	this.isPopulationSizeExperiment = true;
+        }
+        protected void setCrossPointExperimentParams(List<Integer> crossPoints) {
+        	this.crossPointExperimentParams = crossPoints;
+        	this.isCrossPointExperiment = true;
         }
 	 }
 
