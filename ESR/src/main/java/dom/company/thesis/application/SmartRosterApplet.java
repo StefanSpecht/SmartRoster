@@ -65,12 +65,12 @@ public class SmartRosterApplet extends AbstractApplet
 	private final int EXPERIMENT_CROSSPOINTS_MIN = 1;
 	private final int EXPERIMENT_CROSSPOINTS_MAX = 10;
 	private final int EXPERIMENT_CROSSPOINTS_GRAN = 1;
-	private final int EXPERIMENT_PC_MIN = 1050;
-	private final int EXPERIMENT_PC_MAX = 2500;
-	private final int EXPERIMENT_PC_GRAN = 50;
-	private final int EXPERIMENT_PM_MIN = 1050;
-	private final int EXPERIMENT_PM_MAX = 2500;
-	private final int EXPERIMENT_PM_GRAN = 50;
+	private final double EXPERIMENT_PC_MIN = 0.5;
+	private final double EXPERIMENT_PC_MAX = 1.0;
+	private final double EXPERIMENT_PC_GRAN = 0.05;
+	private final double EXPERIMENT_PM_MIN = 0.0001;
+	private final double EXPERIMENT_PM_MAX = 0.01;
+	private final double EXPERIMENT_PM_GRAN = 0.0001;
 	
 	
 	
@@ -374,20 +374,20 @@ public class SmartRosterApplet extends AbstractApplet
 	                			EXPERIMENT_CROSSPOINTS_MAX,
 	                			EXPERIMENT_CROSSPOINTS_GRAN);
 	                }
-	                /*
-	                if(populationSizeExperimentRadioButton.isSelected()) {
+	                
+	                if(pcExperimentRadioButton.isSelected()) {
 	                	startPcExperiment((int)experimentIterationsSpinner.getValue(),
 	                			EXPERIMENT_PC_MIN,
 	                			EXPERIMENT_PC_MAX,
 	                			EXPERIMENT_PC_GRAN);
 	                }
-	                if(populationSizeExperimentRadioButton.isSelected()) {
+	                if(pmExperimentRadioButton.isSelected()) {
 	                	startPmExperiment((int)experimentIterationsSpinner.getValue(),
 	                			EXPERIMENT_PM_MIN,
 	                			EXPERIMENT_PM_MAX,
 	                			EXPERIMENT_PM_GRAN);
 	                }
-	                */
+	                
 	             }
 	        });
 	   		 
@@ -450,6 +450,46 @@ public class SmartRosterApplet extends AbstractApplet
 	                 new Stagnation(TERMINATION_STAGNATION, false),
 	                 new TargetFitness(0, false));
 			 evolutionTask.setCrossPointExperimentParams(crossPoints);
+			 evolutionTask.execute();
+		}
+	 
+	 protected void startPcExperiment(int iterations, double pcMin,
+				double pcMax, double pcGran) {
+			 
+			 	List<Double> pcs = new ArrayList<Double>();
+			 
+			 for (double i = pcMin; i <= pcMax; i += pcGran) {
+				 for (int j = 0; j < iterations; j++) {
+					 pcs.add(i);
+				 }
+			 }
+			 
+			 EvolutionTask evolutionTask = new EvolutionTask((Integer) populationSpinner.getValue(),
+	                 (Integer) elitismSpinner.getValue(),
+	                 abort.getTerminationCondition(),
+	                 new Stagnation(TERMINATION_STAGNATION, false),
+	                 new TargetFitness(0, false));
+			 evolutionTask.setPcExperimentParams(pcs);
+			 evolutionTask.execute();
+		}
+	 
+	 protected void startPmExperiment(int iterations, double pmMin,
+				double pmMax, double pmGran) {
+			 
+			 	List<Double> pms = new ArrayList<Double>();
+			 
+			 for (double i = pmMin; i <= pmMax; i += pmGran) {
+				 for (int j = 0; j < iterations; j++) {
+					 pms.add(i);
+				 }
+			 }
+			 
+			 EvolutionTask evolutionTask = new EvolutionTask((Integer) populationSpinner.getValue(),
+	                 (Integer) elitismSpinner.getValue(),
+	                 abort.getTerminationCondition(),
+	                 new Stagnation(TERMINATION_STAGNATION, false),
+	                 new TargetFitness(0, false));
+			 evolutionTask.setPmExperimentParams(pms);
 			 evolutionTask.execute();
 		}
 		
@@ -540,11 +580,17 @@ public class SmartRosterApplet extends AbstractApplet
 		 		 
 		 private int populationSize;
 		 private int crossPoints;
+		 private double pc;
+		 private double pm;
 	     private int eliteCount;
 	     private List<Integer> populationSizeExperimentParams;
 	     private List<Integer> crossPointExperimentParams;
+	     private List<Double> pcExperimentParams;
+	     private List<Double> pmExperimentParams;
 	     private boolean isPopulationSizeExperiment;
 	     private boolean isCrossPointExperiment;
+	     private boolean isPcExperiment;
+	     private boolean isPmExperiment;
 	     private SelectionStrategy<Object> selection;
 	     private TerminationCondition[] terminationConditions;
 
@@ -565,6 +611,14 @@ public class SmartRosterApplet extends AbstractApplet
            	if(isCrossPointExperiment) {
            		this.crossPoints = crossPointExperimentParams.get(0);
            		probabilitiesPanel.setCrossPoints(crossPoints);
+           	} 
+           	if(isPcExperiment) {
+           		this.pc = pcExperimentParams.get(0);
+           		probabilitiesPanel.setPc(pc);
+           	} 
+           	if(isPmExperiment) {
+           		this.pm = pmExperimentParams.get(0);
+           		probabilitiesPanel.setPm(pm);
            	} 
         	RosterRenderer.disable();
         	Random rng = new MersenneTwisterRNG();
@@ -679,6 +733,64 @@ public class SmartRosterApplet extends AbstractApplet
         	    	}
             	}
             }
+            
+            if (isPcExperiment) {
+            	this.pcExperimentParams.remove(0);
+            	if (!pcExperimentParams.isEmpty()) {
+            		
+            		if (pcExperimentParams.size() == 1 || (pc == pcExperimentParams.get(0) && pc != pcExperimentParams.get(1))) {
+            			evolutionMonitor.setRollup(true);
+            		}
+            		
+            		RosterRenderer.disable();
+	                setGeneralParametersEnabled(false);
+	                setExperimentParametersEnabled(false);
+            		
+            		EvolutionTask evolutionTask = new EvolutionTask(this.populationSize,
+                            this.eliteCount,
+                            abort.getTerminationCondition(),
+                            new Stagnation(TERMINATION_STAGNATION, false),
+                            new TargetFitness(0, false));
+           		 evolutionTask.setPcExperimentParams(pcExperimentParams);
+           		 evolutionTask.execute();
+            	}
+            	else {
+            		setExperimentParametersEnabled(true);
+        	    	
+        	    	if (populationSizeExperimentRadioButton.isSelected()) {
+        	    		setPopulationParametersEnabled(false);
+        	    	}
+            	}
+            }
+            
+            if (isPmExperiment) {
+            	this.pmExperimentParams.remove(0);
+            	if (!pmExperimentParams.isEmpty()) {
+            		
+            		if (pmExperimentParams.size() == 1 || (pm == pmExperimentParams.get(0) && pm != pmExperimentParams.get(1))) {
+            			evolutionMonitor.setRollup(true);
+            		}
+            		
+            		RosterRenderer.disable();
+	                setGeneralParametersEnabled(false);
+	                setExperimentParametersEnabled(false);
+            		
+            		EvolutionTask evolutionTask = new EvolutionTask(this.populationSize,
+                            this.eliteCount,
+                            abort.getTerminationCondition(),
+                            new Stagnation(TERMINATION_STAGNATION, false),
+                            new TargetFitness(0, false));
+           		 evolutionTask.setPmExperimentParams(pmExperimentParams);
+           		 evolutionTask.execute();
+            	}
+            	else {
+            		setExperimentParametersEnabled(true);
+        	    	
+        	    	if (populationSizeExperimentRadioButton.isSelected()) {
+        	    		setPopulationParametersEnabled(false);
+        	    	}
+            	}
+            }
         }
         @Override
         protected void onError(Throwable throwable)
@@ -693,6 +805,14 @@ public class SmartRosterApplet extends AbstractApplet
         protected void setCrossPointExperimentParams(List<Integer> crossPoints) {
         	this.crossPointExperimentParams = crossPoints;
         	this.isCrossPointExperiment = true;
+        }
+        protected void setPcExperimentParams(List<Double> pcs) {
+        	this.pcExperimentParams = pcs;
+        	this.isPcExperiment = true;
+        }
+        protected void setPmExperimentParams(List<Double> pms) {
+        	this.pmExperimentParams = pms;
+        	this.isPmExperiment = true;
         }
 	 }
 

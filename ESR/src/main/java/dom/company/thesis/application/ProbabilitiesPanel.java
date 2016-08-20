@@ -226,14 +226,14 @@ class ProbabilitiesPanel extends JPanel
     public void setCrossPoints(int i) {
     	this.advancedCrossOverPointsSpinner.setValue((Object) i);
     }
-    public void setPc(float i) {
+    public void setPc(double i) {
     	this.advancedCrossoverControl = new ProbabilityParameterControl(
         		Probability.ZERO,
         		Probability.ONE,
                 2,
                 new Probability(i));
     }
-    public void setPm(float i) {
+    public void setPm(double i) {
     	this.swapMutationControl = new ProbabilityParameterControl(Probability.ZERO,
                 ONE_TENTH,
                 4,
