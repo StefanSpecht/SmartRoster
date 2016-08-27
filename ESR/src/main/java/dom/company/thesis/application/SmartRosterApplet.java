@@ -137,7 +137,7 @@ public class SmartRosterApplet extends AbstractApplet
         populationLabel = new JLabel("Population Size: ");
         parameterBox.add(populationLabel);
         parameterBox.add(Box.createHorizontalStrut(5));
-        populationSpinner = new JSpinner(new SpinnerNumberModel(1050, 2, 10000, 1));
+        populationSpinner = new JSpinner(new SpinnerNumberModel(1150, 2, 10000, 1));
         populationSpinner.setMaximumSize(populationSpinner.getMinimumSize());
         parameterBox.add(populationSpinner);
         parameterBox.add(Box.createHorizontalStrut(10));
