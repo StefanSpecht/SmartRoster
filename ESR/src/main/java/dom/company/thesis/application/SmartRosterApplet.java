@@ -137,7 +137,7 @@ public class SmartRosterApplet extends AbstractApplet
         populationLabel = new JLabel("Population Size: ");
         parameterBox.add(populationLabel);
         parameterBox.add(Box.createHorizontalStrut(5));
-        populationSpinner = new JSpinner(new SpinnerNumberModel(100, 2, 10000, 1));
+        populationSpinner = new JSpinner(new SpinnerNumberModel(1050, 2, 10000, 1));
         populationSpinner.setMaximumSize(populationSpinner.getMinimumSize());
         parameterBox.add(populationSpinner);
         parameterBox.add(Box.createHorizontalStrut(10));
@@ -163,7 +163,7 @@ public class SmartRosterApplet extends AbstractApplet
         selectionButtonGroup.add(susSelectionRadioButton);
         
         selectionButtonPanel = new JPanel();
-        rouletteWheelSelectionRadioButton.setSelected(true);
+        rankSelectionRadioButton.setSelected(true);
         selectionButtonPanel.add(rouletteWheelSelectionRadioButton);
         selectionButtonPanel.add(rankSelectionRadioButton);
         selectionButtonPanel.add(susSelectionRadioButton);

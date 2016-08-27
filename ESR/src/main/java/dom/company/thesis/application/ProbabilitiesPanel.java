@@ -56,9 +56,9 @@ class ProbabilitiesPanel extends JPanel
         		Probability.ZERO,
         		Probability.ONE,
                 2,
-                Probability.ONE);        
+                Probability.ZERO);        
         
-        classicCrossOverPointsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));        
+        classicCrossOverPointsSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 1000, 1));        
         classicCrossOverPointsRadioButton = new JRadioButton("# X-over points");
         classicUniformCrossOverRadioButton = new JRadioButton("Uniform Crossover"); 
         classicCrossOverPointsRadioButton.setSelected(true);
@@ -92,9 +92,9 @@ class ProbabilitiesPanel extends JPanel
         		Probability.ZERO,
         		Probability.ONE,
                 2,
-                Probability.ONE);        
+                new Probability(0.9d));        
         
-        advancedCrossOverPointsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));        
+        advancedCrossOverPointsSpinner = new JSpinner(new SpinnerNumberModel(18, 1, 1000, 1));        
         advancedCrossOverPointsRadioButton = new JRadioButton("# X-over points");
         advancedUniformCrossOverRadioButton = new JRadioButton("Uniform Crossover"); 
         advancedCrossOverPointsRadioButton.setSelected(true);
@@ -116,17 +116,17 @@ class ProbabilitiesPanel extends JPanel
         advancedCrossOverButtonPanel.add(advancedCrossOverPointsSpinner);
         advancedCrossOverButtonPanel.add(advancedUniformCrossOverRadioButton);
                 
-        add(new JLabel("segmented Cross-over: "));
+        add(new JLabel("Segmented Crossover: "));
         add(advancedCrossoverControl.getControl());
         advancedCrossoverControl.setDescription("For each pair of solutions, the probability that "
-        		+ "advanced cross-over is applied.");
+        		+ "segmented crossover is applied.");
          add(advancedCrossOverButtonPanel);
         
         // Pull-Push-Mutation (former named "swapMutation")
         swapMutationControl = new ProbabilityParameterControl(Probability.ZERO,
                                                                ONE_TENTH,
                                                                4,
-                                                               new Probability(0.01));
+                                                               new Probability(0.001));
         add(new JLabel("Pull-Push-Mutation: "));
         add(swapMutationControl.getControl());
         swapMutationControl.setDescription("For each allel, the probability that "
