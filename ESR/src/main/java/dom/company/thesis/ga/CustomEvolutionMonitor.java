@@ -1,18 +1,3 @@
-//=============================================================================
-// Copyright 2006-2010 Daniel W. Dyer
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//=============================================================================
 package dom.company.thesis.ga;
 
 import java.awt.BorderLayout;
@@ -47,14 +32,6 @@ import com.opencsv.CSVWriter;
 import dom.company.thesis.gui.RosterRenderer;
 import dom.company.thesis.service.InputService;
 
-/**
- * The Evolution Monitor is a component that can be attached to an
- * {@link org.uncommons.watchmaker.framework.EvolutionEngine} to provide
- * real-time information (in a Swing GUI) about the current state of the
- * evolution.
- * @param <T> The type of the evolved entities monitored by this component.
- * @author Daniel Dyer
- */
 public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
 {
     private final List<IslandEvolutionObserver<? super T>> views = new LinkedList<IslandEvolutionObserver<? super T>>();
@@ -66,40 +43,16 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
     private final boolean islands;
     private boolean rollup;
 
-    /**
-     * <p>Creates an CustomEvolutionMonitor with a single panel that graphs the fitness scores
-     * of the population from generation to generation.</p>
-     * <p>If you are using {@link org.uncommons.watchmaker.framework.islands.IslandEvolution},
-     * use the {@link #CustomEvolutionMonitor(boolean)} constructor instead, to enable island support.</p>
-     */
     public CustomEvolutionMonitor()
     {
         this(false);
     }
 
-    
-    /**
-     * Creates an CustomEvolutionMonitor with a single panel that graphs the fitness scores
-     * of the population from generation to generation.
-     * @param islands Whether the monitor should be configured for displaying data from
-     * {@link org.uncommons.watchmaker.framework.islands.IslandEvolution}.  Set this
-     * parameter to false when using a standard {@link org.uncommons.watchmaker.framework.EvolutionEngine}
-     * or if you don't want to display island-specific data for island evolution.
-     */
     public CustomEvolutionMonitor(boolean islands)
     {
-        this(new ObjectSwingRenderer(), islands, null);
+        this(new ObjectSwingRenderer(), islands, (TerminationCondition[])null);
     }
 
-
-    /**
-     * Creates an CustomEvolutionMonitor with a second panel that displays a graphical
-     * representation of the fittest candidate in the population.
-     * @param renderer Renders a candidate solution as a JComponent.
-     * @param islands Whether the monitor should be configured for displaying data from
-     * {@link org.uncommons.watchmaker.framework.islands.IslandEvolution}.  Set this
-     * parameter to false when using a standard {@link org.uncommons.watchmaker.framework.EvolutionEngine}
-     */
     public CustomEvolutionMonitor(final Renderer<? super T, JComponent> renderer, boolean islands, TerminationCondition... conditions)
     {
         this.islands = islands;
@@ -166,10 +119,6 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
         views.add(statusBar);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     public void populationUpdate(PopulationData<? extends T> populationData)
     {
     	//if termination condition is met, enable the renderer and log statistics to csv
@@ -286,10 +235,6 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     public void islandPopulationUpdate(int islandIndex, PopulationData<? extends T> populationData)
     {
         for (IslandEvolutionObserver<? super T> view : views)
@@ -304,15 +249,6 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
         return monitorComponent;
     }
 
-
-    /**
-     * Displays the evolution monitor component in a new {@link JFrame}.  There is no
-     * need to make sure this method is invoked from the Event Dispatch Thread, the
-     * method itself ensures that the window is created and displayed from the EDT.
-     * @param title The title for the new frame.
-     * @param exitOnClose Whether the JVM should exit when the frame is closed.  Useful
-     * if this is the only application window.
-     */
     public void showInFrame(final String title,
                             final boolean exitOnClose)
     {        
@@ -327,15 +263,6 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
         });
     }
 
-
-    /**
-     * Displays the evolution monitor component in a new {@link JDialog}.  There is no
-     * need to make sure this method is invoked from the Event Dispatch Thread, the
-     * method itself ensures that the window is created and displayed from the EDT.
-     * @param owner The owning frame for the new dialog.
-     * @param title The title for the new dialog.
-     * @param modal Whether the 
-     */
     public void showInDialog(final JFrame owner,
                              final String title,
                              final boolean modal)
@@ -351,11 +278,6 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
         });
     }
 
-
-    /**
-     * Helper method for showing the evolution monitor in a frame or dialog.
-     * @param newWindow The frame or dialog used to show the evolution monitor.
-     */
     private void showWindow(Window newWindow)
     {
         if (window != null)
@@ -371,11 +293,9 @@ public class CustomEvolutionMonitor<T> implements IslandEvolutionObserver<T>
         this.window = newWindow;
     }
 
-
 	public boolean isRollup() {
 		return rollup;
 	}
-
 
 	public void setRollup(boolean rollup) {
 		this.rollup = rollup;

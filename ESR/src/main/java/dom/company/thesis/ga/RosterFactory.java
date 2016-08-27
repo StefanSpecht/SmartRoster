@@ -1,4 +1,4 @@
-package dom.company.thesis.application;
+package dom.company.thesis.ga;
 
 import java.util.Random;
 

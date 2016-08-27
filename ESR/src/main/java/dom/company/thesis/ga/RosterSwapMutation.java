@@ -1,16 +1,16 @@
 
-package dom.company.thesis.application;
+package dom.company.thesis.ga;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import org.uncommons.maths.number.ConstantGenerator;
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 
 import dom.company.thesis.model.Roster;
-import dom.company.thesis.service.InputService;
 
 public class RosterSwapMutation implements EvolutionaryOperator<Roster>
 {
@@ -18,12 +18,6 @@ public class RosterSwapMutation implements EvolutionaryOperator<Roster>
     private double mutationProbabilityValue;
     private int nextMutation;
 
-
-    /**
-     * Creates a mutation operator for bit strings with the specified probability that a given
-     * bit string will be mutated, with exactly one bit being flipped.
-     * @param mutationProbability The probability of a candidate being mutated.
-     */
     public RosterSwapMutation(Probability mutationProbability)
     {
         this.mutationProbability = new ConstantGenerator<Probability>(mutationProbability);
@@ -63,14 +57,6 @@ public class RosterSwapMutation implements EvolutionaryOperator<Roster>
     	return next;
     }
 
-    /**
-     * Mutate a single bit string.  Zero or more bits may be flipped.  The
-     * probability of any given bit being flipped is governed by the probability
-     * generator configured for this mutation operator.
-     * @param bitString The bit string to mutate.
-     * @param rng A source of randomness.
-     * @return The mutated bit string.
-     */
     private Roster mutateRoster(Roster roster, Random rng)
     {
         Roster mutatedRoster = roster.clone();

@@ -2,7 +2,6 @@ package dom.company.thesis.application;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -22,37 +21,26 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.uncommons.maths.random.MersenneTwisterRNG;
-import org.uncommons.maths.random.Probability;
-import org.uncommons.maths.random.XORShiftRNG;
 import org.uncommons.swing.SwingBackgroundTask;
-import org.uncommons.watchmaker.framework.CachingFitnessEvaluator;
 import org.uncommons.watchmaker.framework.EvolutionEngine;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
-import org.uncommons.watchmaker.framework.FitnessEvaluator;
 import org.uncommons.watchmaker.framework.GenerationalEvolutionEngine;
 import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.TerminationCondition;
-import org.uncommons.watchmaker.framework.factories.BitStringFactory;
-import org.uncommons.watchmaker.framework.factories.StringFactory;
 import org.uncommons.watchmaker.framework.interactive.Renderer;
 import org.uncommons.watchmaker.framework.selection.RankSelection;
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
 import org.uncommons.watchmaker.framework.selection.StochasticUniversalSampling;
-import org.uncommons.watchmaker.framework.selection.TournamentSelection;
 import org.uncommons.watchmaker.framework.termination.Stagnation;
 import org.uncommons.watchmaker.framework.termination.TargetFitness;
 import org.uncommons.watchmaker.swing.AbortControl;
-import org.uncommons.watchmaker.swing.ProbabilityParameterControl;
-import org.uncommons.watchmaker.swing.evolutionmonitor.EvolutionMonitor;
 
 import dom.company.thesis.ga.CustomEvolutionMonitor;
+import dom.company.thesis.ga.RosterFactory;
 import dom.company.thesis.gui.RosterRenderer;
 import dom.company.thesis.model.Roster;
-import dom.company.thesis.service.InputParser;
 import dom.company.thesis.service.InputService;
 
 public class SmartRosterApplet extends AbstractApplet
@@ -72,15 +60,13 @@ public class SmartRosterApplet extends AbstractApplet
 	private final double EXPERIMENT_PM_MAX = InputService.getExperimentPmMax();
 	private final double EXPERIMENT_PM_GRAN = InputService.getExperimentPmGran();	
 	
-	
 	private JButton startButton;
 	private AbortControl abort;
 	private JLabel populationLabel;
 	private JLabel elitismLabel;
 	private JLabel selectionLabel;
 	private JSpinner populationSpinner;
-	private JSpinner elitismSpinner;
-	
+	private JSpinner elitismSpinner;	
 	private JLabel weekendWeightLabel;
 	private static JSpinner weekendWeightSpinner;
 	private JLabel shiftOffWeightLabel;
@@ -89,7 +75,6 @@ public class SmartRosterApplet extends AbstractApplet
 	private static JSpinner maxAssignWeightSpinner;	
 	private JLabel coverWeightLabel;
 	private static JSpinner coverWeightSpinner;
-	//private ProbabilityParameterControl selectionPressureControl;
 	private JPanel selectionButtonPanel;
 	private JRadioButton rankSelectionRadioButton;
 	private JRadioButton rouletteWheelSelectionRadioButton;
@@ -98,11 +83,9 @@ public class SmartRosterApplet extends AbstractApplet
 	private ProbabilitiesPanel probabilitiesPanel;
 	private CustomEvolutionMonitor<Roster> evolutionMonitor;
 
-	//Experiments
+	//Experimens variables
 	private JCheckBox experimentModeCheckBox;
-	//private JLabel populationSizeExperimentLabel;
 	private JRadioButton populationSizeExperimentRadioButton;
-	//private JLabel selectionExperimentLabel;
 	private JRadioButton pcExperimentRadioButton;
 	private JRadioButton pmExperimentRadioButton;
 	private JRadioButton crossPointExperimentRadioButton;
@@ -114,18 +97,6 @@ public class SmartRosterApplet extends AbstractApplet
 	private JButton startExperimentButton;
 	
 
-	/**Delete if no additional initialization needed**/	
-	 @Override
-	 public void init()
-	 {
-	     super.init();
-	 }
-	
-	
-	 /**
-	  * Initialize and layout the GUI.
-	  * @param container The Swing component that will contain the GUI controls.
-	  */
 	 @Override
 	 protected void prepareGUI(Container container)
 	 {
@@ -179,16 +150,6 @@ public class SmartRosterApplet extends AbstractApplet
         parameterBox.add(elitismSpinner);
         parameterBox.add(Box.createHorizontalStrut(10));
 
-        /**
-        parameterBox.add(new JLabel("Selection Pressure: "));
-        parameterBox.add(Box.createHorizontalStrut(10));
-        selectionPressureControl = new ProbabilityParameterControl(Probability.EVENS,
-                                                                   Probability.ONE,
-                                                                   2,
-                                                                   new Probability(0.7));
-        parameterBox.add(selectionPressureControl.getControl());
-        parameterBox.add(Box.createHorizontalStrut(10));
-		**/
         selectionLabel = new JLabel("Selection: ");
         parameterBox.add(selectionLabel);
         parameterBox.add(Box.createHorizontalStrut(5));        
@@ -336,8 +297,6 @@ public class SmartRosterApplet extends AbstractApplet
 	        		else {
 	        			setExperimentParametersEnabled(false);
 	        			setGeneralParametersEnabled(true);
-	        			//setPopulationParametersEnabled(true);
-	        			//setSelectionParametersEnabled(true);
 	        		}
 	            }
 	        });
@@ -559,7 +518,6 @@ public class SmartRosterApplet extends AbstractApplet
 			experimentIterationsLabel.setEnabled(false);
 			experimentIterationsSpinner.setEnabled(false);
 			startExperimentButton.setEnabled(false);
-			//startButton.setEnabled(true);
 		}
 	 }
 	 
@@ -593,7 +551,6 @@ public class SmartRosterApplet extends AbstractApplet
 	     private SelectionStrategy<Object> selection;
 	     private TerminationCondition[] terminationConditions;
 
-
         EvolutionTask(int populationSize, int eliteCount, TerminationCondition... terminationConditions) {
         	
             this.populationSize = populationSize;
@@ -601,6 +558,7 @@ public class SmartRosterApplet extends AbstractApplet
             this.terminationConditions = terminationConditions;
             this.isPopulationSizeExperiment = false;
         }
+        
         @Override
         protected Roster performTask() throws Exception
         {
@@ -791,6 +749,7 @@ public class SmartRosterApplet extends AbstractApplet
             	}
             }
         }
+        
         @Override
         protected void onError(Throwable throwable)
         {
@@ -833,6 +792,4 @@ public class SmartRosterApplet extends AbstractApplet
 	public static JSpinner getCoverWeightSpinner() {
 		return coverWeightSpinner;
 	}
-	 
-	 
 }

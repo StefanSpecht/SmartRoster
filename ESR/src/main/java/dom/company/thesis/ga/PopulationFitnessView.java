@@ -19,12 +19,14 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -35,6 +37,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.islands.IslandEvolutionObserver;
+import org.uncommons.watchmaker.swing.evolutionmonitor.EvolutionMonitor;
 
 /**
  * {@link EvolutionMonitor} view for displaying a graph of population fitness data
@@ -43,7 +46,8 @@ import org.uncommons.watchmaker.framework.islands.IslandEvolutionObserver;
  */
 class PopulationFitnessView extends JPanel implements IslandEvolutionObserver<Object>
 {
-    private static final int SHOW_FIXED_GENERATIONS = 200;
+   	private static final long serialVersionUID = -4732990563504593116L;
+   	private static final int SHOW_FIXED_GENERATIONS = 200;
 
     private final XYSeries bestSeries = new XYSeries("Fittest Individual");
     private final XYSeries meanSeries;
@@ -97,11 +101,6 @@ class PopulationFitnessView extends JPanel implements IslandEvolutionObserver<Ob
         add(createControls(islands), BorderLayout.SOUTH);
     }
 
-
-    /**
-     * Creates the GUI controls for toggling graph display options.
-     * @return A component that can be added to the main panel.
-     */
     private JComponent createControls(boolean islands)
     {
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -151,11 +150,6 @@ class PopulationFitnessView extends JPanel implements IslandEvolutionObserver<Ob
         return controls;
     }
 
-
-    /**
-     * If "all data" is selected, set the range of the domain axis to include all
-     * values.  Otherwise set it to show the most recent 200 generations.
-     */
     private void updateDomainAxisRange()
     {
         int count = dataSet.getSeries(0).getItemCount();
@@ -173,10 +167,6 @@ class PopulationFitnessView extends JPanel implements IslandEvolutionObserver<Ob
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     public void populationUpdate(final PopulationData<?> populationData)
     {
         SwingUtilities.invokeLater(new Runnable()
@@ -219,7 +209,6 @@ class PopulationFitnessView extends JPanel implements IslandEvolutionObserver<Ob
             }
         });
     }
-
 
     public void islandPopulationUpdate(int islandIndex, PopulationData<? extends Object> populationData)
     {

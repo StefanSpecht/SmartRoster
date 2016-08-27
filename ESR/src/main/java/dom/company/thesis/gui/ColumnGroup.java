@@ -10,12 +10,6 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-/**
- * ColumnGroup
- * 
- * @version 1.0 20.10.1998
- * @author Nobuo Tamemasa
- */
 public class ColumnGroup {
 
     protected TableCellRenderer renderer;
@@ -45,10 +39,6 @@ public class ColumnGroup {
         groups.add(group);
     }
 
-    /**
-     * @param column
-     *            TableColumn
-     */
     public List<ColumnGroup> getColumnGroups(TableColumn column) {
         if (!contains(column)) {
             return Collections.emptyList();
@@ -113,5 +103,4 @@ public class ColumnGroup {
             columnGroup.setColumnMargin(margin);
         }
     }
-
 }

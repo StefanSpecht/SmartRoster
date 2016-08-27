@@ -146,8 +146,7 @@ public class Numbering {
 			}
 		}
 		
-		//TO-DO: penaltise max_between
-		
+		//TO-DO: penaltise max_between (not needed at moment)
 	}
 	
 	public void evaluate() {
@@ -414,8 +413,4 @@ public class Numbering {
 	public void setMinConsecutive(int minConsecutive) {
 		this.minConsecutive = minConsecutive;
 	}
-	
-	
-	
-
 }

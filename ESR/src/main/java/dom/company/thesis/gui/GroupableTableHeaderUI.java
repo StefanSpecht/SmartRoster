@@ -128,5 +128,4 @@ public class GroupableTableHeaderUI extends BasicTableHeaderUI {
         }
         return new Dimension(width, getHeaderHeight());
     }
-
 }

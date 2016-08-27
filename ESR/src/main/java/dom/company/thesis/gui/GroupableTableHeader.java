@@ -8,16 +8,11 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-/**
- * GroupableTableHeader
- * 
- * @version 1.0 20.10.1998
- * @author Nobuo Tamemasa
- */
-@SuppressWarnings("serial")
 public class GroupableTableHeader extends JTableHeader {
 
-    @SuppressWarnings("unused")
+   	private static final long serialVersionUID = -4003463266900590969L;
+
+	@SuppressWarnings("unused")
     private static final String uiClassID = "GroupableTableHeaderUI";
 
     protected List<ColumnGroup> columnGroups = new ArrayList<ColumnGroup>();
@@ -26,7 +21,6 @@ public class GroupableTableHeader extends JTableHeader {
         super(model);
         setUI(new GroupableTableHeaderUI());
         setReorderingAllowed(false);
-        // setDefaultRenderer(new MultiLineHeaderRenderer());
     }
 
     @Override
@@ -59,5 +53,4 @@ public class GroupableTableHeader extends JTableHeader {
             group.setColumnMargin(columnMargin);
         }
     }
-
 }

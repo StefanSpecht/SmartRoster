@@ -2,7 +2,6 @@ package dom.company.thesis.application;
 
 import java.util.List;
 
-import org.uncommons.maths.binary.BitString;
 import org.uncommons.watchmaker.framework.FitnessEvaluator;
 
 import dom.company.thesis.model.Employee;
@@ -82,17 +81,6 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 				//Integer assignedTaskCombination = candidate.getAssignments()[e * candidate.getNoOfShifts() + s];
 				Integer assignedTaskCombination = candidate.getValue(e, s);
 				 
-				/**
-				//check for availability
-	    		if (assignedTaskCombination != 0 && InputService.getAvailabilityMatrix()[s][e] == 0) {
-	    			penalty++;
-	    		}
-	    		 
-	    		//check for ability
-	    		if (InputService.getAbilityMatrix()[assignedTaskCombination][e] != 1) {
-	    			penalty++;
-	    		}
-	    		 **/
 	    		for (Task task : InputService.getTaskCombinationMap().get(assignedTaskCombination)) {
 	    			int taskNr = InputService.getReverseTaskMap().get(task);
 	    			if (uncoveredTasks[taskNr] > 0) {
@@ -120,10 +108,6 @@ public class RosterEvaluator implements FitnessEvaluator<Roster>
 	    		 + penaltyCoverRequirements;
 	 }
 	
-	
-	 /**
-	  * {@inheritDoc}
-	  */
 	 public boolean isNatural()
 	 {
 	     return false;

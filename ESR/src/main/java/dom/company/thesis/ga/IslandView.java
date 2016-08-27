@@ -1,18 +1,3 @@
-//=============================================================================
-// Copyright 2006-2010 Daniel W. Dyer
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//=============================================================================
 package dom.company.thesis.ga;
 
 import java.awt.BorderLayout;
@@ -21,10 +6,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -38,14 +25,11 @@ import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
 import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.islands.IslandEvolutionObserver;
 
-/**
- * An evolution monitor view that gives an insight into how the evolution is progressing on
- * individual islands.
- * @author Daniel Dyer
- */
 class IslandsView extends JPanel implements IslandEvolutionObserver<Object>
 {
-    private static final String FITTEST_INDIVIDUAL_LABEL = "Fittest Individual";
+    static final long serialVersionUID = -6889043350002030793L;
+    
+	private static final String FITTEST_INDIVIDUAL_LABEL = "Fittest Individual";
     private static final String MEAN_FITNESS_LABEL = "Mean Fitness/Standard Deviation";
 
     private final DefaultCategoryDataset bestDataSet = new DefaultCategoryDataset();
@@ -91,11 +75,6 @@ class IslandsView extends JPanel implements IslandEvolutionObserver<Object>
         add(createControls(), BorderLayout.SOUTH);
     }
 
-
-    /**
-     * Creates the GUI controls for toggling graph display options.
-     * @return A component that can be added to the main panel.
-     */
     private JComponent createControls()
     {
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -124,8 +103,6 @@ class IslandsView extends JPanel implements IslandEvolutionObserver<Object>
 
         return controls;
     }
-
-
 
     public void islandPopulationUpdate(final int islandIndex, final PopulationData<? extends Object> populationData)
     {
@@ -183,7 +160,6 @@ class IslandsView extends JPanel implements IslandEvolutionObserver<Object>
             }
         });
     }
-
 
     public void populationUpdate(PopulationData<? extends Object> populationData)
     {

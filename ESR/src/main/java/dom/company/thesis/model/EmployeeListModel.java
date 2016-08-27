@@ -1,6 +1,5 @@
 package dom.company.thesis.model;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractListModel;
@@ -24,15 +23,14 @@ public class EmployeeListModel extends AbstractListModel<String>{
 			employeeNames[i] = employeeMap.get(i).getId();
 		}
 	}
+	
 	@Override
 	public String getElementAt(int index) {
 		return employeeNames[index];
 	}
+	
 	@Override
 	public int getSize() {
 		return employeeNames.length;
 	}
-	
-	
- 
 }

@@ -2,8 +2,6 @@ package dom.company.thesis.model;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +31,7 @@ public class Employee {
 		completeWeekendsEnabled = false;
 		maxAssignmentsPerWeekEnabled = false;
 	}
+	
 	public Employee(String id, String name) {
 		super();
 		this.id = id;
@@ -135,8 +134,4 @@ public class Employee {
 		}
 		return false;
 	}
-	
-	
-	
-	
 }

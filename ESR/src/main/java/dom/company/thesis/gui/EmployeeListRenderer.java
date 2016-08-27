@@ -25,6 +25,6 @@ public class EmployeeListRenderer extends JLabel implements ListCellRenderer<Str
 	public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean fSelected, boolean fCellHasFocus) {
 		setText((value == null) ? "" : value.toString());
 		return this;
-}
+	}
 	
 }

@@ -25,6 +25,6 @@ public class ShiftListRenderer extends JLabel implements ListCellRenderer<String
 	public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean fSelected, boolean fCellHasFocus) {
 		setText((value == null) ? "" : value.toString());
 		return this;
-}
+	}
 	
 }

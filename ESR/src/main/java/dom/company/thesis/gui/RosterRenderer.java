@@ -1,6 +1,5 @@
 package dom.company.thesis.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -17,10 +16,11 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.uncommons.watchmaker.framework.interactive.Renderer;
-import dom.company.thesis.model.RosterTableModel;
-import dom.company.thesis.service.InputService;
+
 import dom.company.thesis.model.EmployeeListModel;
 import dom.company.thesis.model.Roster;
+import dom.company.thesis.model.RosterTableModel;
+import dom.company.thesis.service.InputService;
 
 public class RosterRenderer implements Renderer<Roster,JComponent> {
 
@@ -49,7 +49,6 @@ public class RosterRenderer implements Renderer<Roster,JComponent> {
 						
 			//Add row headers (employee names)
 			JList<String> rowHeader = new JList<String>(employeeListModel);
-			//rowHeader.setFixedCellWidth(30);
 		    rowHeader.setFixedCellHeight(rosterTable.getRowHeight());
 		    rowHeader.setCellRenderer(new EmployeeListRenderer(rosterTable));
 		    
@@ -107,5 +106,4 @@ public class RosterRenderer implements Renderer<Roster,JComponent> {
 	static public void disable() {
 		isEnabled = false;
 	}
-
 }

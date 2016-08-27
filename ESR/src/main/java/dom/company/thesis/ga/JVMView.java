@@ -24,10 +24,12 @@ import java.awt.event.ActionListener;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -47,8 +49,9 @@ import org.jfree.ui.TextAnchor;
  */
 class JVMView extends JPanel
 {
-    private static final int MEGABYTE = 1048576;
+  	private static final long serialVersionUID = 1930792394088168166L;
 
+	private static final int MEGABYTE = 1048576;
     private final TimeSeries memoryUsageSeries = new TimeSeries("Memory Usage");
     private final TimeSeries heapSizeSeries = new TimeSeries("Heap Size");
 
@@ -117,11 +120,6 @@ class JVMView extends JPanel
         return chart;
     }
 
-
-    /**
-     * Creates the GUI controls for toggling graph display options.
-     * @return A component that can be added to the main panel.
-     */
     private JComponent createControls()
     {
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -137,8 +135,6 @@ class JVMView extends JPanel
         controls.add(gcButton);
         return controls;
     }
-
-
 
     private void addMemoryDataPoint()
     {

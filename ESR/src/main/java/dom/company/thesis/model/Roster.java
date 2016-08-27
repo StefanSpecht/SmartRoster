@@ -1,17 +1,13 @@
 package dom.company.thesis.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import dom.company.thesis.service.InputService;
 
@@ -39,14 +35,6 @@ public class Roster {
         this.assignments = assignments;
 	}
 	
-	/**
-	private void randomInit(Random rng) {
-		for (int i = 0; i < noOfEmployees * noOfShifts ; i++) {
-        		assignments[i] = rng.nextInt(noOfTasks);
-        }
-	}
-	**/
-	
 	private void smartInit() {
 		
 		Map<Integer,List<Task>> taskCombinationMap= InputService.getTaskCombinationMap();
@@ -66,7 +54,6 @@ public class Roster {
 				}
 			}
 			
-			//
 			for (int t = 0; t < uncoveredTasks.length; t++) {
 				
 				Task task = InputService.getSingleTaskMap().get(t);
@@ -382,6 +369,4 @@ public class Roster {
 	public void setValue(int value, int e, int s) {
 		this.assignments[s * this.getNoOfEmployees() + e] = value;
 	}
-	
-	
 }

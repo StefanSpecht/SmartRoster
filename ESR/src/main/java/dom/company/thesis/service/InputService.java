@@ -6,7 +6,6 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -706,6 +705,4 @@ public class InputService {
 	public static int getTerminationStagnation() {
 		return terminationStagnation;
 	}	
-	
-	
 }

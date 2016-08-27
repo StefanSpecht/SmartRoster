@@ -36,8 +36,7 @@ public class RosterTableModel extends AbstractTableModel {
     
     @Override
 	public Object getValueAt(int row, int column) {
-       //return roster == null ? null : roster.getValue(row, column);
-    	
+        	
     	List<Task> tasks = InputService.getTaskMap().get(roster.getValue(row, column));
     	String tasksString = "";
     	
