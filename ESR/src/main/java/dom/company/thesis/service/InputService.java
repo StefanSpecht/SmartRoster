@@ -2,6 +2,8 @@ package dom.company.thesis.service;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.DayOfWeek;
@@ -23,10 +25,12 @@ import dom.company.thesis.model.Task;
 
 public class InputService {
 	
-	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input6.xml";
-	static private final String LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment.csv";
-	static private final String ROLLUP_LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment_rollup.csv";
-	static private final String DETAILED_LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment_detailed.csv";
+	static private Path relativePath = Paths.get("");
+	static private String absolutePath = relativePath.toAbsolutePath().toString();
+	static private final String XML_FILE_PATH = absolutePath + "\\Input.xml";
+	static private final String LOG_FILE_PATH = absolutePath + "\\output\\experiment.csv";
+	static private final String ROLLUP_LOG_FILE_PATH = absolutePath + "\\output\\experiment_rollup.csv";
+	static private final String DETAILED_LOG_FILE_PATH = absolutePath + "\\output\\experiment_detailed.csv";
 	
 	static Date startDate;
 	static Date endDate;	

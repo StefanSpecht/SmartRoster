@@ -1,0 +1,979 @@
+<SchedulingPeriod>
+	
+	<!--=====================================================================-->
+    <!--                       Planning Horizon                              -->
+    <!--=====================================================================-->
+    <!--
+    The planning horizon is defined by a start date and an end date. The end 
+    date is inclusive
+    -->
+    <StartDate>2016-07-01</StartDate>
+    <EndDate>2016-07-31</EndDate>
+
+    
+    <!--=====================================================================-->
+    <!--                          ShiftTypes                                 -->
+    <!--=====================================================================-->
+    <!--
+    Here we define the shift types to be assigned. The required information
+    for each shift type is a unique ID, StartTime and EndTime. A description is 
+	optional
+    -->
+    <ShiftTypes>
+        <Shift ID="AP">
+            <Description>APAC shift</Description>
+            <StartTime>00:00</StartTime>
+            <EndTime>07:59</EndTime>
+        </Shift>
+        <Shift ID="EM">
+            <Description>EMEA shift</Description>
+            <StartTime>08:00</StartTime>
+            <EndTime>15:59</EndTime>
+        </Shift>
+		<Shift ID="AM">
+            <Description>AMERICAS shift</Description>
+            <StartTime>16:00</StartTime>
+            <EndTime>23:59</EndTime>
+        </Shift>
+    </ShiftTypes>
+	
+
+	<!--=====================================================================-->
+    <!--                          	   Tasks	                             -->
+    <!--=====================================================================-->
+    <!--
+    Here we define the tasks that can will be assigned to shifts later. The
+	required information for each task is a unique ID. A description is optional
+    -->
+	
+    <Tasks>
+		<Task ID="MCC">
+				<Description>Mission Control Center</Description>
+		</Task>
+		<Task ID="EoD">
+				<Description>Engineer on Duty</Description>
+		</Task>
+		<Task ID="FEV">
+				<Description>Functional Expert Virtualization</Description>
+		</Task>
+		<Task ID="FEF">
+				<Description>Functional Expert File-Service</Description>
+		</Task>
+		<Task ID="FEW">
+				<Description>Functional Expert Windows</Description>
+		</Task>
+		<Task ID="FES">
+				<Description>Functional Expert Security</Description>
+		</Task>
+		<Task ID="FEH">
+				<Description>Functional Expert Hardware</Description>
+		</Task>
+		<Task ID="FEB">
+				<Description>Functional Expert Backup</Description>
+		</Task>
+		<Task ID="OCS">
+				<Description>On-Call Service</Description>
+		</Task>
+	</Tasks>
+	<!--=====================================================================-->
+    <!--                    	   TasksCombinations                         -->
+    <!--=====================================================================-->
+    <!--
+    Here we define the feasible tasks combinations. Single task assignments
+	are always considered to be feasible and must not defined here.
+	Each task-element must refer to a valid task ID.
+    -->
+	<TaskCombinations>
+		<TaskCombination>
+			<Task>EoD</Task>
+			<Task>FEV</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>EoD</Task>
+			<Task>FEF</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>EoD</Task>
+			<Task>FEW</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>EoD</Task>
+			<Task>FES</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>EoD</Task>
+			<Task>FEH</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>EoD</Task>
+			<Task>FEB</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEV</Task>
+			<Task>FEF</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEV</Task>
+			<Task>FEW</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEV</Task>
+			<Task>FES</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEV</Task>
+			<Task>FEH</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEV</Task>
+			<Task>FEB</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEF</Task>
+			<Task>FEW</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEF</Task>
+			<Task>FES</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEF</Task>
+			<Task>FEH</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEF</Task>
+			<Task>FEB</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEW</Task>
+			<Task>FES</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEW</Task>
+			<Task>FEH</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FEW</Task>
+			<Task>FEB</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FES</Task>
+			<Task>FEH</Task>
+		</TaskCombination>
+		<TaskCombination>
+			<Task>FES</Task>
+			<Task>FEB</Task>
+		</TaskCombination>
+	</TaskCombinations>
+	
+    <!--=====================================================================-->
+    <!--                              ShiftGroups                            -->
+    <!--=====================================================================-->
+    <!-- 
+    Shifts can be placed in groups to limit the scope for some constraints. 
+	The groups are defined here. The required information for each group is
+	a unique ID. Each Shift element must refer to a valid shift ID.
+    -->
+    <ShiftGroups>
+        <ShiftGroup ID="EMEA">
+            <Shift>EM</Shift>
+        </ShiftGroup>
+		<ShiftGroup ID="APAC">
+            <Shift>AP</Shift>
+        </ShiftGroup>
+		<ShiftGroup ID="AMERICAS">
+            <Shift>AM</Shift>
+        </ShiftGroup>
+    </ShiftGroups>
+    
+    <!--=====================================================================-->
+    <!--                           Employees                                 -->
+    <!--=====================================================================-->
+    <!-- 
+    Here we define the employees to be scheduled in the planning horizon. The
+    only required information for each employee is a unique ID. Each employee
+	can get one or multiple task qualification assigned. Each task qualification 
+	must refer to a valid task ID
+    -->
+	
+	<!--============================== EMEA =================================-->
+	
+    <Employees>
+        <Employee ID="EM1">
+			<Name>Stefan</Name>
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEV"/>
+				<TaskQualification ID="FEF"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM2">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="FES"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM3">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM4">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEV"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM5">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM6">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FES"/>
+				<TaskQualification ID="FEV"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM7">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEF"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM8">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM9">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM10">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="FES"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM11">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM12">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEV"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM13">
+		<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="EM14">
+		<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEF"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		
+		<!--============================ AMERICAS ===============================-->
+		
+		<Employee ID="AM1">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEV"/>
+				<TaskQualification ID="FEF"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AM2">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="FES"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AM3">		
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AM4">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="FEV"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AM5">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AM6">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEF"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AM7">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AM8">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="FES"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		
+		<!--============================== APAC =================================-->
+		
+		<Employee ID="AP1">
+		<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEV"/>
+				<TaskQualification ID="FEF"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AP2">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="FES"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AP3">		
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AP4">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEV"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AP5">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FES"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AP6">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEF"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AP7">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEW"/>
+				<TaskQualification ID="FEB"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+		<Employee ID="AP8">
+			<TaskQualifications>
+				<TaskQualification ID="MCC"/>
+				<TaskQualification ID="EoD"/>
+				<TaskQualification ID="FEH"/>
+				<TaskQualification ID="FES"/>
+				<TaskQualification ID="OCS"/>
+			</TaskQualifications>
+		</Employee>
+	</Employees>
+
+    <!--=====================================================================-->
+    <!--                         		EmployeeGroups                       -->
+    <!--=====================================================================-->
+    <!-- 
+    Employees can be placed in groups to limit the scope for some constraints. 
+	The groups are defined here. The required information for each group is
+	a unique ID. Each Employee element must refer to a valid employee ID.
+    -->
+	<EmployeeGroups>
+		<EmployeeGroup ID="EMEA">
+			<Employee>EM1</Employee>
+			<Employee>EM2</Employee>
+			<Employee>EM3</Employee>
+			<Employee>EM4</Employee>
+			<Employee>EM5</Employee>
+			<Employee>EM6</Employee>
+			<Employee>EM7</Employee>
+			<Employee>EM8</Employee>
+			<Employee>EM9</Employee>
+			<Employee>EM10</Employee>
+			<Employee>EM11</Employee>
+			<Employee>EM12</Employee>
+			<Employee>EM13</Employee>
+			<Employee>EM14</Employee>
+		</EmployeeGroup>
+		<EmployeeGroup ID="APAC">
+			<Employee>AP1</Employee>
+			<Employee>AP2</Employee>
+			<Employee>AP3</Employee>
+			<Employee>AP4</Employee>
+			<Employee>AP5</Employee>
+			<Employee>AP6</Employee>
+			<Employee>AP7</Employee>
+			<Employee>AP8</Employee>
+		</EmployeeGroup>
+		<EmployeeGroup ID="AMERICAS">
+			<Employee>AM1</Employee>
+			<Employee>AM2</Employee>
+			<Employee>AM3</Employee>
+			<Employee>AM4</Employee>
+			<Employee>AM5</Employee>
+			<Employee>AM6</Employee>
+			<Employee>AM7</Employee>
+			<Employee>AM8</Employee>
+		</EmployeeGroup>
+	</EmployeeGroups>
+	
+	<!--=====================================================================-->
+    <!--                    	   TaskCoverRequirements					 -->
+    <!--=====================================================================-->
+    <!--
+    Here we define the task cover requirements for each 
+	ShiftType-WeekDay-Combination. The required information for each cover
+	requirement is a reference to a valid ShiftType and a minimum of one defined
+	weekday. Multiple weekdays can be concatenated by semicolons. The required
+	information for each cover-element is a reference to valid task ID and 
+	quantity.
+    -->
+	<TaskCoverRequirements>
+		<TaskCoverRequirement ShiftType="EM" WeekDays="MONDAY;TUESDAY;WEDNESDAY;THURSDAY;FRIDAY">
+				<Cover>			
+					<Task>MCC</Task>
+					<Quantity>2</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>EoD</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEV</Task>
+					<Quantity>2</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEF</Task>
+					<Quantity>2</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEW</Task>
+					<Quantity>2</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FES</Task>
+					<Quantity>2</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEH</Task>
+					<Quantity>2</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEB</Task>
+					<Quantity>2</Quantity>
+				</Cover>			
+		</TaskCoverRequirement>
+		<TaskCoverRequirement ShiftType="AP" WeekDays="MONDAY;TUESDAY;WEDNESDAY;THURSDAY;FRIDAY">			
+				<Cover>			
+					<Task>MCC</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>EoD</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEV</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEF</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEW</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FES</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEH</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEB</Task>
+					<Quantity>1</Quantity>
+				</Cover>			
+		</TaskCoverRequirement>
+		<TaskCoverRequirement ShiftType="AM" WeekDays="MONDAY;TUESDAY;WEDNESDAY;THURSDAY;FRIDAY">			
+				<Cover>			
+					<Task>MCC</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>EoD</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEV</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEF</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEW</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FES</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEH</Task>
+					<Quantity>1</Quantity>
+				</Cover>
+				<Cover>			
+					<Task>FEB</Task>
+					<Quantity>1</Quantity>
+				</Cover>			
+		</TaskCoverRequirement>
+		<TaskCoverRequirement ShiftType="EM" WeekDays="SATURDAY;SUNDAY">			
+				<Cover>			
+					<Task>OCS</Task>
+					<Quantity>1</Quantity>
+				</Cover>			
+		</TaskCoverRequirement>
+		<TaskCoverRequirement ShiftType="AP" WeekDays="SATURDAY;SUNDAY">			
+				<Cover>			
+					<Task>OCS</Task>
+					<Quantity>1</Quantity>
+				</Cover>			
+		</TaskCoverRequirement>
+		<TaskCoverRequirement ShiftType="AM" WeekDays="SATURDAY;SUNDAY">			
+				<Cover>			
+					<Task>OCS</Task>
+					<Quantity>1</Quantity>
+				</Cover>			
+		</TaskCoverRequirement>
+	</TaskCoverRequirements>
+	
+	<!--=====================================================================-->
+    <!--                    	   ShiftCoverRequirements					 -->
+    <!--=====================================================================-->
+    <!--
+    Here we define the shift cover requirements for each weekday. The required 
+	information for each cover requirement is a day and a minimum of one
+	reference to a valid ShiftType ID
+    -->
+	<ShiftCoverRequirements>
+		<DayOfWeekCoverRequirement>
+			<Day>MONDAY</Day>
+			<Cover Shift="EM"/>
+			<Cover Shift="AP"/>
+			<Cover Shift="AM"/>
+		</DayOfWeekCoverRequirement>
+		<DayOfWeekCoverRequirement>
+			<Day>TUESDAY</Day>
+			<Cover Shift="EM"/>
+			<Cover Shift="AP"/>
+			<Cover Shift="AM"/>
+		</DayOfWeekCoverRequirement>
+		<DayOfWeekCoverRequirement>
+			<Day>WEDNESDAY</Day>
+			<Cover Shift="EM"/>
+			<Cover Shift="AP"/>
+			<Cover Shift="AM"/>
+		</DayOfWeekCoverRequirement>
+		<DayOfWeekCoverRequirement>
+			<Day>THURSDAY</Day>
+			<Cover Shift="EM"/>
+			<Cover Shift="AP"/>
+			<Cover Shift="AM"/>
+		</DayOfWeekCoverRequirement>
+		<DayOfWeekCoverRequirement>
+			<Day>FRIDAY</Day>
+			<Cover Shift="EM"/>
+			<Cover Shift="AP"/>
+			<Cover Shift="AM"/>
+		</DayOfWeekCoverRequirement>
+		<DayOfWeekCoverRequirement>
+			<Day>SATURDAY</Day>
+			<Cover Shift="EM"/>
+			<Cover Shift="AP"/>
+			<Cover Shift="AM"/>
+		</DayOfWeekCoverRequirement>
+		<DayOfWeekCoverRequirement>
+			<Day>SUNDAY</Day>
+			<Cover Shift="EM"/>
+			<Cover Shift="AP"/>
+			<Cover Shift="AM"/>
+		</DayOfWeekCoverRequirement>
+	</ShiftCoverRequirements>
+
+    <!--=====================================================================-->
+    <!--                        ShiftUnavailabilities                        -->
+    <!--=====================================================================-->	
+	<!--
+    Here we define which employees are unavailable on which shift groups. The 
+	required information for each ShiftUnavailability element is a reference
+	to a valid EmployeeGroup ID or Employee ID alternativly, and a reference 
+	to a valid ShiftGroup ID. 
+	Optionally, dates can be specified to limit the unavailability to these
+	dates. Dates must be specified in "YYYY-MM-DD" format
+    -->
+	
+	<ShiftUnavailabilities>
+		<ShiftUnavailability>
+			<EmployeeGroup>AMERICAS</EmployeeGroup>
+			<ShiftGroup>EMEA</ShiftGroup>
+		</ShiftUnavailability>
+		<ShiftUnavailability>
+			<EmployeeGroup>AMERICAS</EmployeeGroup>
+			<ShiftGroup>APAC</ShiftGroup>
+		</ShiftUnavailability>
+		<ShiftUnavailability>
+			<EmployeeGroup>APAC</EmployeeGroup>
+			<ShiftGroup>EMEA</ShiftGroup>
+		</ShiftUnavailability>
+		<ShiftUnavailability>
+			<EmployeeGroup>APAC</EmployeeGroup>
+			<ShiftGroup>AMERICAS</ShiftGroup>
+		</ShiftUnavailability>
+		<ShiftUnavailability>
+			<EmployeeGroup>EMEA</EmployeeGroup>
+			<ShiftGroup>APAC</ShiftGroup>
+		</ShiftUnavailability>
+		<ShiftUnavailability>
+			<EmployeeGroup>EMEA</EmployeeGroup>
+			<ShiftGroup>AMERICAS</ShiftGroup>
+		</ShiftUnavailability>
+		<ShiftUnavailability> <!-- Reise Frankfurt -->
+			<Employee>AM3</Employee>
+			<ShiftGroup>AMERICAS</ShiftGroup>
+			<Date>2016-07-09</Date>
+			<Date>2016-07-10</Date>
+			<Date>2016-07-11</Date>
+			<Date>2016-07-12</Date>
+			<Date>2016-07-13</Date>
+			<Date>2016-07-14</Date>
+			<Date>2016-07-15</Date>
+			<Date>2016-07-16</Date>
+			<Date>2016-07-17</Date>			
+		</ShiftUnavailability>
+	</ShiftUnavailabilities>
+
+    <!--=====================================================================-->
+    <!--                        ShiftUnavailabilityfExceptions               -->
+    <!--=====================================================================-->
+	<!--
+    Here we define exceptions for the ShiftUnavailabilities just defined. The 
+	required information for each ShiftUnavailabilityfException element is a 
+	reference	to a valid EmployeeGroup ID or Employee ID alternatively, 
+	and reference to a valid ShiftGroup ID. 
+	Optionally, dates can be specified to limit the exception to these
+	dates. Dates must be specified in "YYYY-MM-DD" format
+    -->
+	<ShiftUnavailabilityfExceptions>
+		<ShiftUnavailabilityfException>
+			<Employee>AM3</Employee>
+			<ShiftGroup>EMEA</ShiftGroup>
+			<Date>2016-07-11</Date>
+			<Date>2016-07-12</Date>
+			<Date>2016-07-13</Date>
+			<Date>2016-07-14</Date>
+			<Date>2016-07-15</Date>
+		</ShiftUnavailabilityfException>
+	</ShiftUnavailabilityfExceptions>
+
+    <!--=====================================================================-->
+    <!--                         DayUnavailabilities                         -->
+    <!--=====================================================================-->
+	<!--
+    Here we define which employees are unavailable on which days. The 
+	required information for each DayUnavailability element is a reference
+	to a valid EmployeeGroup ID or Employee ID alternatively, and a minimum of
+	on date. Dates must be specified in "YYYY-MM-DD" format
+    -->
+	<DayUnavailabilities>
+		<DayUnavailability> <!-- VCE Schulung -->
+			<Employee>EM3</Employee>
+			<Date>2016-07-27</Date>
+			<Date>2016-07-28</Date>
+			<Date>2016-07-29</Date>		
+		</DayUnavailability>
+		 <DayUnavailability>  <!--VCE Schulung --> 
+			<Employee>EM12</Employee>
+			<Date>2016-07-27</Date>
+			<Date>2016-07-28</Date>
+			<Date>2016-07-29</Date>		
+		</DayUnavailability> -->
+		<DayUnavailability> <!--Klausur -->
+			<Employee>EM7</Employee> 
+			<Date>2016-07-09</Date>	
+		</DayUnavailability>
+		<DayUnavailability> <!-- ESK Seminar -->
+			<Employee>AP3</Employee> 
+			<Date>2016-07-03</Date>	
+		</DayUnavailability>
+		<DayUnavailability>
+			<Employee>EM2</Employee>
+			<Date>2016-07-16</Date>
+			<Date>2016-07-17</Date>
+		</DayUnavailability>
+		<DayUnavailability>
+			<Employee>AP3</Employee>
+			<Date>2016-07-18</Date>
+		</DayUnavailability>
+	</DayUnavailabilities>
+	
+	<!--=====================================================================-->
+    <!--                           DayOffPreferences                         -->
+    <!--=====================================================================-->
+	<!--
+	Employees can express their preference to get certain days off. These
+	preferences are defined here. The required information for each 
+	DayPreference element is reference to a valid Employee ID and a minimum of
+	one date. Dates must be specified in "YYYY-MM-DD" format
+    -->
+	<DayOffPreferences>
+		<DayOffPreference>
+			<Employee>EM1</Employee>
+			<Date>2016-07-04</Date>
+			<Date>2016-07-05</Date>
+			<Date>2016-07-06</Date>
+			<Date>2016-07-07</Date>
+			<Date>2016-07-08</Date>
+			<Date>2016-07-09</Date>
+			<Date>2016-07-10</Date>
+			<Date>2016-07-11</Date>
+			<Date>2016-07-12</Date>
+			<Date>2016-07-13</Date>
+			<Date>2016-07-14</Date>
+			<Date>2016-07-15</Date>
+		</DayOffPreference>
+		<DayOffPreference>
+			<Employee>EM4</Employee>
+			<Date>2016-07-04</Date>
+			<Date>2016-07-05</Date>
+			<Date>2016-07-06</Date>
+			<Date>2016-07-07</Date>
+			<Date>2016-07-08</Date>
+		</DayOffPreference>		
+		<DayOffPreference>
+			<Employee>EM5</Employee>
+			<Date>2016-07-04</Date>
+			<Date>2016-07-05</Date>
+			<Date>2016-07-06</Date>
+			<Date>2016-07-07</Date>
+			<Date>2016-07-08</Date>
+			<Date>2016-07-09</Date>
+			<Date>2016-07-10</Date>			
+		</DayOffPreference>
+		<DayOffPreference>
+			<Employee>EM13</Employee>
+			<Date>2016-07-18</Date>
+			<Date>2016-07-19</Date>
+			<Date>2016-07-20</Date>
+			<Date>2016-07-21</Date>
+			<Date>2016-07-22</Date>
+			<Date>2016-07-23</Date>
+			<Date>2016-07-24</Date>			
+		</DayOffPreference>
+		<DayOffPreference>
+			<Employee>EM14</Employee>
+			<Date>2016-07-18</Date>
+			<Date>2016-07-19</Date>
+			<Date>2016-07-20</Date>
+			<Date>2016-07-21</Date>
+			<Date>2016-07-22</Date>
+			<Date>2016-07-23</Date>
+			<Date>2016-07-24</Date>			
+			<Date>2016-07-25</Date>			
+			<Date>2016-07-26</Date>			
+			<Date>2016-07-27</Date>			
+			<Date>2016-07-28</Date>	
+			<Date>2016-07-29</Date>						
+		</DayOffPreference>
+		<DayOffPreference>
+			<Employee>AM5</Employee>
+			<Date>2016-07-11</Date>
+			<Date>2016-07-12</Date>
+			<Date>2016-07-13</Date>
+			<Date>2016-07-14</Date>
+			<Date>2016-07-15</Date>
+			<Date>2016-07-16</Date>
+			<Date>2016-07-17</Date>
+		</DayOffPreference>
+		<DayOffPreference>
+			<Employee>AM2</Employee>
+			<Date>2016-07-18</Date>
+			<Date>2016-07-19</Date>
+			<Date>2016-07-20</Date>
+			<Date>2016-07-21</Date>
+			<Date>2016-07-22</Date>	
+		</DayOffPreference>		
+		<DayOffPreference>
+			<Employee>AP7</Employee>
+			<Date>2016-07-04</Date>
+			<Date>2016-07-05</Date>
+			<Date>2016-07-06</Date>
+		</DayOffPreference>	
+	</DayOffPreferences>
+	
+	<!--=====================================================================-->
+    <!--                           Constraints                           -->
+    <!--=====================================================================-->
+	<!--
+	Here the setting for soft constraints are defined.
+	The required information for each ConstraintSet element is a reference to
+	a valid Employee ID, or EmployeeGroup ID alternatively. The existence of
+	a CompleteWeekends element means that this constraint get enabled for the
+	Employee(s). AssignmentsPerWeek limits the number of assignments per week.
+    -->
+	<ConstraintSets>
+		<ConstraintSet>
+			<EmployeeGroup>EMEA</EmployeeGroup>
+			<CompleteWeekends/>
+			<AssignmentsPerWeek>6</AssignmentsPerWeek>
+		</ConstraintSet>
+		<ConstraintSet>
+			<EmployeeGroup>APAC</EmployeeGroup>
+			<CompleteWeekends/>
+			<AssignmentsPerWeek>6</AssignmentsPerWeek>
+		</ConstraintSet>
+		<ConstraintSet>
+			<EmployeeGroup>AMERICAS</EmployeeGroup>
+			<CompleteWeekends/>
+			<AssignmentsPerWeek>6</AssignmentsPerWeek>
+		</ConstraintSet>
+	</ConstraintSets>
+	
+	<!--=====================================================================-->
+    <!--                          Global Parameters                          -->
+    <!--=====================================================================-->
+	<!--
+	Here the the global settings are defined.
+    -->
+	<GlobalSettings>
+		<Termination>
+			<StagnationLimit>50</StagnationLimit>
+		</Termination>
+		<Experiments>
+			<PopulationSize>
+				<Min>100</Min>
+				<Max>105</Max>
+				<Granularity>1</Granularity>
+			</PopulationSize>
+			<CrossoverPoints>
+				<Min>1</Min>
+				<Max>59</Max>
+				<Granularity>1</Granularity>
+			</CrossoverPoints>
+			<CrossoverRate>
+				<Min>0.5</Min>
+				<Max>1.0</Max>
+				<Granularity>0.1</Granularity>
+			</CrossoverRate>
+			<MutationRate>
+				<Min>0.0</Min>
+				<Max>0.003</Max>
+				<Granularity>0.0001</Granularity>
+			</MutationRate>
+		</Experiments>
+	</GlobalSettings>	
+	    
+</SchedulingPeriod>
