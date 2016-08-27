@@ -59,16 +59,16 @@ public class SmartRosterApplet extends AbstractApplet
 {
 	private static final long serialVersionUID = 9082082587988054878L;
 	private final int TERMINATION_STAGNATION = 50;
-	private final int EXPERIMENT_POPULATION_MIN = 1500;
-	private final int EXPERIMENT_POPULATION_MAX = 2500;
+	private final int EXPERIMENT_POPULATION_MIN = 1150;
+	private final int EXPERIMENT_POPULATION_MAX = 1150;
 	private final int EXPERIMENT_POPULATION_GRAN = 50;
 	private final int EXPERIMENT_CROSSPOINTS_MIN = 1;
-	private final int EXPERIMENT_CROSSPOINTS_MAX = 10;
+	private final int EXPERIMENT_CROSSPOINTS_MAX = 73;
 	private final int EXPERIMENT_CROSSPOINTS_GRAN = 1;
-	private final double EXPERIMENT_PC_MIN = 0.5;
+	private final double EXPERIMENT_PC_MIN = 1.0;
 	private final double EXPERIMENT_PC_MAX = 1.0;
 	private final double EXPERIMENT_PC_GRAN = 0.05;
-	private final double EXPERIMENT_PM_MIN = 0.0001;
+	private final double EXPERIMENT_PM_MIN = 0.0000;
 	private final double EXPERIMENT_PM_MAX = 0.01;
 	private final double EXPERIMENT_PM_GRAN = 0.0001;
 	
