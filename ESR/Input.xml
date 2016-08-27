@@ -969,7 +969,7 @@
 				<Granularity>0.1</Granularity>
 			</CrossoverRate>
 			<MutationRate>
-				<Min>0.0</Min>
+				<Min>0.0027</Min>
 				<Max>0.003</Max>
 				<Granularity>0.0001</Granularity>
 			</MutationRate>
