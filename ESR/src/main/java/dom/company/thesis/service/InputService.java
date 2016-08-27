@@ -24,7 +24,7 @@ import dom.company.thesis.model.Task;
 
 public class InputService {
 	
-	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input5.xml";
+	static private final String XML_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\Input6.xml";
 	static private final String LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment.csv";
 	static private final String ROLLUP_LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment_rollup.csv";
 	static private final String DETAILED_LOG_FILE_PATH = "C:\\Users\\Steff\\CloudStation\\Thesis\\_workspace\\experiment_detailed.csv";
@@ -55,6 +55,21 @@ public class InputService {
 	
 	//Soft Constraints
 	static int[][] shiftOffPreferenceMatrix;	// [shift][employee] = {0,1}
+	
+	//global settings
+	static private int terminationStagnation;
+	static private int experimentPopulationMin;
+	static private int experimentPopulationMax;
+	static private int experimentPopulationGran;
+	static private int experimentCrosspointsMin;
+	static private int experimentCrosspointsMax;
+	static private int experimentCrosspointsGran;
+	static private double experimentPcMin;
+	static private double experimentPcMax;
+	static private double experimentPcGran;
+	static private double experimentPmMin;
+	static private double experimentPmMax;
+	static private double experimentPmGran;
 		
 	public InputService() {		
 	}
@@ -242,6 +257,9 @@ public class InputService {
 		
 		//Generate maxAssignmentsPerWeekNumberingPattern
 		generateMaxAssignmentsPerWeekNumberingPattern();
+		
+		//load global settings
+		loadGlobalSettings();
 	}
 	
 	private static void generateMaxAssignmentsPerWeekNumberingPattern() {
@@ -470,6 +488,38 @@ public class InputService {
 	        }
 	    });
 	}
+	private static void loadGlobalSettings() {
+		
+		
+		InputParser inputParser = new InputParser(XML_FILE_PATH);
+		
+		Map<String,Integer> experimentPopulationSizeSettings = new HashMap<String,Integer>();
+		Map<String,Integer> experimentCrossPointsSettings = new HashMap<String,Integer>();
+		Map<String,Double> experimentPcSettings = new HashMap<String,Double>();
+		Map<String,Double> experimentPmSettings = new HashMap<String,Double>();
+		
+		terminationStagnation = inputParser.getTerminationSetting();
+		experimentPopulationSizeSettings = inputParser.getExperimentPopulationSizeSettings();
+		experimentCrossPointsSettings = inputParser.getExperimentCrossPointsSettings();
+		experimentPcSettings = inputParser.getExperimentPcSettings();
+		experimentPmSettings = inputParser.getExperimentPmSettings();
+		
+		experimentPopulationMin = experimentPopulationSizeSettings.get("min").intValue();
+		experimentPopulationMax = experimentPopulationSizeSettings.get("max").intValue();
+		experimentPopulationGran = experimentPopulationSizeSettings.get("gran").intValue();
+		experimentCrosspointsMin = experimentCrossPointsSettings.get("min").intValue();
+		experimentCrosspointsMax = experimentCrossPointsSettings.get("max").intValue();
+		experimentCrosspointsGran = experimentCrossPointsSettings.get("gran").intValue();
+		experimentPcMin = experimentPcSettings.get("min").doubleValue();
+		experimentPcMax = experimentPcSettings.get("max").doubleValue();
+		experimentPcGran = experimentPcSettings.get("gran").doubleValue();
+		experimentPmMin = experimentPmSettings.get("min").doubleValue();
+		experimentPmMax = experimentPmSettings.get("max").doubleValue();
+		experimentPmGran = experimentPmSettings.get("gran").doubleValue();
+		
+	}
+	
+	
 	private static Task getTask(String taskId) {
 		return tasks.stream().filter(task -> task.getId().equals(taskId)).collect(Collectors.toList()).get(0);
 	}
@@ -603,6 +653,58 @@ public class InputService {
 
 	public static String getDetailedLogFilePath() {
 		return DETAILED_LOG_FILE_PATH;
+	}
+
+	public static int getExperimentPopulationMin() {
+		return experimentPopulationMin;
+	}
+
+	public static int getExperimentPopulationMax() {
+		return experimentPopulationMax;
+	}
+
+	public static int getExperimentPopulationGran() {
+		return experimentPopulationGran;
+	}
+
+	public static int getExperimentCrosspointsMin() {
+		return experimentCrosspointsMin;
+	}
+
+	public static int getExperimentCrosspointsMax() {
+		return experimentCrosspointsMax;
+	}
+
+	public static int getExperimentCrosspointsGran() {
+		return experimentCrosspointsGran;
+	}
+
+	public static double getExperimentPcMin() {
+		return experimentPcMin;
+	}
+
+	public static double getExperimentPcMax() {
+		return experimentPcMax;
+	}
+
+	public static double getExperimentPcGran() {
+		return experimentPcGran;
+	}
+
+	public static double getExperimentPmMin() {
+		return experimentPmMin;
+	}
+
+	public static double getExperimentPmMax() {
+		return experimentPmMax;
+	}
+
+	public static double getExperimentPmGran() {
+		return experimentPmGran;
+	}
+
+	public static int getTerminationStagnation() {
+		return terminationStagnation;
 	}	
 	
 	

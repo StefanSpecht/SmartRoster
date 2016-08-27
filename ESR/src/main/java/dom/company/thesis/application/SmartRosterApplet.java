@@ -58,20 +58,19 @@ import dom.company.thesis.service.InputService;
 public class SmartRosterApplet extends AbstractApplet
 {
 	private static final long serialVersionUID = 9082082587988054878L;
-	private final int TERMINATION_STAGNATION = 50;
-	private final int EXPERIMENT_POPULATION_MIN = 1150;
-	private final int EXPERIMENT_POPULATION_MAX = 1150;
-	private final int EXPERIMENT_POPULATION_GRAN = 50;
-	private final int EXPERIMENT_CROSSPOINTS_MIN = 1;
-	private final int EXPERIMENT_CROSSPOINTS_MAX = 73;
-	private final int EXPERIMENT_CROSSPOINTS_GRAN = 1;
-	private final double EXPERIMENT_PC_MIN = 1.0;
-	private final double EXPERIMENT_PC_MAX = 1.0;
-	private final double EXPERIMENT_PC_GRAN = 0.05;
-	private final double EXPERIMENT_PM_MIN = 0.0000;
-	private final double EXPERIMENT_PM_MAX = 0.01;
-	private final double EXPERIMENT_PM_GRAN = 0.0001;
-	
+	private final int TERMINATION_STAGNATION = InputService.getTerminationStagnation();
+	private final int EXPERIMENT_POPULATION_MIN = InputService.getExperimentPopulationMin();
+	private final int EXPERIMENT_POPULATION_MAX = InputService.getExperimentPopulationMax();
+	private final int EXPERIMENT_POPULATION_GRAN = InputService.getExperimentPopulationGran();
+	private final int EXPERIMENT_CROSSPOINTS_MIN = InputService.getExperimentCrosspointsMin();
+	private final int EXPERIMENT_CROSSPOINTS_MAX = InputService.getExperimentCrosspointsMax();
+	private final int EXPERIMENT_CROSSPOINTS_GRAN = InputService.getExperimentCrosspointsGran();
+	private final double EXPERIMENT_PC_MIN = InputService.getExperimentPcMin();
+	private final double EXPERIMENT_PC_MAX = InputService.getExperimentPcMax();
+	private final double EXPERIMENT_PC_GRAN = InputService.getExperimentPcGran();
+	private final double EXPERIMENT_PM_MIN = InputService.getExperimentPmMin();
+	private final double EXPERIMENT_PM_MAX = InputService.getExperimentPmMax();
+	private final double EXPERIMENT_PM_GRAN = InputService.getExperimentPmGran();	
 	
 	
 	private JButton startButton;

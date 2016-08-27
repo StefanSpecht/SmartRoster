@@ -762,4 +762,157 @@ public Map<Date, List<String>> getShifIdOffPreferences(String employeeId, Date s
 		}
 		return employeeGroupIds;
 	}
+
+	public int getTerminationSetting() {
+		
+		XPath xPath =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			XPathExpression expression = xPath.compile("SchedulingPeriod/GlobalSettings/Termination/StagnationLimit");
+			Node terminationNode = (Node) expression.evaluate(document,XPathConstants.NODE);
+			
+			return Integer.parseInt(terminationNode.getTextContent());
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		
+		return 50;
+	}
+
+	public Map<String, Integer> getExperimentPopulationSizeSettings() {
+		Map<String,Integer> experimentPopulationSizeSettings = new HashMap<String,Integer>();
+		XPath xPathMin =  XPathFactory.newInstance().newXPath();
+		XPath xPathMax =  XPathFactory.newInstance().newXPath();
+		XPath xPathGran =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			XPathExpression expressionMin = xPathMin.compile("SchedulingPeriod/GlobalSettings/Experiments/PopulationSize/Min");
+			Node minNode = (Node) expressionMin.evaluate(document,XPathConstants.NODE);
+			
+			XPathExpression expressionMax = xPathMax.compile("SchedulingPeriod/GlobalSettings/Experiments/PopulationSize/Max");
+			Node maxNode = (Node) expressionMax.evaluate(document,XPathConstants.NODE);
+			
+			XPathExpression expressionGran = xPathGran.compile("SchedulingPeriod/GlobalSettings/Experiments/PopulationSize/Granularity");
+			Node granNode = (Node) expressionGran.evaluate(document,XPathConstants.NODE);
+			
+			experimentPopulationSizeSettings.put("min", Integer.parseInt(minNode.getTextContent()));
+			experimentPopulationSizeSettings.put("max", Integer.parseInt(maxNode.getTextContent()));
+			experimentPopulationSizeSettings.put("gran", Integer.parseInt(granNode.getTextContent()));
+			
+			return experimentPopulationSizeSettings;
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		
+		//default values
+		experimentPopulationSizeSettings.put("min", 50);
+		experimentPopulationSizeSettings.put("max", 2500);
+		experimentPopulationSizeSettings.put("gran", 50);
+		return experimentPopulationSizeSettings;
+	}
+	
+	public Map<String, Integer> getExperimentCrossPointsSettings() {
+		Map<String,Integer> experimentCrossPointsSettings = new HashMap<String,Integer>();
+		XPath xPathMin =  XPathFactory.newInstance().newXPath();
+		XPath xPathMax =  XPathFactory.newInstance().newXPath();
+		XPath xPathGran =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			XPathExpression expressionMin = xPathMin.compile("SchedulingPeriod/GlobalSettings/Experiments/CrossoverPoints/Min");
+			Node minNode = (Node) expressionMin.evaluate(document,XPathConstants.NODE);
+			
+			XPathExpression expressionMax = xPathMax.compile("SchedulingPeriod/GlobalSettings/Experiments/CrossoverPoints/Max");
+			Node maxNode = (Node) expressionMax.evaluate(document,XPathConstants.NODE);
+			
+			XPathExpression expressionGran = xPathGran.compile("SchedulingPeriod/GlobalSettings/Experiments/CrossoverPoints/Granularity");
+			Node granNode = (Node) expressionGran.evaluate(document,XPathConstants.NODE);
+			
+			experimentCrossPointsSettings.put("min", Integer.parseInt(minNode.getTextContent()));
+			experimentCrossPointsSettings.put("max", Integer.parseInt(maxNode.getTextContent()));
+			experimentCrossPointsSettings.put("gran", Integer.parseInt(granNode.getTextContent()));
+			
+			return experimentCrossPointsSettings;
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		
+		//default values
+		experimentCrossPointsSettings.put("min", 50);
+		experimentCrossPointsSettings.put("max", 2500);
+		experimentCrossPointsSettings.put("gran", 50);
+		return experimentCrossPointsSettings;
+	}
+	
+	public Map<String, Double> getExperimentPcSettings() {
+		Map<String,Double> experimentPcSettings = new HashMap<String,Double>();
+		XPath xPathMin =  XPathFactory.newInstance().newXPath();
+		XPath xPathMax =  XPathFactory.newInstance().newXPath();
+		XPath xPathGran =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			XPathExpression expressionMin = xPathMin.compile("SchedulingPeriod/GlobalSettings/Experiments/CrossoverRate/Min");
+			Node minNode = (Node) expressionMin.evaluate(document,XPathConstants.NODE);
+			
+			XPathExpression expressionMax = xPathMax.compile("SchedulingPeriod/GlobalSettings/Experiments/CrossoverRate/Max");
+			Node maxNode = (Node) expressionMax.evaluate(document,XPathConstants.NODE);
+			
+			XPathExpression expressionGran = xPathGran.compile("SchedulingPeriod/GlobalSettings/Experiments/CrossoverRate/Granularity");
+			Node granNode = (Node) expressionGran.evaluate(document,XPathConstants.NODE);
+			
+			experimentPcSettings.put("min", Double.parseDouble(minNode.getTextContent()));
+			experimentPcSettings.put("max", Double.parseDouble(maxNode.getTextContent()));
+			experimentPcSettings.put("gran", Double.parseDouble(granNode.getTextContent()));
+			
+			return experimentPcSettings;
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		
+		//default values
+		experimentPcSettings.put("min", 0.5);
+		experimentPcSettings.put("max", 1.0);
+		experimentPcSettings.put("gran", 0.1);
+		return experimentPcSettings;
+	}
+	
+	public Map<String, Double> getExperimentPmSettings() {
+		Map<String,Double> experimentPmSettings = new HashMap<String,Double>();
+		XPath xPathMin =  XPathFactory.newInstance().newXPath();
+		XPath xPathMax =  XPathFactory.newInstance().newXPath();
+		XPath xPathGran =  XPathFactory.newInstance().newXPath();
+		
+		try {
+			XPathExpression expressionMin = xPathMin.compile("SchedulingPeriod/GlobalSettings/Experiments/MutationRate/Min");
+			Node minNode = (Node) expressionMin.evaluate(document,XPathConstants.NODE);
+			
+			XPathExpression expressionMax = xPathMax.compile("SchedulingPeriod/GlobalSettings/Experiments/MutationRate/Max");
+			Node maxNode = (Node) expressionMax.evaluate(document,XPathConstants.NODE);
+			
+			XPathExpression expressionGran = xPathGran.compile("SchedulingPeriod/GlobalSettings/Experiments/MutationRate/Granularity");
+			Node granNode = (Node) expressionGran.evaluate(document,XPathConstants.NODE);
+			
+			experimentPmSettings.put("min", Double.parseDouble(minNode.getTextContent()));
+			experimentPmSettings.put("max", Double.parseDouble(maxNode.getTextContent()));
+			experimentPmSettings.put("gran", Double.parseDouble(granNode.getTextContent()));
+			
+			return experimentPmSettings;
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		
+		//default values
+		experimentPmSettings.put("min", 0.0000);
+		experimentPmSettings.put("max", 0.003);
+		experimentPmSettings.put("gran", 0.0001);
+		return experimentPmSettings;
+	}
+	
 }
